@@ -4,7 +4,7 @@ mod test {
     use rstest::rstest;
 
     #[rstest]
-    #[case(Ntsc::False, false)]
+    #[case(Ntsc::None, false)]
     #[case(Ntsc::NonDropFrame, true)]
     #[case(Ntsc::DropFrame, true)]
     fn test_ntsc(#[case] value: Ntsc, #[case] is_ntsc: bool) {
@@ -117,7 +117,7 @@ mod test {
     #[case::int_24_timebase(ParseCase{
         source: 24,
         source_type: SourceType::Timebase,
-        ntsc: Ntsc::False,
+        ntsc: Ntsc::None,
         expected: Ok(Success{
             playback: num::Rational64::new(24, 1),
             timebase: num::Rational64::new(24, 1),
@@ -126,7 +126,7 @@ mod test {
     #[case::int_24_playback(ParseCase{
         source: 24,
         source_type: SourceType::Playback,
-        ntsc: Ntsc::False,
+        ntsc: Ntsc::None,
         expected: Ok(Success{
             playback: num::Rational64::new(24, 1),
             timebase: num::Rational64::new(24, 1),
@@ -136,7 +136,7 @@ mod test {
     #[case::rational_2398_playback(ParseCase{
         source: num::Rational64::new(24000, 1001),
         source_type: SourceType::Playback,
-        ntsc: Ntsc::False,
+        ntsc: Ntsc::None,
         expected: Ok(Success{
             playback: num::Rational64::new(24000, 1001),
             timebase: num::Rational64::new(24000, 1001),
@@ -146,7 +146,7 @@ mod test {
     #[case::rational_2398_timebase(ParseCase{
         source: num::Rational64::new(24000, 1001),
         source_type: SourceType::Timebase,
-        ntsc: Ntsc::False,
+        ntsc: Ntsc::None,
         expected: Ok(Success{
             playback: num::Rational64::new(24000, 1001),
             timebase: num::Rational64::new(24000, 1001),
@@ -156,7 +156,7 @@ mod test {
     #[case::rational_2398_timebase(ParseCase{
         source: num::Rational64::new(24, 1),
         source_type: SourceType::Timebase,
-        ntsc: Ntsc::False,
+        ntsc: Ntsc::None,
         expected: Ok(Success{
             playback: num::Rational64::new(24, 1),
             timebase: num::Rational64::new(24, 1),
@@ -165,7 +165,7 @@ mod test {
     #[case::rational_2398_playback(ParseCase{
         source: num::Rational64::new(24, 1),
         source_type: SourceType::Playback,
-        ntsc: Ntsc::False,
+        ntsc: Ntsc::None,
         expected: Ok(Success{
             playback: num::Rational64::new(24, 1),
             timebase: num::Rational64::new(24, 1),
@@ -298,7 +298,7 @@ mod test {
     #[case::from_i64(ParseCase{
         source: 24i64,
         source_type: SourceType::Timebase,
-        ntsc: Ntsc::False,
+        ntsc: Ntsc::None,
         expected: Ok(Success{
             playback: num::Rational64::new(24, 1),
             timebase: num::Rational64::new(24, 1),
@@ -307,7 +307,7 @@ mod test {
     #[case::from_u64(ParseCase{
         source: 24u64,
         source_type: SourceType::Timebase,
-        ntsc: Ntsc::False,
+        ntsc: Ntsc::None,
         expected: Ok(Success{
             playback: num::Rational64::new(24, 1),
             timebase: num::Rational64::new(24, 1),
@@ -316,7 +316,7 @@ mod test {
     #[case::from_i32(ParseCase{
         source: 24i32,
         source_type: SourceType::Timebase,
-        ntsc: Ntsc::False,
+        ntsc: Ntsc::None,
         expected: Ok(Success{
             playback: num::Rational64::new(24, 1),
             timebase: num::Rational64::new(24, 1),
@@ -325,7 +325,7 @@ mod test {
     #[case::from_u32(ParseCase{
         source: 24u32,
         source_type: SourceType::Timebase,
-        ntsc: Ntsc::False,
+        ntsc: Ntsc::None,
         expected: Ok(Success{
             playback: num::Rational64::new(24, 1),
             timebase: num::Rational64::new(24, 1),
@@ -334,7 +334,7 @@ mod test {
     #[case::from_u16(ParseCase{
         source: 24u16,
         source_type: SourceType::Timebase,
-        ntsc: Ntsc::False,
+        ntsc: Ntsc::None,
         expected: Ok(Success{
             playback: num::Rational64::new(24, 1),
             timebase: num::Rational64::new(24, 1),
@@ -343,7 +343,7 @@ mod test {
     #[case::from_i16(ParseCase{
         source: 24i16,
         source_type: SourceType::Timebase,
-        ntsc: Ntsc::False,
+        ntsc: Ntsc::None,
         expected: Ok(Success{
             playback: num::Rational64::new(24, 1),
             timebase: num::Rational64::new(24, 1),
@@ -352,7 +352,7 @@ mod test {
     #[case::from_i8(ParseCase{
         source: 24i8,
         source_type: SourceType::Timebase,
-        ntsc: Ntsc::False,
+        ntsc: Ntsc::None,
         expected: Ok(Success{
             playback: num::Rational64::new(24, 1),
             timebase: num::Rational64::new(24, 1),
@@ -361,7 +361,7 @@ mod test {
     #[case::from_u8(ParseCase{
         source: 24u8,
         source_type: SourceType::Timebase,
-        ntsc: Ntsc::False,
+        ntsc: Ntsc::None,
         expected: Ok(Success{
             playback: num::Rational64::new(24, 1),
             timebase: num::Rational64::new(24, 1),
@@ -379,7 +379,7 @@ mod test {
     #[case::from_rational32(ParseCase{
         source: num::Rational32::new(24, 1),
         source_type: SourceType::Timebase,
-        ntsc: Ntsc::False,
+        ntsc: Ntsc::None,
         expected: Ok(Success{
             playback: num::Rational64::new(24, 1),
             timebase: num::Rational64::new(24, 1),
@@ -420,13 +420,13 @@ mod test {
     #[case::error_f64_nonntsc(ParseCase{
         source: 23.98f64,
         source_type: SourceType::Playback,
-        ntsc: Ntsc::False,
+        ntsc: Ntsc::None,
         expected: Err(FramerateParseError::Imprecise("float values cannot be parsed for non-NTSC Framerates due to imprecision".to_string())),
     })]
     #[case::error_f32_nonntsc(ParseCase{
         source: 23.98f32,
         source_type: SourceType::Playback,
-        ntsc: Ntsc::False,
+        ntsc: Ntsc::None,
         expected: Err(FramerateParseError::Imprecise("float values cannot be parsed for non-NTSC Framerates due to imprecision".to_string())),
     })]
     #[case::error_u64_overlfow(ParseCase{
@@ -458,7 +458,7 @@ mod test {
     }
 
     #[rstest]
-    #[case(Framerate::new_with_timebase(24, Ntsc::False), "[24]")]
+    #[case(Framerate::new_with_timebase(24, Ntsc::None), "[24]")]
     #[case(
         Framerate::new_with_timebase(24, Ntsc::NonDropFrame),
         "[23.98 NTSC NDF]"

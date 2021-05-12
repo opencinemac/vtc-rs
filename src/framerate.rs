@@ -9,8 +9,8 @@ type ParseResult = Result<Framerate, FramerateParseError>;
 /// NTSC is the type of NTSC standard a framerate adheres to.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Ntsc {
-    /// False means this Framerate is not NTSC.
-    False,
+    /// None means this Framerate is not NTSC.
+    None,
     /// NonDrop means this Framerate is non-drop NTSC (no frame numbers are dropped to sync timecode
     /// with real-world time - results in Timecode that drifts from true time).
     NonDropFrame,
@@ -26,19 +26,19 @@ impl Ntsc {
     ///
     /// ```rust
     /// use vtc::Ntsc;
-    /// println!("False: {}", vtc::Ntsc::False.is_ntsc());
+    /// println!("None: {}", vtc::Ntsc::None.is_ntsc());
     /// println!("NonDropFrame: {}", vtc::Ntsc::NonDropFrame.is_ntsc());
     /// println!("DropFrame: {}", vtc::Ntsc::DropFrame.is_ntsc());
     /// ```
     pub fn is_ntsc(self) -> bool {
-        self != Self::False
+        self != Self::None
     }
 }
 
 impl fmt::Display for Ntsc {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         let ntsc_str = match self {
-            Ntsc::False => "",
+            Ntsc::None => "",
             Ntsc::NonDropFrame => "NTSC NDF",
             Ntsc::DropFrame => "NTSC DF",
         };
@@ -162,7 +162,7 @@ impl Framerate {
     /// println!("ERR: {:?}", err);
     /// ```
     ///
-    /// This means that integers will always result in an error if ntsc != Ntsc::False:
+    /// This means that integers will always result in an error if ntsc != Ntsc::None:
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
@@ -170,12 +170,12 @@ impl Framerate {
     /// println!("ERR: {:?}", err);
     /// ```
     ///
-    /// If we switch our NTSC settings, we can parse integers and integer strings, as well as other
-    /// arbirary playback speed values:
+    /// If we switch our NTSC settings to Ntsc::None, we can parse integers and integer strings, as
+    /// well as other arbirary playback speed values:
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
-    /// let rate = Framerate::new_with_playback(24, Ntsc::False).unwrap();
+    /// let rate = Framerate::new_with_playback(24, Ntsc::None).unwrap();
     /// println!("PLAYBACK: {}", rate.playback());
     /// println!("TIMEBASE: {}", rate.timebase());
     /// println!("NTSC    : {}", rate.ntsc());
@@ -183,7 +183,7 @@ impl Framerate {
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
-    /// let rate = Framerate::new_with_playback("24", Ntsc::False).unwrap();
+    /// let rate = Framerate::new_with_playback("24", Ntsc::None).unwrap();
     /// println!("PLAYBACK: {}", rate.playback());
     /// println!("TIMEBASE: {}", rate.timebase());
     /// println!("NTSC    : {}", rate.ntsc());
@@ -191,7 +191,7 @@ impl Framerate {
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
-    /// let rate = Framerate::new_with_playback("3/1", Ntsc::False).unwrap();
+    /// let rate = Framerate::new_with_playback("3/1", Ntsc::None).unwrap();
     /// println!("PLAYBACK: {}", rate.playback());
     /// println!("TIMEBASE: {}", rate.timebase());
     /// println!("NTSC    : {}", rate.ntsc());
@@ -276,7 +276,7 @@ impl Framerate {
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
-    /// let rate = Framerate::new_with_timebase("3/1", Ntsc::False).unwrap();
+    /// let rate = Framerate::new_with_timebase("3/1", Ntsc::None).unwrap();
     /// println!("PLAYBACK: {}", rate.playback());
     /// println!("TIMEBASE: {}", rate.timebase());
     /// println!("NTSC    : {}", rate.ntsc());
