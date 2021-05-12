@@ -18,16 +18,43 @@ pub enum Ntsc {
 
 impl Ntsc {
     /// check returns whether this is any NTSC format (drop or non-drop).
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use vtc::Ntsc;
+    /// println!("False: {}", vtc::Ntsc::False().check());
+    /// println!("NonDropFrame: {}", vtc::Ntsc::NonDropFrame().check());
+    /// println!("DropFrame: {}", vtc::Ntsc::DropFrame().check());
+    /// ```
     pub fn check(self) -> bool {
         self != Self::False()
     }
 
     /// is_non_drop returns true if this is an NTSC non-drop-frame specification.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use vtc::Ntsc;
+    /// println!("False: {}", vtc::Ntsc::False().is_non_dropframe());
+    /// println!("NonDropFrame: {}", vtc::Ntsc::NonDropFrame().is_non_dropframe());
+    /// println!("DropFrame: {}", vtc::Ntsc::DropFrame().is_non_dropframe());
+    /// ```
     pub fn is_non_dropframe(self) -> bool {
         self == Self::NonDropFrame()
     }
 
     /// is_dropframe returns true if this is an NTSC drop-frame specification.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use vtc::Ntsc;
+    /// println!("False: {}", vtc::Ntsc::False().is_dropframe());
+    /// println!("NonDropFrame: {}", vtc::Ntsc::NonDropFrame().is_dropframe());
+    /// println!("DropFrame: {}", vtc::Ntsc::DropFrame().is_dropframe());
+    /// ```
     pub fn is_dropframe(self) -> bool {
         self == Self::DropFrame()
     }
@@ -44,9 +71,15 @@ pub struct Framerate {
 
 impl Framerate {
     /// playback is the rational representation of the real-world playback speed as a fraction
-    /// in frames-per-second
+    /// in frames-per-second.
     ///
-    /// ex: 24000/1001.
+    /// # Examples
+    ///
+    /// ```rust
+    /// use vtc::{Framerate, Ntsc};
+    /// let rate = Framerate::from_str_timebase("24/1", Ntsc::NonDropFrame()).unwrap();
+    /// println!("{}", rate.playback())
+    /// ```
     pub fn playback(&self) -> num::Rational64 {
         self.value
     }
@@ -54,7 +87,14 @@ impl Framerate {
     /// timebase is the rational representation of the timecode timebase speed as a fraction in
     /// frames-per-second.
     ///
-    /// ex: 24/1.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use vtc::{Framerate, Ntsc};
+    /// let rate = Framerate::from_str_playback("24000/1001", Ntsc::NonDropFrame()).unwrap();
+    /// println!("{}", rate.timebase())
+    /// ```
     pub fn timebase(&self) -> num::Rational64 {
         // If this is an NTSC timebase, we need to round it to the nearest whole number.
         if self.ntsc.check() {

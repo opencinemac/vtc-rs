@@ -8,4 +8,9 @@ lint:
 
 .PHONY: test
 test:
-	-cargo test --color=always --package vtc --lib framerate_test --no-fail-fast
+	-cargo test --color=always --no-fail-fast
+
+.PHONY: doc
+doc:
+	-cargo doc --lib
+	open ./target/doc/vtc/index.html
