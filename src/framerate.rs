@@ -104,6 +104,98 @@ impl Framerate {
         self.ntsc
     }
 
+    /// new_with_playback creates a new Framerate with a given real-world media playback value
+    /// measured in frames-per-second.
+    ///
+    /// # Arguments
+    ///
+    /// * `rate` - A value that represents playback frames-per-second.
+    ///
+    /// * `ntsc` - The ntsc standard this value should be parsed as.
+    ///
+    /// # Examples
+    ///
+    /// we can generate any NTSC framerates from f32 or f64 values easily.
+    ///
+    /// ```rust
+    /// use vtc::{Framerate, FramerateSource, Ntsc};
+    /// let rate = Framerate::new_with_playback(23.98, Ntsc::NonDropFrame).unwrap();
+    /// println!("PLAYBACK: {}", rate.playback());
+    /// println!("TIMEBASE: {}", rate.timebase());
+    /// println!("NTSC    : {}", rate.ntsc());
+    /// ```
+    ///
+    /// floats are automatically rounded to the nearest valid NTSC playback speed:
+    ///
+    /// ```rust
+    /// # use vtc::{Framerate, FramerateSource, Ntsc};
+    /// let rate = Framerate::new_with_playback(23.5, Ntsc::NonDropFrame).unwrap();
+    /// println!("PLAYBACK: {}", rate.playback());
+    /// println!("TIMEBASE: {}", rate.timebase());
+    /// println!("NTSC    : {}", rate.ntsc());
+    /// ```
+    ///
+    /// strings can be parsed if they are a float or rational format:
+    ///
+    /// ```rust
+    /// # use vtc::{Framerate, FramerateSource, Ntsc};
+    /// let rate = Framerate::new_with_playback("23.98", Ntsc::NonDropFrame).unwrap();
+    /// println!("PLAYBACK: {}", rate.playback());
+    /// println!("TIMEBASE: {}", rate.timebase());
+    /// println!("NTSC    : {}", rate.ntsc());
+    /// ```
+    ///
+    /// ```rust
+    /// # use vtc::{Framerate, FramerateSource, Ntsc};
+    /// let rate = Framerate::new_with_playback("24000/1001", Ntsc::NonDropFrame).unwrap();
+    /// println!("PLAYBACK: {}", rate.playback());
+    /// println!("TIMEBASE: {}", rate.timebase());
+    /// println!("NTSC    : {}", rate.ntsc());
+    /// ```
+    ///
+    /// Non-valid NTSC playback rates will result in an error if we are parsing NTSC drop or
+    /// non-drop values:
+    ///
+    /// ```rust
+    /// # use vtc::{Framerate, FramerateSource, Ntsc};
+    /// let err = Framerate::new_with_playback("24/1", Ntsc::NonDropFrame);
+    /// println!("ERR: {:?}", err);
+    /// ```
+    ///
+    /// This means that integers will always result in an error if ntsc != Ntsc::False:
+    ///
+    /// ```rust
+    /// # use vtc::{Framerate, FramerateSource, Ntsc};
+    /// let err = Framerate::new_with_playback(24, Ntsc::NonDropFrame);
+    /// println!("ERR: {:?}", err);
+    /// ```
+    ///
+    /// If we switch our NTSC settings, we can parse integers and integer strings, as well as other
+    /// arbirary playback speed values:
+    ///
+    /// ```rust
+    /// # use vtc::{Framerate, FramerateSource, Ntsc};
+    /// let rate = Framerate::new_with_playback(24, Ntsc::False).unwrap();
+    /// println!("PLAYBACK: {}", rate.playback());
+    /// println!("TIMEBASE: {}", rate.timebase());
+    /// println!("NTSC    : {}", rate.ntsc());
+    /// ```
+    ///
+    /// ```rust
+    /// # use vtc::{Framerate, FramerateSource, Ntsc};
+    /// let rate = Framerate::new_with_playback("24", Ntsc::False).unwrap();
+    /// println!("PLAYBACK: {}", rate.playback());
+    /// println!("TIMEBASE: {}", rate.timebase());
+    /// println!("NTSC    : {}", rate.ntsc());
+    /// ```
+    ///
+    /// ```rust
+    /// # use vtc::{Framerate, FramerateSource, Ntsc};
+    /// let rate = Framerate::new_with_playback("3/1", Ntsc::False).unwrap();
+    /// println!("PLAYBACK: {}", rate.playback());
+    /// println!("TIMEBASE: {}", rate.timebase());
+    /// println!("NTSC    : {}", rate.ntsc());
+    /// ```
     pub fn new_with_playback<T: FramerateSource>(rate: T, ntsc: Ntsc) -> ParseResult {
         let rational = rate.to_playback(ntsc, false)?;
         let rate = Framerate {
@@ -113,6 +205,82 @@ impl Framerate {
         Ok(rate)
     }
 
+    /// new_with_timebase creates a new Framerate with a given timecode timebase playback value
+    /// measured in frames-per-second. For NTSC framerates, the timebase will differ from the
+    /// playback.
+    ///
+    /// # Arguments
+    ///
+    /// * `base` - A value that represents timebase frames-per-second.
+    ///
+    /// * `ntsc` - The ntsc standard this value should be parsed as.
+    ///
+    /// # Examples
+    ///
+    /// we can generate any NTSC framerates from any non 128-bit integer type easily:
+    ///
+    /// ```rust
+    /// use vtc::{Framerate, FramerateSource, Ntsc};
+    /// let rate = Framerate::new_with_timebase(24, Ntsc::NonDropFrame).unwrap();
+    /// println!("PLAYBACK: {}", rate.playback());
+    /// println!("TIMEBASE: {}", rate.timebase());
+    /// println!("NTSC    : {}", rate.ntsc());
+    /// ```
+    ///
+    /// floats are automatically rounded to the nearest valid NTSC timebase speed:
+    ///
+    /// ```rust
+    /// # use vtc::{Framerate, FramerateSource, Ntsc};
+    /// let rate = Framerate::new_with_timebase(24.0, Ntsc::NonDropFrame).unwrap();
+    /// println!("PLAYBACK: {}", rate.playback());
+    /// println!("TIMEBASE: {}", rate.timebase());
+    /// println!("NTSC    : {}", rate.ntsc());
+    /// ```
+    ///
+    /// strings can be parsed if they are an int, float or rational format:
+    ///
+    /// ```rust
+    /// # use vtc::{Framerate, FramerateSource, Ntsc};
+    /// let rate = Framerate::new_with_timebase("24", Ntsc::NonDropFrame).unwrap();
+    /// println!("PLAYBACK: {}", rate.playback());
+    /// println!("TIMEBASE: {}", rate.timebase());
+    /// println!("NTSC    : {}", rate.ntsc());
+    /// ```
+    ///
+    /// ```rust
+    /// # use vtc::{Framerate, FramerateSource, Ntsc};
+    /// let rate = Framerate::new_with_timebase("24.0", Ntsc::NonDropFrame).unwrap();
+    /// println!("PLAYBACK: {}", rate.playback());
+    /// println!("TIMEBASE: {}", rate.timebase());
+    /// println!("NTSC    : {}", rate.ntsc());
+    /// ```
+    ///
+    /// ```rust
+    /// # use vtc::{Framerate, FramerateSource, Ntsc};
+    /// let rate = Framerate::new_with_timebase("24/1", Ntsc::NonDropFrame).unwrap();
+    /// println!("PLAYBACK: {}", rate.playback());
+    /// println!("TIMEBASE: {}", rate.timebase());
+    /// println!("NTSC    : {}", rate.ntsc());
+    /// ```
+    ///
+    /// Non-valid NTSC timebase will result in an error if we are parsing NTSC drop or non-drop
+    /// values:
+    ///
+    /// ```rust
+    /// # use vtc::{Framerate, FramerateSource, Ntsc};
+    /// let err = Framerate::new_with_timebase("24000/1001", Ntsc::NonDropFrame);
+    /// println!("ERR: {:?}", err);
+    /// ```
+    ///
+    /// If we switch our NTSC settings, we can parse arbirary Framerate values:
+    ///
+    /// ```rust
+    /// # use vtc::{Framerate, FramerateSource, Ntsc};
+    /// let rate = Framerate::new_with_timebase("3/1", Ntsc::False).unwrap();
+    /// println!("PLAYBACK: {}", rate.playback());
+    /// println!("TIMEBASE: {}", rate.timebase());
+    /// println!("NTSC    : {}", rate.ntsc());
+    /// ```
     pub fn new_with_timebase<T: FramerateSource>(base: T, ntsc: Ntsc) -> ParseResult {
         let rational = base.to_playback(ntsc, true)?;
         let rate = Framerate {
