@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod test {
-    use crate::{Framerate, FramerateSource, Ntsc};
+    use crate::{Framerate, FramerateParseError, FramerateSource, Ntsc};
     use rstest::rstest;
 
     #[rstest]
@@ -25,7 +25,7 @@ mod test {
         /// ntsc is whether the source should be parsed as an NTSC framerate.
         ntsc: Ntsc,
         /// expected is the expected result. Use Err([message])
-        expected: Result<Success, String>,
+        expected: Result<Success, FramerateParseError>,
     }
 
     enum SourceType {
@@ -293,37 +293,138 @@ mod test {
             timebase: num::Rational64::new(60, 1),
         }),
     })]
+    // OTHER TYPES ---------
+    // ---------------------
+    #[case::from_i64(ParseCase{
+        source: 24i64,
+        source_type: SourceType::Timebase,
+        ntsc: Ntsc::False,
+        expected: Ok(Success{
+            playback: num::Rational64::new(24, 1),
+            timebase: num::Rational64::new(24, 1),
+        }),
+    })]
+    #[case::from_u64(ParseCase{
+        source: 24u64,
+        source_type: SourceType::Timebase,
+        ntsc: Ntsc::False,
+        expected: Ok(Success{
+            playback: num::Rational64::new(24, 1),
+            timebase: num::Rational64::new(24, 1),
+        }),
+    })]
+    #[case::from_i32(ParseCase{
+        source: 24i32,
+        source_type: SourceType::Timebase,
+        ntsc: Ntsc::False,
+        expected: Ok(Success{
+            playback: num::Rational64::new(24, 1),
+            timebase: num::Rational64::new(24, 1),
+        }),
+    })]
+    #[case::from_u32(ParseCase{
+        source: 24u32,
+        source_type: SourceType::Timebase,
+        ntsc: Ntsc::False,
+        expected: Ok(Success{
+            playback: num::Rational64::new(24, 1),
+            timebase: num::Rational64::new(24, 1),
+        }),
+    })]
+    #[case::from_u16(ParseCase{
+        source: 24u16,
+        source_type: SourceType::Timebase,
+        ntsc: Ntsc::False,
+        expected: Ok(Success{
+            playback: num::Rational64::new(24, 1),
+            timebase: num::Rational64::new(24, 1),
+        }),
+    })]
+    #[case::from_i16(ParseCase{
+        source: 24i16,
+        source_type: SourceType::Timebase,
+        ntsc: Ntsc::False,
+        expected: Ok(Success{
+            playback: num::Rational64::new(24, 1),
+            timebase: num::Rational64::new(24, 1),
+        }),
+    })]
+    #[case::from_i8(ParseCase{
+        source: 24i8,
+        source_type: SourceType::Timebase,
+        ntsc: Ntsc::False,
+        expected: Ok(Success{
+            playback: num::Rational64::new(24, 1),
+            timebase: num::Rational64::new(24, 1),
+        }),
+    })]
+    #[case::from_u8(ParseCase{
+        source: 24u8,
+        source_type: SourceType::Timebase,
+        ntsc: Ntsc::False,
+        expected: Ok(Success{
+            playback: num::Rational64::new(24, 1),
+            timebase: num::Rational64::new(24, 1),
+        }),
+    })]
+    #[case::from_f32(ParseCase{
+        source: 24f32,
+        source_type: SourceType::Timebase,
+        ntsc: Ntsc::NonDropFrame,
+        expected: Ok(Success{
+            playback: num::Rational64::new(24000, 1001),
+            timebase: num::Rational64::new(24, 1),
+        }),
+    })]
     // ERROR CASES ---------
     // ---------------------
     #[case::error_ntsc_playback_bad_denom(ParseCase{
         source: num::Rational64::new(24, 1),
         source_type: SourceType::Playback,
         ntsc: Ntsc::NonDropFrame,
-        expected: Err("ntsc framerates must be n/1001".to_string()),
+        expected: Err(FramerateParseError::Ntsc("ntsc framerates must be n/1001".to_string())),
     })]
     #[case::error_ntsc_timebase_bad_denom(ParseCase{
         source: "24000/1001",
         source_type: SourceType::Timebase,
         ntsc: Ntsc::NonDropFrame,
-        expected: Err("ntsc timebases must be whole numbers".to_string()),
+        expected: Err(FramerateParseError::Ntsc("ntsc timebases must be whole numbers".to_string())),
     })]
     #[case::error_drop_frame_bad_value(ParseCase{
         source: "24000/1001",
         source_type: SourceType::Playback,
         ntsc: Ntsc::DropFrame,
-        expected: Err("dropframe must have playback divisible by 30000/1001 (multiple of 29.97)".to_string()),
+        expected: Err(FramerateParseError::DropFrame("dropframe must have playback divisible by 30000/1001 (multiple of 29.97)".to_string())),
     })]
     #[case::error_drop_frame_bad_value(ParseCase{
         source: "24/1",
         source_type: SourceType::Timebase,
         ntsc: Ntsc::DropFrame,
-        expected: Err("dropframe must have timebase divisible by 30 (multiple of 29.97)".to_string()),
+        expected: Err(FramerateParseError::DropFrame("dropframe must have timebase divisible by 30 (multiple of 29.97)".to_string())),
     })]
     #[case::error_negative(ParseCase{
         source: -24,
         source_type: SourceType::Playback,
         ntsc: Ntsc::NonDropFrame,
-        expected: Err("framerates cannot be negative".to_string()),
+        expected: Err(FramerateParseError::Negative("framerates cannot be negative".to_string())),
+    })]
+    #[case::error_f64_nonntsc(ParseCase{
+        source: 23.98f64,
+        source_type: SourceType::Playback,
+        ntsc: Ntsc::False,
+        expected: Err(FramerateParseError::Imprecise("float values cannot be parsed for non-NTSC Framerates due to imprecision".to_string())),
+    })]
+    #[case::error_f32_nonntsc(ParseCase{
+        source: 23.98f32,
+        source_type: SourceType::Playback,
+        ntsc: Ntsc::False,
+        expected: Err(FramerateParseError::Imprecise("float values cannot be parsed for non-NTSC Framerates due to imprecision".to_string())),
+    })]
+    #[case::error_u64_overlfow(ParseCase{
+        source: u64::MAX,
+        source_type: SourceType::Playback,
+        ntsc: Ntsc::NonDropFrame,
+        expected: Err(FramerateParseError::Conversion("error converting u64 to i64 : out of range integral type conversion attempted".to_string())),
     })]
     fn test_parse_framerate<T: FramerateSource>(#[case] case: ParseCase<T>) {
         let result = match case.source_type {
@@ -349,9 +450,15 @@ mod test {
 
     #[rstest]
     #[case(Framerate::new_with_timebase(24, Ntsc::False), "[24]")]
-    #[case(Framerate::new_with_timebase(24, Ntsc::NonDropFrame), "[23.98 NTSC]")]
+    #[case(
+        Framerate::new_with_timebase(24, Ntsc::NonDropFrame),
+        "[23.98 NTSC NDF]"
+    )]
     #[case(Framerate::new_with_timebase(30, Ntsc::DropFrame), "[29.97 NTSC DF]")]
-    fn test_framerate_display(#[case] rate: Result<Framerate, String>, #[case] display_str: &str) {
+    fn test_framerate_display(
+        #[case] rate: Result<Framerate, FramerateParseError>,
+        #[case] display_str: &str,
+    ) {
         assert!(rate.is_ok(), "framerate was parsed");
         assert_eq!(format!("{}", rate.unwrap()), display_str)
     }

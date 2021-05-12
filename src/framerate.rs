@@ -1,10 +1,10 @@
-use crate::errors::ParseErr;
+use crate::errors::FramerateParseError;
 use crate::framerate_parse::FramerateSource;
 use num::ToPrimitive;
 use std::fmt;
 use std::fmt::Formatter;
 
-type ParseResult = Result<Framerate, ParseErr>;
+type ParseResult = Result<Framerate, FramerateParseError>;
 
 /// NTSC is the type of NTSC standard a framerate adheres to.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -32,6 +32,17 @@ impl Ntsc {
     /// ```
     pub fn is_ntsc(self) -> bool {
         self != Self::False
+    }
+}
+
+impl fmt::Display for Ntsc {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        let ntsc_str = match self {
+            Ntsc::False => "",
+            Ntsc::NonDropFrame => "NTSC NDF",
+            Ntsc::DropFrame => "NTSC DF",
+        };
+        write!(f, "{}", ntsc_str)
     }
 }
 
@@ -80,6 +91,15 @@ impl Framerate {
 
     /// ntsc is whether this is an NTSC-style time base (aka 23.98, 24000/1001, etc). It returns
     /// an enum detailing if it is not NTSC or what type of NTSC flavor it is.
+    ///
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use vtc::{Framerate, Ntsc};
+    /// let rate = Framerate::new_with_playback("24000/1001", Ntsc::NonDropFrame).unwrap();
+    /// println!("{}", rate.ntsc())
+    /// ```
     pub fn ntsc(&self) -> Ntsc {
         self.ntsc
     }
@@ -109,11 +129,10 @@ impl fmt::Display for Framerate {
         let mut value_str = value_str.trim_end_matches('0');
         value_str = value_str.trim_end_matches('.');
 
-        let ntsc_str = match self.ntsc {
-            Ntsc::False => "",
-            Ntsc::NonDropFrame => " NTSC",
-            Ntsc::DropFrame => " NTSC DF",
-        };
-        write!(f, "[{}{}]", value_str, ntsc_str)
+        write!(f, "[{}", value_str)?;
+        if self.ntsc.is_ntsc() {
+            write!(f, " ")?;
+        }
+        write!(f, "{}]", self.ntsc)
     }
 }
