@@ -376,6 +376,15 @@ mod test {
             timebase: num::Rational64::new(24, 1),
         }),
     })]
+    #[case::from_rational32(ParseCase{
+        source: num::Rational32::new(24, 1),
+        source_type: SourceType::Timebase,
+        ntsc: Ntsc::False,
+        expected: Ok(Success{
+            playback: num::Rational64::new(24, 1),
+            timebase: num::Rational64::new(24, 1),
+        }),
+    })]
     // ERROR CASES ---------
     // ---------------------
     #[case::error_ntsc_playback_bad_denom(ParseCase{
