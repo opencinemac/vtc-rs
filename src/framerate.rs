@@ -6,21 +6,21 @@ use std::fmt::Formatter;
 
 type ParseResult = Result<Framerate, FramerateParseError>;
 
-/// NTSC is the type of NTSC standard a framerate adheres to.
+/// The type of NTSC standard a [Framerate] adheres to.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Ntsc {
-    /// None means this Framerate is not NTSC.
+    /// This [Framerate] is not NTSC.
     None,
-    /// NonDrop means this Framerate is non-drop NTSC (no frame numbers are dropped to sync timecode
-    /// with real-world time - results in Timecode that drifts from true time).
+    /// This [Framerate] is non-drop NTSC (no frame numbers are dropped to sync timecode with
+    /// real-world time - results in Timecode that drifts from true time).
     NonDropFrame,
-    /// DropFrame means this framerate is drop-frame NTSC (frames numbers are dropped periodically
-    /// to keep timecode in sync with real-world time).
+    /// This [Framerate] is drop-frame NTSC (frames numbers are dropped periodically to keep
+    /// timecode in sync with real-world time).
     DropFrame,
 }
 
 impl Ntsc {
-    /// is_ntsc returns whether this is any NTSC format (drop or non-drop).
+    /// Returns whether this is any NTSC format (drop or non-drop).
     ///
     /// # Examples
     ///
@@ -46,7 +46,7 @@ impl fmt::Display for Ntsc {
     }
 }
 
-/// Framerate is the rate at which a video file frames are played back.
+/// The rate at which a video file frames are played back.
 ///
 /// Framerate is measured in frames-per-second (24/1 = 24 frames-per-second).
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -56,8 +56,8 @@ pub struct Framerate {
 }
 
 impl Framerate {
-    /// playback is the rational representation of the real-world playback speed as a fraction
-    /// in frames-per-second.
+    /// The rational representation of the real-world playback speed as a fraction in
+    /// frames-per-second.
     ///
     /// # Examples
     ///
@@ -70,7 +70,7 @@ impl Framerate {
         self.value
     }
 
-    /// timebase is the rational representation of the timecode timebase speed as a fraction in
+    /// The rational representation of the timecode timebase speed as a fraction in
     /// frames-per-second.
     ///
     ///
@@ -89,8 +89,8 @@ impl Framerate {
         self.value
     }
 
-    /// ntsc is whether this is an NTSC-style time base (aka 23.98, 24000/1001, etc). It returns
-    /// an enum detailing if it is not NTSC or what type of NTSC flavor it is.
+    /// Whether this is an NTSC-style time base (aka 23.98, 24000/1001, etc). Returns an enum
+    /// detailing if it is not NTSC or what type of NTSC flavor it is.
     ///
     ///
     /// # Examples
@@ -104,8 +104,8 @@ impl Framerate {
         self.ntsc
     }
 
-    /// new_with_playback creates a new Framerate with a given real-world media playback value
-    /// measured in frames-per-second.
+    /// Creates a new [Framerate] with a given real-world media playback value measured in
+    /// frames-per-second.
     ///
     /// # Arguments
     ///
@@ -115,7 +115,7 @@ impl Framerate {
     ///
     /// # Examples
     ///
-    /// we can generate any NTSC framerates from f32 or f64 values easily.
+    /// We can generate any NTSC framerates from [f32] or [f64] values easily.
     ///
     /// ```rust
     /// use vtc::{Framerate, FramerateSource, Ntsc};
@@ -125,7 +125,7 @@ impl Framerate {
     /// println!("NTSC    : {}", rate.ntsc());
     /// ```
     ///
-    /// floats are automatically rounded to the nearest valid NTSC playback speed:
+    /// Floats are automatically rounded to the nearest valid NTSC playback speed:
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
@@ -135,7 +135,7 @@ impl Framerate {
     /// println!("NTSC    : {}", rate.ntsc());
     /// ```
     ///
-    /// strings can be parsed if they are a float or rational format:
+    /// [&str] and [String] can be parsed if they are a float or rational format:
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
@@ -162,7 +162,7 @@ impl Framerate {
     /// println!("ERR: {:?}", err);
     /// ```
     ///
-    /// This means that integers will always result in an error if ntsc != Ntsc::None:
+    /// This means that integers will always result in an error if ntsc != [Ntsc::None]:
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
@@ -170,8 +170,8 @@ impl Framerate {
     /// println!("ERR: {:?}", err);
     /// ```
     ///
-    /// If we switch our NTSC settings to Ntsc::None, we can parse integers and integer strings, as
-    /// well as other arbirary playback speed values:
+    /// If we switch our NTSC settings to [Ntsc::None], we can parse integers and integer strings,
+    /// as well as other arbirary playback speed values:
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
@@ -196,6 +196,18 @@ impl Framerate {
     /// println!("TIMEBASE: {}", rate.timebase());
     /// println!("NTSC    : {}", rate.ntsc());
     /// ```
+    ///
+    /// If we try to parse a non-drop-frame NTSC value with the wrong timbebase we will get an
+    /// error:
+    ///
+    /// ```rust
+    /// # use vtc::{Framerate, FramerateSource, Ntsc};
+    /// let err = Framerate::new_with_playback(23.98, Ntsc::NonDropFrame);
+    /// println!("ERR: {:?}", err);
+    /// ```
+    ///
+    /// For more information on why drop-frame timebases must be a multiple of 30000/1001, see
+    /// [this blogpost](https://www.davidheidelberger.com/2010/06/10/drop-frame-timecode/).
     pub fn new_with_playback<T: FramerateSource>(rate: T, ntsc: Ntsc) -> ParseResult {
         let rational = rate.to_playback(ntsc, false)?;
         let rate = Framerate {
@@ -205,9 +217,8 @@ impl Framerate {
         Ok(rate)
     }
 
-    /// new_with_timebase creates a new Framerate with a given timecode timebase playback value
-    /// measured in frames-per-second. For NTSC framerates, the timebase will differ from the
-    /// playback.
+    /// Creates a new [Framerate] with a given timecode timebase playback value measured in
+    /// frames-per-second. For NTSC framerates, the timebase will differ from the playback.
     ///
     /// # Arguments
     ///
@@ -217,7 +228,7 @@ impl Framerate {
     ///
     /// # Examples
     ///
-    /// we can generate any NTSC framerates from any non 128-bit integer type easily:
+    /// We can generate any NTSC framerates from any non 128-bit integer type easily:
     ///
     /// ```rust
     /// use vtc::{Framerate, FramerateSource, Ntsc};
@@ -227,7 +238,7 @@ impl Framerate {
     /// println!("NTSC    : {}", rate.ntsc());
     /// ```
     ///
-    /// floats are automatically rounded to the nearest valid NTSC timebase speed:
+    /// Floats are automatically rounded to the nearest valid NTSC timebase speed:
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
@@ -237,7 +248,7 @@ impl Framerate {
     /// println!("NTSC    : {}", rate.ntsc());
     /// ```
     ///
-    /// strings can be parsed if they are an int, float or rational format:
+    /// [&str] and [String] can be parsed if they are an int, float or rational format:
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
@@ -281,6 +292,17 @@ impl Framerate {
     /// println!("TIMEBASE: {}", rate.timebase());
     /// println!("NTSC    : {}", rate.ntsc());
     /// ```
+    ///
+    /// If we try to parse a drop-frame value with the wrong timbebase we will get an error:
+    ///
+    /// ```rust
+    /// # use vtc::{Framerate, FramerateSource, Ntsc};
+    /// let err = Framerate::new_with_timebase("24", Ntsc::DropFrame);
+    /// println!("ERR: {:?}", err);
+    /// ```
+    ///
+    /// For more information on why drop-frame timebases must be a multiple of 30, see
+    /// [this blogpost](https://www.davidheidelberger.com/2010/06/10/drop-frame-timecode/).
     pub fn new_with_timebase<T: FramerateSource>(base: T, ntsc: Ntsc) -> ParseResult {
         let rational = base.to_playback(ntsc, true)?;
         let rate = Framerate {
@@ -305,7 +327,7 @@ impl fmt::Display for Framerate {
     }
 }
 
-/// rates is a collection of common framerates seen in the wild as constants.
+/// A collection of common framerates seen in the wild as constants.
 ///
 /// # Examples
 ///

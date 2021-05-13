@@ -5,7 +5,7 @@ use crate::errors::FramerateParseError;
 use crate::framerate::Ntsc;
 use std::convert::TryFrom;
 
-/// PlaybackSourceResult is the result type of FramerateSource.to_playback().
+/// The result type of [FramerateSource::to_playback]
 pub type FramerateSourceResult = Result<num::Rational64, FramerateParseError>;
 
 /// DROP_DIVISOR_PLAYBACK is the value that a playback rate needs to be cleanly divisible for
@@ -76,12 +76,13 @@ fn validate_ntsc_value(
     Ok(())
 }
 
-/// FramerateSource is implemented by any type that can be parsed into a rational playback
-/// frames-per-second value for a given an NTSC standard and whether the value represents a playback
-/// speed or a timecode timebase.
+/// Implemented by any type that can be parsed into a rational playback frames-per-second value for
+/// a given an NTSC standard and whether the value represents a playback speed or a timecode
+/// timebase.
 ///
-/// In most cases types that implement this trait can convert to a num::Rational64 value, then call
-/// num::Rational64.to_playback to complete the conversion.
+/// In most cases types that implement this trait can convert to a [num::Rational64] value, then
+/// call
+/// [num::Rational64::to_playback] to complete the conversion.
 pub trait FramerateSource {
     /// to_playback converts the implementing value to a Rational64 which represents the playback
     /// frames-per-second, then
