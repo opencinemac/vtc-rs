@@ -5,7 +5,7 @@ use crate::errors::FramerateParseError;
 use crate::framerate::Ntsc;
 use std::convert::TryFrom;
 
-/// The result type of [FramerateSource::to_playback]
+/// The result type of [FramerateSource::to_playback].
 pub type FramerateSourceResult = Result<num::Rational64, FramerateParseError>;
 
 /// DROP_DIVISOR_PLAYBACK is the value that a playback rate needs to be cleanly divisible for
