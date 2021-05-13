@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod test {
-    use crate::{Framerate, FramerateParseError, FramerateSource, Ntsc};
+    use crate::{rates, Framerate, FramerateParseError, FramerateSource, Ntsc};
     use rstest::rstest;
 
     #[rstest]
@@ -470,5 +470,34 @@ mod test {
     ) {
         assert!(rate.is_ok(), "framerate was parsed");
         assert_eq!(format!("{}", rate.unwrap()), display_str)
+    }
+
+    #[rstest]
+    #[case::f23_98(Framerate::new_with_timebase(24, Ntsc::NonDropFrame), rates::F23_98)]
+    #[case::f24(Framerate::new_with_timebase(24, Ntsc::None), rates::F24)]
+    #[case::f29_97_ndf(
+        Framerate::new_with_timebase(30, Ntsc::NonDropFrame),
+        rates::F29_97_NDF
+    )]
+    #[case::f29_97_ndf(
+        Framerate::new_with_timebase(30, Ntsc::NonDropFrame),
+        rates::F29_97_NDF
+    )]
+    #[case::f29_97_df(Framerate::new_with_timebase(30, Ntsc::DropFrame), rates::F29_97_DF)]
+    #[case::f30(Framerate::new_with_timebase(30, Ntsc::None), rates::F30)]
+    #[case::f47_95(Framerate::new_with_timebase(48, Ntsc::NonDropFrame), rates::F47_95)]
+    #[case::f48(Framerate::new_with_timebase(48, Ntsc::None), rates::F48)]
+    #[case::f59_94_ndf(
+        Framerate::new_with_timebase(60, Ntsc::NonDropFrame),
+        rates::F59_94_NDF
+    )]
+    #[case::f59_94_df(Framerate::new_with_timebase(60, Ntsc::DropFrame), rates::F59_94_DF)]
+    #[case::f60(Framerate::new_with_timebase(60, Ntsc::None), rates::F60)]
+    fn test_framerate_consts(
+        #[case] expected: Result<Framerate, FramerateParseError>,
+        #[case] const_value: Framerate,
+    ) {
+        assert!(expected.is_ok(), "framerate was parsed");
+        assert_eq!(expected.unwrap(), const_value)
     }
 }

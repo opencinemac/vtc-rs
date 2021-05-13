@@ -304,3 +304,78 @@ impl fmt::Display for Framerate {
         write!(f, "{}]", self.ntsc)
     }
 }
+
+/// rates is a collection of common framerates seen in the wild as constants.
+///
+/// # Examples
+///
+/// ```rust
+/// use vtc::rates;
+/// println!("{}", rates::F23_98);
+/// println!("{}", rates::F24);
+/// println!("{}", rates::F29_97_DF);
+/// ```
+pub mod rates {
+    use crate::Framerate;
+    use crate::Ntsc;
+
+    /// 23.98 NTSC.
+    pub const F23_98: Framerate = Framerate {
+        value: num::Rational64::new_raw(24000, 1001),
+        ntsc: Ntsc::NonDropFrame,
+    };
+
+    /// 24 fps.
+    pub const F24: Framerate = Framerate {
+        value: num::Rational64::new_raw(24, 1),
+        ntsc: Ntsc::None,
+    };
+
+    /// 29.97 NTSC Non-drop-frame.
+    pub const F29_97_NDF: Framerate = Framerate {
+        value: num::Rational64::new_raw(30000, 1001),
+        ntsc: Ntsc::NonDropFrame,
+    };
+
+    /// 29.97 NTSC Drop-frame.
+    pub const F29_97_DF: Framerate = Framerate {
+        value: num::Rational64::new_raw(30000, 1001),
+        ntsc: Ntsc::DropFrame,
+    };
+
+    /// 30 fps.
+    pub const F30: Framerate = Framerate {
+        value: num::Rational64::new_raw(30, 1),
+        ntsc: Ntsc::None,
+    };
+
+    /// 47.95 NTSC.
+    pub const F47_95: Framerate = Framerate {
+        value: num::Rational64::new_raw(48000, 1001),
+        ntsc: Ntsc::NonDropFrame,
+    };
+
+    /// 48 fps.
+    pub const F48: Framerate = Framerate {
+        value: num::Rational64::new_raw(48, 1),
+        ntsc: Ntsc::None,
+    };
+
+    /// 59.94 NTSC Non-drop-frame.
+    pub const F59_94_NDF: Framerate = Framerate {
+        value: num::Rational64::new_raw(60000, 1001),
+        ntsc: Ntsc::NonDropFrame,
+    };
+
+    /// 59.94 NTSC Drop-frame.
+    pub const F59_94_DF: Framerate = Framerate {
+        value: num::Rational64::new_raw(60000, 1001),
+        ntsc: Ntsc::DropFrame,
+    };
+
+    /// 60 fps.
+    pub const F60: Framerate = Framerate {
+        value: num::Rational64::new_raw(60, 1),
+        ntsc: Ntsc::None,
+    };
+}
