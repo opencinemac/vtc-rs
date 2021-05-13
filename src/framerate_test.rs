@@ -28,13 +28,17 @@ mod test {
         expected: Result<Success, FramerateParseError>,
     }
 
+    /// Whether the source should be parsed as a playback rate or a timebase rate.
     enum SourceType {
         Playback,
         Timebase,
     }
 
+    /// The expected success values for a test case.
     struct Success {
+        /// What we expect to be returned by [Framerate::playback]
         playback: num::Rational64,
+        /// What we expect to be returned by [Framerate::timebase]
         timebase: num::Rational64,
     }
 
