@@ -5,5 +5,5 @@ mod framerate_parse;
 mod framerate_test;
 
 pub use errors::FramerateParseError;
-pub use framerate::{rates, Framerate, Ntsc};
+pub use framerate::{rates, Framerate, FramerateParseResult, Ntsc};
 pub use framerate_parse::{FramerateSource, FramerateSourceResult};

@@ -4,8 +4,6 @@ use num::ToPrimitive;
 use std::fmt;
 use std::fmt::Formatter;
 
-type ParseResult = Result<Framerate, FramerateParseError>;
-
 /// The type of NTSC standard a [Framerate] adheres to.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Ntsc {
@@ -45,6 +43,9 @@ impl fmt::Display for Ntsc {
         write!(f, "{}", ntsc_str)
     }
 }
+
+/// The [Result] type returned by [Framerate::new_with_playback] and [Framerate::new_with_timebase].
+pub type FramerateParseResult = Result<Framerate, FramerateParseError>;
 
 /// The rate at which a video file frames are played back.
 ///
@@ -208,7 +209,7 @@ impl Framerate {
     ///
     /// For more information on why drop-frame timebases must be a multiple of 30000/1001, see
     /// [this blogpost](https://www.davidheidelberger.com/2010/06/10/drop-frame-timecode/).
-    pub fn new_with_playback<T: FramerateSource>(rate: T, ntsc: Ntsc) -> ParseResult {
+    pub fn new_with_playback<T: FramerateSource>(rate: T, ntsc: Ntsc) -> FramerateParseResult {
         let rational = rate.to_playback(ntsc, false)?;
         let rate = Framerate {
             value: rational,
@@ -303,7 +304,7 @@ impl Framerate {
     ///
     /// For more information on why drop-frame timebases must be a multiple of 30, see
     /// [this blogpost](https://www.davidheidelberger.com/2010/06/10/drop-frame-timecode/).
-    pub fn new_with_timebase<T: FramerateSource>(base: T, ntsc: Ntsc) -> ParseResult {
+    pub fn new_with_timebase<T: FramerateSource>(base: T, ntsc: Ntsc) -> FramerateParseResult {
         let rational = base.to_playback(ntsc, true)?;
         let rate = Framerate {
             value: rational,
