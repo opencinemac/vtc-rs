@@ -81,8 +81,7 @@ fn validate_ntsc_value(
 /// timebase.
 ///
 /// In most cases types that implement this trait can convert to a [num::Rational64] value, then
-/// call
-/// [num::Rational64::to_playback] to complete the conversion.
+/// call [num::Rational64::to_playback] to complete the conversion.
 pub trait FramerateSource {
     /// to_playback converts the implementing value to a Rational64 which represents the playback
     /// frames-per-second, then
