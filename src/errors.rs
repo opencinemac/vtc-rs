@@ -22,3 +22,15 @@ pub enum FramerateParseError {
     /// such as a u64 value overflowing a [num::Rational64].
     Conversion(String),
 }
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum TimecodeParseError {
+    /// Returned when there is an error doing an internal type conversion to create a new Timecode,
+    /// such as a u64 value overflowing a [num::Rational64].
+    Conversion(String),
+    /// Returned when a string does not match any known Timecode format.
+    UnknownStrFormat(String),
+    /// Returned when a drop-frame tc-string has a frames value that should have been dropped.
+    /// ex: '00:01:00:01'.
+    DropFrameValue(String),
+}

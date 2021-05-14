@@ -4,6 +4,7 @@ use std::str::FromStr;
 use crate::errors::FramerateParseError;
 use crate::framerate::Ntsc;
 use std::convert::TryFrom;
+use std::fmt::Debug;
 
 /// The result type of [FramerateSource::to_playback].
 pub type FramerateSourceResult = Result<num::Rational64, FramerateParseError>;
@@ -82,10 +83,25 @@ fn validate_ntsc_value(
 ///
 /// In most cases types that implement this trait can convert to a [num::Rational64] value, then
 /// call [num::Rational64::to_playback] to complete the conversion.
-pub trait FramerateSource {
+pub trait FramerateSource: Debug {
     /// to_playback converts the implementing value to a Rational64 which represents the playback
     /// frames-per-second, then
     fn to_playback(&self, ntsc: Ntsc, is_timebase: bool) -> FramerateSourceResult;
+}
+
+impl<T> FramerateSource for &T
+where
+    T: FramerateSource,
+{
+    fn to_playback(&self, ntsc: Ntsc, is_timebase: bool) -> FramerateSourceResult {
+        (*self).to_playback(ntsc, is_timebase)
+    }
+}
+
+impl FramerateSource for &dyn FramerateSource {
+    fn to_playback(&self, ntsc: Ntsc, is_timebase: bool) -> FramerateSourceResult {
+        (*self).to_playback(ntsc, is_timebase)
+    }
 }
 
 impl FramerateSource for Rational64 {
