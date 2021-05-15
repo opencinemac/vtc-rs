@@ -9,7 +9,7 @@ mod framerate_test;
 mod timecode;
 mod timecode_parse;
 #[cfg(test)]
-mod timecode_test;
+mod timecode_test_parse;
 
 mod source_frames;
 mod source_ppro_ticks;

@@ -110,8 +110,9 @@ impl Timecode {
     pub fn runtime(&self, precision: usize) -> String {
         // We use the absolute seconds here so floor behaves as expected regardless of whether
         // this value is negative.
-        let hours = (abs(self.seconds) / SECONDS_PER_HOUR).floor().to_integer();
-        let mut seconds = self.seconds % SECONDS_PER_HOUR;
+        let mut seconds = abs(self.seconds);
+        let hours = (seconds / SECONDS_PER_HOUR).floor().to_integer();
+        seconds %= SECONDS_PER_HOUR;
 
         let minutes = (seconds / SECONDS_PER_MINUTE).floor().to_integer();
         seconds %= SECONDS_PER_MINUTE;
@@ -178,7 +179,7 @@ impl Timecode {
         let mut seconds_rat = seconds.to_seconds(rate)?;
 
         // if our value can be cleanly divied by the length of a single frame, we can use it as-is.
-        seconds_rat = if seconds_rat == num::Rational64::zero() % rate.playback().inv() {
+        seconds_rat = if seconds_rat != num::Rational64::zero() % rate.playback().inv() {
             let frames = (seconds_rat * rate.playback()).round();
             frames / rate.playback()
         } else {
