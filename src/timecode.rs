@@ -169,6 +169,17 @@ impl Timecode {
         return format!("{}{}+{:02}", sign, feet, frames);
     }
 
+    /// Returns a [Timecode] with the same number of frames running at a different
+    /// [Framerate].
+    pub fn rebase(&self, rate: Framerate) -> Self {
+        Timecode::new_with_i64_frames(self.frames(), rate)
+    }
+
+    /// Returns the absolute value of the [Timecode] value.
+    pub fn abs(&self) -> Self {
+        Timecode::new_with_rational_seconds(abs(self.seconds), self.rate)
+    }
+
     /// Returns a new [Timecode] with a [Timecode::frames] return value equal to the frames arg.
     pub fn new_with_frames<T: FramesSource>(frames: T, rate: Framerate) -> TimecodeParseResult {
         let frame_count = frames.to_frames(rate)?;
@@ -237,7 +248,7 @@ impl PartialOrd for Timecode {
 
 impl Ord for Timecode {
     fn cmp(&self, other: &Self) -> Ordering {
-        return self.seconds.cmp(&other.seconds);
+        self.seconds.cmp(&other.seconds)
     }
 }
 
@@ -295,13 +306,35 @@ impl Mul<Timecode> for i64 {
     }
 }
 
+impl Div<Rational64> for Timecode {
+    type Output = Timecode;
+
+    fn div(self, rhs: Rational64) -> Self::Output {
+        let mut frames_rat = Rational64::from_integer(self.frames());
+        frames_rat /= rhs;
+        frames_rat = frames_rat.floor();
+        Timecode::new_with_i64_frames(frames_rat.to_integer(), self.rate)
+    }
+}
+
+impl Rem<Rational64> for Timecode {
+    type Output = Timecode;
+
+    fn rem(self, rhs: Rational64) -> Self::Output {
+        let mut frames_rat = Rational64::from_integer(self.frames());
+        frames_rat %= rhs;
+        frames_rat = frames_rat.round();
+        Timecode::new_with_i64_frames(frames_rat.to_integer(), self.rate)
+    }
+}
+
 impl Div<f64> for Timecode {
     type Output = Timecode;
 
     fn div(self, rhs: f64) -> Self::Output {
+        // We're going to do the actual operation with rationals.
         let rhs_rat = Rational64::from_f64(rhs).unwrap();
-        let new_seconds = self.seconds / rhs_rat;
-        Timecode::new_with_rational_seconds(new_seconds, self.rate)
+        self / rhs_rat
     }
 }
 
@@ -309,11 +342,8 @@ impl Rem<f64> for Timecode {
     type Output = Timecode;
 
     fn rem(self, rhs: f64) -> Self::Output {
-        let dividend = self / rhs;
-        let frame_count = self.frames();
-        let frame_divisor = frame_count / dividend.frames();
-        let frames_rem = frame_count % frame_divisor;
-        Timecode::new_with_i64_frames(frames_rem, self.rate)
+        let rhs_rat = Rational64::from_f64(rhs).unwrap();
+        self % rhs_rat
     }
 }
 
