@@ -8,6 +8,7 @@ use crate::consts::{
 use crate::source_ppro_ticks::PremiereTicksSource;
 use crate::{Framerate, FramesSource, Ntsc, SecondsSource, TimecodeParseError};
 use std::cmp::Ordering;
+use std::fmt::{Display, Formatter};
 use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
 
 /// Holds the individual sections of a timecode for formatting / manipulation.
@@ -214,6 +215,12 @@ impl Timecode {
     }
 }
 
+impl Display for Timecode {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "[{} @ {}]", self.timecode(), self.rate)
+    }
+}
+
 impl PartialEq for Timecode {
     fn eq(&self, other: &Self) -> bool {
         self.seconds == other.seconds
@@ -225,6 +232,12 @@ impl Eq for Timecode {}
 impl PartialOrd for Timecode {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         self.seconds.partial_cmp(&other.seconds)
+    }
+}
+
+impl Ord for Timecode {
+    fn cmp(&self, other: &Self) -> Ordering {
+        return self.seconds.cmp(&other.seconds);
     }
 }
 
@@ -256,6 +269,14 @@ impl Mul<f64> for Timecode {
     }
 }
 
+impl Mul<Timecode> for f64 {
+    type Output = Timecode;
+
+    fn mul(self, rhs: Timecode) -> Self::Output {
+        rhs * self
+    }
+}
+
 impl Mul<i64> for Timecode {
     type Output = Timecode;
 
@@ -263,6 +284,14 @@ impl Mul<i64> for Timecode {
         let rhs_rat = Rational64::from_integer(rhs);
         let new_seconds = self.seconds * rhs_rat;
         Timecode::new_with_rational_seconds(new_seconds, self.rate)
+    }
+}
+
+impl Mul<Timecode> for i64 {
+    type Output = Timecode;
+
+    fn mul(self, rhs: Timecode) -> Self::Output {
+        rhs * self
     }
 }
 
