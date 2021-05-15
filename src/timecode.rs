@@ -1,12 +1,14 @@
 use num::integer::div_mod_floor;
 use num::traits::Inv;
-use num::{abs, Rational64, Signed, ToPrimitive, Zero};
+use num::{abs, FromPrimitive, Rational64, Signed, ToPrimitive, Zero};
 
 use crate::consts::{
     FRAMES_PER_FOOT, PREMIERE_TICKS_PER_SECOND, SECONDS_PER_HOUR, SECONDS_PER_MINUTE,
 };
 use crate::source_ppro_ticks::PremiereTicksSource;
 use crate::{Framerate, FramesSource, Ntsc, SecondsSource, TimecodeParseError};
+use std::cmp::Ordering;
+use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
 
 /// Holds the individual sections of a timecode for formatting / manipulation.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -169,27 +171,14 @@ impl Timecode {
     /// Returns a new [Timecode] with a [Timecode::frames] return value equal to the frames arg.
     pub fn new_with_frames<T: FramesSource>(frames: T, rate: Framerate) -> TimecodeParseResult {
         let frame_count = frames.to_frames(rate)?;
-        let seconds = Rational64::from_integer(frame_count) / rate.playback();
-        Self::new_with_seconds(&seconds, rate)
+        Ok(Self::new_with_i64_frames(frame_count, rate))
     }
 
     /// Returns a new [Timecode] with a [Timecode::seconds] return value equal to the seconds arg
     /// (rounded to the nearest frame).
     pub fn new_with_seconds<T: SecondsSource>(seconds: T, rate: Framerate) -> TimecodeParseResult {
-        let mut seconds_rat = seconds.to_seconds(rate)?;
-
-        // if our value can be cleanly divied by the length of a single frame, we can use it as-is.
-        seconds_rat = if seconds_rat != num::Rational64::zero() % rate.playback().inv() {
-            let frames = (seconds_rat * rate.playback()).round();
-            frames / rate.playback()
-        } else {
-            seconds_rat
-        };
-
-        Ok(Timecode {
-            seconds: seconds_rat,
-            rate,
-        })
+        let seconds_rat = seconds.to_seconds(rate)?;
+        Ok(Self::new_with_rational_seconds(seconds_rat, rate))
     }
 
     /// Returns a new [Timecode] with a [Timecode::premiere_ticks] return value equal to the ticks
@@ -200,7 +189,28 @@ impl Timecode {
     ) -> TimecodeParseResult {
         let tick_count = ticks.to_ticks(rate)?;
         let seconds = Rational64::from_integer(tick_count) / PREMIERE_TICKS_PER_SECOND;
-        Self::new_with_seconds(&seconds, rate)
+        Self::new_with_seconds(seconds, rate)
+    }
+
+    /// Used internally for creating new timecodes from i64 frame count values without an error
+    /// return.
+    fn new_with_i64_frames(frame_count: i64, rate: Framerate) -> Timecode {
+        let seconds = Rational64::from_integer(frame_count) / rate.playback();
+        Self::new_with_rational_seconds(seconds, rate)
+    }
+
+    /// Used internally for creating new timecodes from Rational64 seconds values without an error
+    /// return.
+    fn new_with_rational_seconds(seconds: Rational64, rate: Framerate) -> Timecode {
+        // if our value can be cleanly divied by the length of a single frame, we can use it as-is.
+        let seconds = if seconds != num::Rational64::zero() % rate.playback().inv() {
+            let frames = (seconds * rate.playback()).round();
+            frames / rate.playback()
+        } else {
+            seconds
+        };
+
+        Timecode { seconds, rate }
     }
 }
 
@@ -211,6 +221,98 @@ impl PartialEq for Timecode {
 }
 
 impl Eq for Timecode {}
+
+impl PartialOrd for Timecode {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        self.seconds.partial_cmp(&other.seconds)
+    }
+}
+
+impl Add for Timecode {
+    type Output = Timecode;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        let new_seconds = self.seconds + rhs.seconds;
+        Timecode::new_with_rational_seconds(new_seconds, self.rate())
+    }
+}
+
+impl Sub for Timecode {
+    type Output = Timecode;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        let new_seconds = self.seconds - rhs.seconds;
+        Timecode::new_with_rational_seconds(new_seconds, self.rate)
+    }
+}
+
+impl Mul<f64> for Timecode {
+    type Output = Timecode;
+
+    fn mul(self, rhs: f64) -> Self::Output {
+        let rhs_rat = Rational64::from_f64(rhs).unwrap();
+        let new_seconds = self.seconds * rhs_rat;
+        Timecode::new_with_rational_seconds(new_seconds, self.rate)
+    }
+}
+
+impl Mul<i64> for Timecode {
+    type Output = Timecode;
+
+    fn mul(self, rhs: i64) -> Self::Output {
+        let rhs_rat = Rational64::from_integer(rhs);
+        let new_seconds = self.seconds * rhs_rat;
+        Timecode::new_with_rational_seconds(new_seconds, self.rate)
+    }
+}
+
+impl Div<f64> for Timecode {
+    type Output = Timecode;
+
+    fn div(self, rhs: f64) -> Self::Output {
+        let rhs_rat = Rational64::from_f64(rhs).unwrap();
+        let new_seconds = self.seconds / rhs_rat;
+        Timecode::new_with_rational_seconds(new_seconds, self.rate)
+    }
+}
+
+impl Rem<f64> for Timecode {
+    type Output = Timecode;
+
+    fn rem(self, rhs: f64) -> Self::Output {
+        let dividend = self / rhs;
+        let frame_count = self.frames();
+        let frame_divisor = frame_count / dividend.frames();
+        let frames_rem = frame_count % frame_divisor;
+        Timecode::new_with_i64_frames(frames_rem, self.rate)
+    }
+}
+
+impl Div<i64> for Timecode {
+    type Output = Timecode;
+
+    fn div(self, rhs: i64) -> Self::Output {
+        let frames_divided = self.frames() / rhs;
+        Timecode::new_with_i64_frames(frames_divided, self.rate)
+    }
+}
+
+impl Rem<i64> for Timecode {
+    type Output = Timecode;
+
+    fn rem(self, rhs: i64) -> Self::Output {
+        let frames_remainder = self.frames() % rhs;
+        Timecode::new_with_i64_frames(frames_remainder, self.rate)
+    }
+}
+
+impl Neg for Timecode {
+    type Output = Self;
+
+    fn neg(self) -> Self::Output {
+        Timecode::new_with_rational_seconds(-self.seconds, self.rate)
+    }
+}
 
 /// Converts a frame-number to an adjusted frame number for creating drop-frame tc.
 ///
