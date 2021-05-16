@@ -6,8 +6,7 @@ mod test {
     use serde::de::{Error, Visitor};
     use serde::{Deserialize, Deserializer};
     use serde_json;
-    use std::fmt::Formatter;
-    use std::fmt::{self, Debug};
+    use std::fmt::{self, Debug, Formatter};
     use std::fs;
     use std::str::FromStr;
 

@@ -21,7 +21,6 @@ mod test {
         runtime: String,
         feet_and_frames: String,
         premiere_ticks: i64,
-        inspect: bool,
     }
 
     #[rstest]
@@ -58,7 +57,6 @@ mod test {
             runtime: "01:00:03.6".to_string(),
             feet_and_frames: "5400+00".to_string(),
             premiere_ticks: 915372057600000i64,
-            inspect: false,
         }
     )]
     #[case::t01_00_00_00_f23_98_negative(
@@ -88,7 +86,6 @@ mod test {
             runtime: "-01:00:03.6".to_string(),
             feet_and_frames: "-5400+00".to_string(),
             premiere_ticks: -915372057600000i64,
-            inspect: false,
         }
     )]
     #[case::t00_40_00_00_f23_98(
@@ -122,7 +119,6 @@ mod test {
             runtime: "00:40:02.4".to_string(),
             feet_and_frames: "3600+00".to_string(),
             premiere_ticks: 610248038400000,
-            inspect: false,
         }
     )]
     #[case::t00_40_00_00_f23_98_negative(
@@ -152,7 +148,6 @@ mod test {
             runtime: "-00:40:02.4".to_string(),
             feet_and_frames: "-3600+00".to_string(),
             premiere_ticks: -610248038400000,
-            inspect: false,
         }
     )]
     // 24 CASES ------------------
@@ -189,7 +184,6 @@ mod test {
             runtime: "01:00:00.0".to_string(),
             feet_and_frames: "5400+00".to_string(),
             premiere_ticks: 914457600000000,
-            inspect: false,
         }
     )]
     #[case::t01_00_00_00_f24_negative(
@@ -219,7 +213,6 @@ mod test {
             runtime: "-01:00:00.0".to_string(),
             feet_and_frames: "-5400+00".to_string(),
             premiere_ticks: -914457600000000,
-            inspect: false,
         }
     )]
     #[case::t00_40_00_00_f24(
@@ -254,7 +247,6 @@ mod test {
             runtime: "00:40:00.0".to_string(),
             feet_and_frames: "3600+00".to_string(),
             premiere_ticks: 609638400000000,
-            inspect: false,
         }
     )]
     #[case::t00_40_00_00_f24_negative(
@@ -285,7 +277,6 @@ mod test {
             runtime: "-00:40:00.0".to_string(),
             feet_and_frames: "-3600+00".to_string(),
             premiere_ticks: -609638400000000,
-            inspect: false,
         }
     )]
     // 29.97 DF CASES ------------
@@ -319,7 +310,6 @@ mod test {
             runtime: "00:00:00.0".to_string(),
             feet_and_frames: "0+00".to_string(),
             premiere_ticks: 0,
-            inspect: false,
         }
     )]
     #[case::t00_00_02_02_f29_97_df(
@@ -355,7 +345,6 @@ mod test {
             runtime: "00:00:02.068733333".to_string(),
             feet_and_frames: "3+14".to_string(),
             premiere_ticks: 525491366400,
-            inspect: true,
         }
     )]
     #[case::t00_00_02_02_f29_97_df_negative(
@@ -386,7 +375,6 @@ mod test {
             runtime: "-00:00:02.068733333".to_string(),
             feet_and_frames: "-3+14".to_string(),
             premiere_ticks: -525491366400,
-            inspect: false,
         }
     )]
     #[case::t00_01_00_02_f29_97_df(
@@ -420,7 +408,6 @@ mod test {
             runtime: "00:01:00.06".to_string(),
             feet_and_frames: "112+08".to_string(),
             premiere_ticks: 15256200960000,
-            inspect: false,
         }
     )]
     #[case::t00_00_01_02_f29_97_df_negative(
@@ -450,7 +437,6 @@ mod test {
             runtime: "-00:01:00.06".to_string(),
             feet_and_frames: "-112+08".to_string(),
             premiere_ticks: -15256200960000,
-            inspect: false,
         }
     )]
     #[case::t00_10_00_00_f29_97_df(
@@ -484,7 +470,6 @@ mod test {
             runtime: "00:09:59.9994".to_string(),
             feet_and_frames: "1123+14".to_string(),
             premiere_ticks: 152409447590400,
-            inspect: false,
         }
     )]
     #[case::t00_10_00_00_f29_97_df_negative(
@@ -514,7 +499,6 @@ mod test {
             runtime: "-00:09:59.9994".to_string(),
             feet_and_frames: "-1123+14".to_string(),
             premiere_ticks: -152409447590400,
-            inspect: false,
         }
     )]
     #[case::t00_11_00_02_f29_97_df(
@@ -548,7 +532,6 @@ mod test {
             runtime: "00:11:00.0594".to_string(),
             feet_and_frames: "1236+06".to_string(),
             premiere_ticks: 167665648550400,
-            inspect: false,
         }
     )]
     #[case::t00_11_00_02_f29_97_df_negative(
@@ -578,7 +561,6 @@ mod test {
             runtime: "-00:11:00.0594".to_string(),
             feet_and_frames: "-1236+06".to_string(),
             premiere_ticks: -167665648550400,
-            inspect: false,
         }
     )]
     #[case::t01_00_00_00_f29_97_df(
@@ -610,7 +592,6 @@ mod test {
             runtime: "00:59:59.9964".to_string(),
             feet_and_frames: "6743+04".to_string(),
             premiere_ticks: 914456685542400,
-            inspect: false,
         }
     )]
     #[case::t01_00_00_00_f29_97_df_negative(
@@ -639,7 +620,6 @@ mod test {
             runtime: "-00:59:59.9964".to_string(),
             feet_and_frames: "-6743+04".to_string(),
             premiere_ticks: -914456685542400,
-            inspect: false,
         }
     )]
     // 59.94 DF CASES ------------
@@ -673,7 +653,6 @@ mod test {
             runtime: "00:00:00.0".to_string(),
             feet_and_frames: "0+00".to_string(),
             premiere_ticks: 0,
-            inspect: false,
         }
     )]
     #[case::t00_00_01_01_f59_94_df(
@@ -709,7 +688,6 @@ mod test {
             runtime: "00:00:01.017683333".to_string(),
             feet_and_frames: "3+13".to_string(),
             premiere_ticks: 258507849600,
-            inspect: false,
         }
     )]
     #[case::t00_00_01_01_f59_94_df_negative(
@@ -740,7 +718,6 @@ mod test {
             runtime: "-00:00:01.017683333".to_string(),
             feet_and_frames: "-3+13".to_string(),
             premiere_ticks: -258507849600,
-            inspect: false,
         }
     )]
     #[case::t00_00_01_03_f59_94_df(
@@ -776,7 +753,6 @@ mod test {
             runtime: "00:00:01.05105".to_string(),
             feet_and_frames: "3+15".to_string(),
             premiere_ticks: 266983516800,
-            inspect: false,
         }
     )]
     #[case::t00_00_01_03_f59_94_df_negative(
@@ -807,7 +783,6 @@ mod test {
             runtime: "-00:00:01.05105".to_string(),
             feet_and_frames: "-3+15".to_string(),
             premiere_ticks: -266983516800,
-            inspect: false,
         }
     )]
     // This is the first minute we should be skipping frames on. For 59.94 we
@@ -843,7 +818,6 @@ mod test {
             runtime: "00:01:00.06".to_string(),
             feet_and_frames: "225+00".to_string(),
             premiere_ticks: 15256200960000,
-            inspect: false,
         }
     )]
     #[case::t00_01_00_04_f59_94_df_negative(
@@ -873,7 +847,6 @@ mod test {
             runtime: "-00:01:00.06".to_string(),
             feet_and_frames: "-225+00".to_string(),
             premiere_ticks: -15256200960000,
-            inspect: false,
         }
     )]
     fn test_parse_timecode(#[case] case: ParseCase) -> Result<(), TimecodeParseError> {
