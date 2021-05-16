@@ -227,18 +227,7 @@ impl Timecode {
     /// Used internally for creating new timecodes from Rational64 seconds values
     /// without an error return.
     fn with_rational_seconds(seconds: Rational64, rate: Framerate) -> Timecode {
-        // If our seconds value is coming from a float that results in very large
-        // numerator and denominator values, then we might be close to the max value an
-        // i64 can hold, and converting to rational frames might cause an overflow.
-        //
-        // In order to avoid that, we are going to cast our seconds to an i128 value,
-        // do our normalization to our fps framerate, then cast back down to an i64.
-        // let seconds128 = Ratio::<i128>::new(*seconds.numer() as i128, *seconds.denom() as i128);
-
-        // Self::new_with_i128rational_seconds(seconds128, rate)
-
         let seconds = round_seconds_to_frame(seconds, rate);
-
         Timecode { seconds, rate }
     }
 }
