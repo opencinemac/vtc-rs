@@ -1,12 +1,12 @@
 use num::integer::div_mod_floor;
 use num::rational::Ratio;
-use num::traits::Inv;
 use num::{abs, FromPrimitive, Rational64, Signed, ToPrimitive, Zero};
 
-use crate::consts::{
-    FRAMES_PER_FOOT, PREMIERE_TICKS_PER_SECOND, SECONDS_PER_HOUR, SECONDS_PER_MINUTE,
-};
 use crate::source_ppro_ticks::PremiereTicksSource;
+use crate::{
+    consts::{FRAMES_PER_FOOT, PREMIERE_TICKS_PER_SECOND, SECONDS_PER_HOUR, SECONDS_PER_MINUTE},
+    timecode_parse::round_seconds_to_frame,
+};
 use crate::{Framerate, FramesSource, Ntsc, SecondsSource, TimecodeParseError};
 use std::cmp::Ordering;
 use std::fmt::{Display, Formatter};
@@ -237,12 +237,7 @@ impl Timecode {
 
         // Self::new_with_i128rational_seconds(seconds128, rate)
 
-        let seconds = if seconds % rate.playback().inv() != Rational64::zero() {
-            let frames = (seconds * rate.playback()).round();
-            frames / rate.playback()
-        } else {
-            seconds
-        };
+        let seconds = round_seconds_to_frame(seconds, rate);
 
         Timecode { seconds, rate }
     }

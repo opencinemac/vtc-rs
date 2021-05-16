@@ -4,9 +4,9 @@ mod test {
     use rstest::rstest;
 
     use crate::{
-        rates, source_ppro_ticks::PremiereTicksSource, Framerate, Timecode, TimecodeParseError,
+        rates, source_ppro_ticks::PremiereTicksSource, Framerate, FramesSource, Ntsc,
+        SecondsSource, Timecode, TimecodeParseError,
     };
-    use crate::{source_frames::FramesSource, SecondsSource};
     use std::fmt::Debug;
     use std::ops::Deref;
 
@@ -847,6 +847,42 @@ mod test {
             runtime: "-00:01:00.06".to_string(),
             feet_and_frames: "-225+00".to_string(),
             premiere_ticks: -15256200960000,
+        }
+    )]
+    // 239.76 NDF CASES ---------------------
+    // We're going to use this to test very large values beyond what you would normally see in the
+    // wild to put pressure on possible integer overflow points.
+    //
+    // This value represetns a timecode of over 123 hours rrunning at 240 fps. In the real world,
+    // one would be VERY unlikely to see a timecode like this. We are using an NTSC timebase as
+    // NTSC bases are far more likely to create large numerators / denominators.
+    #[case::t123_17_34_217_f239_76_ndf_negative(
+        ParseCase{
+            frames_sources: vec![
+                Box::new("123:17:34:217".to_string()),
+                Box::new("106525177".to_string()),
+                Box::new(106525177i64),
+                Box::new(106525177u64),
+            ],
+            seconds_sources: vec![
+                Box::new(Rational64::new(106631702177, 240000)),
+                Box::new(Rational64::new(106631702177, 240000).to_f64().unwrap()),
+                // We are not going to run the f32 version of this test. The value is too imprecice 
+                // to give us the correct answer.
+                // Box::new(Rational64::new(106631702177, 240000).to_f32().unwrap()),
+                Box::new("123:24:58.759070833".to_string()),
+            ],
+            ticks_sources: vec![
+                Box::new(112858993584136800i64),
+                Box::new(112858993584136800u64),
+            ],
+            rate: Framerate::new_with_playback(239.76, Ntsc::NonDropFrame).unwrap(),
+            seconds: Rational64::new(106631702177, 240000),
+            frames: 106525177,
+            timecode: "123:17:34:217".to_string(),
+            runtime: "123:24:58.759070833".to_string(),
+            feet_and_frames: "6657823+09".to_string(),
+            premiere_ticks: 112858993584136800,
         }
     )]
     fn test_parse_timecode(#[case] case: ParseCase) -> Result<(), TimecodeParseError> {

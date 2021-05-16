@@ -1,4 +1,4 @@
-use crate::{Framerate, TimecodeParseError};
+use crate::{timecode_parse::round_seconds_to_frame, Framerate, TimecodeParseError};
 use core::result::Result;
 use core::result::Result::Ok;
 use num::Rational32;
@@ -164,10 +164,15 @@ fn parse_runtime_str(matched: regex::Captures, rate: Framerate) -> SecondsSource
         Some(parsed) => parsed,
     };
 
-    let seconds_fractal_rat64 = Rational64::new(
+    let mut seconds_fractal_rat64 = Rational64::new(
         *seconds_fractal_rat32.numer() as i64,
         *seconds_fractal_rat32.denom() as i64,
     );
+
+    // We're still in danger of getting an overflow here with large numbers that could have complex
+    // time bases, so before we add the fractal seconds to our whole seconds, we're going to bring
+    // the fractal value into the corrct base, THEN add it.
+    seconds_fractal_rat64 = round_seconds_to_frame(seconds_fractal_rat64, rate);
 
     // Which we can combine with the integer-calculated seconds to get a full rational
     // value of our seconds.
