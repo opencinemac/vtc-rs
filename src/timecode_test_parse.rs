@@ -868,7 +868,7 @@ mod test {
                 Box::new(Rational64::new(106631702177, 240000)),
                 Box::new(Rational64::new(106631702177, 240000).to_f64().unwrap()),
                 // We are not going to run the f32 version of this test. The value is too imprecice 
-                // to give us the correct answer.
+                // to give us the correct answer at values this high.
                 // Box::new(Rational64::new(106631702177, 240000).to_f32().unwrap()),
                 Box::new("123:24:58.759070833".to_string()),
             ],
