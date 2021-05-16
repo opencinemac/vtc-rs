@@ -12,6 +12,8 @@ mod timecode_parse;
 mod timecode_test_ops;
 #[cfg(test)]
 mod timecode_test_parse;
+#[cfg(test)]
+mod timecode_test_table;
 
 mod source_frames;
 mod source_ppro_ticks;

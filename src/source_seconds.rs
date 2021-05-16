@@ -1,6 +1,7 @@
 use crate::{Framerate, TimecodeParseError};
 use core::result::Result;
 use core::result::Result::Ok;
+use num::Rational32;
 use num::{FromPrimitive, Rational64};
 use regex::Match;
 
@@ -42,23 +43,34 @@ impl SecondsSource for num::Rational64 {
 
 impl SecondsSource for f64 {
     fn to_seconds(&self, _: Framerate) -> SecondsSourceResult {
-        match Rational64::from_f64(*self) {
-            None => Err(TimecodeParseError::Conversion(
-                "could not convert f64 to Rational64".to_string(),
-            )),
-            Some(parsed) => Ok(parsed),
-        }
+        // Floats are ticky, as they can often result in rational values wich try to
+        // capture their imprecision using every bit available in the numerator and
+        // denominator integer values.
+        //
+        // For this reason, we are going to first parse as a Rational32, then upgrade to
+        // a Rational64. This will give operations down the line which need to multiply
+        // and divide by the frame rate plenty of room to do so without running into an
+        // overflow.
+        let rat32 = match Rational32::from_f64(*self) {
+            None => {
+                return Err(TimecodeParseError::Conversion(
+                    "could not convert f64 to Rational64".to_string(),
+                ))
+            }
+            Some(parsed) => parsed,
+        };
+
+        Ok(Rational64::new(
+            *rat32.numer() as i64,
+            *rat32.denom() as i64,
+        ))
     }
 }
 
 impl SecondsSource for f32 {
-    fn to_seconds(&self, _: Framerate) -> SecondsSourceResult {
-        match Rational64::from_f32(*self) {
-            None => Err(TimecodeParseError::Conversion(
-                "could not convert f32 to Rational64".to_string(),
-            )),
-            Some(parsed) => Ok(parsed),
-        }
+    fn to_seconds(&self, rate: Framerate) -> SecondsSourceResult {
+        // Cast to an f64 then use the f64 conversion.
+        f64::from(*self).to_seconds(rate)
     }
 }
 
@@ -139,8 +151,11 @@ fn parse_runtime_str(matched: regex::Captures, rate: Framerate) -> SecondsSource
         }
     };
 
-    // And transform it to a rational value..
-    let seconds_fractal_rat = match Rational64::from_f64(seconds_fractal) {
+    // And transform it to a rational value. We are going to use a Rational32 here, then
+    // cast it to a Rational64 so if we have a float which parses to a rational value
+    // which would fill up the entire integer bits to be as precise as possible, we
+    // don't cause an overfow when we add it to the seconds value.
+    let seconds_fractal_rat32 = match Rational32::from_f64(seconds_fractal) {
         None => {
             return Err(TimecodeParseError::Conversion(
                 "error conversion fractal seconds of runtime to rational".to_string(),
@@ -149,9 +164,14 @@ fn parse_runtime_str(matched: regex::Captures, rate: Framerate) -> SecondsSource
         Some(parsed) => parsed,
     };
 
-    // Which we can combine with the integer-calculated seconds to get a full rational value of
-    // our seconds.
-    let mut seconds_rat = Rational64::from_integer(seconds) + seconds_fractal_rat;
+    let seconds_fractal_rat64 = Rational64::new(
+        *seconds_fractal_rat32.numer() as i64,
+        *seconds_fractal_rat32.denom() as i64,
+    );
+
+    // Which we can combine with the integer-calculated seconds to get a full rational
+    // value of our seconds.
+    let mut seconds_rat = Rational64::from_integer(seconds) + seconds_fractal_rat64;
     if is_negative {
         seconds_rat = -seconds_rat
     }

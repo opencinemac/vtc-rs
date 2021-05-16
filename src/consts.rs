@@ -1,4 +1,5 @@
 use lazy_static::lazy_static;
+use num::rational::Ratio;
 use num::Rational64;
 use regex::Regex;
 
@@ -10,8 +11,8 @@ pub(super) const SECONDS_PER_HOUR: Rational64 = Rational64::new_raw(60 * 60, 1);
 /// The number of frames in a foot of 35mm, 4-perf film.
 pub(super) const FRAMES_PER_FOOT: i64 = 16;
 
-/// The number of ticks Adobe Premiere Pro breaks a second into.
-pub(super) const PREMIERE_TICKS_PER_SECOND: Rational64 = Rational64::new_raw(254016000000, 1);
+/// The number of ticks Adobe Premiere Pro breaks a second ratio.
+pub(super) const PREMIERE_TICKS_PER_SECOND: Ratio<i128> = Ratio::<i128>::new_raw(254016000000, 1);
 
 /// The number of seconds in a minute as an i64.
 pub(super) const SECONDS_PER_MINUTE_I64: i64 = 60;

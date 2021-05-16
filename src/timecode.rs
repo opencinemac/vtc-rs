@@ -1,4 +1,5 @@
 use num::integer::div_mod_floor;
+use num::rational::Ratio;
 use num::traits::Inv;
 use num::{abs, FromPrimitive, Rational64, Signed, ToPrimitive, Zero};
 
@@ -150,9 +151,16 @@ impl Timecode {
     ///
     /// Ticks are also used for scripting in Premiere Panels.
     pub fn premiere_ticks(&self) -> i64 {
-        (self.seconds * PREMIERE_TICKS_PER_SECOND)
+        // We need to jump up to a i128-based rat for a second to avoid an overflow
+        // here.
+        let seconds128 =
+            Ratio::<i128>::new(*self.seconds.numer() as i128, *self.seconds.denom() as i128);
+
+        let seconds_int = (seconds128 * PREMIERE_TICKS_PER_SECOND)
             .round()
-            .to_integer()
+            .to_integer();
+
+        seconds_int as i64
     }
 
     /// Returns the number of feet and frames this timecode represents if it were shot on 35mm
@@ -200,22 +208,36 @@ impl Timecode {
         rate: Framerate,
     ) -> TimecodeParseResult {
         let tick_count = ticks.to_ticks(rate)?;
-        let seconds = Rational64::from_integer(tick_count) / PREMIERE_TICKS_PER_SECOND;
+        // We need to do this calculation in a 128-bit Ratio because otherwise
+        // PREMIERE_TICKS_PER_SECOND could easily cause an integer overflow for a reasonably i64
+        // seconds value.
+        let seconds128 =
+            Ratio::<i128>::from_integer(tick_count as i128) / PREMIERE_TICKS_PER_SECOND;
+        let seconds = Rational64::new(*seconds128.numer() as i64, *seconds128.denom() as i64);
         Self::new_with_seconds(seconds, rate)
     }
 
-    /// Used internally for creating new timecodes from i64 frame count values without an error
-    /// return.
+    /// Used internally for creating new timecodes from i64 frame count values without
+    /// an error return.
     fn new_with_i64_frames(frame_count: i64, rate: Framerate) -> Timecode {
         let seconds = Rational64::from_integer(frame_count) / rate.playback();
         Self::new_with_rational_seconds(seconds, rate)
     }
 
-    /// Used internally for creating new timecodes from Rational64 seconds values without an error
-    /// return.
+    /// Used internally for creating new timecodes from Rational64 seconds values
+    /// without an error return.
     fn new_with_rational_seconds(seconds: Rational64, rate: Framerate) -> Timecode {
-        // if our value can be cleanly divied by the length of a single frame, we can use it as-is.
-        let seconds = if seconds != num::Rational64::zero() % rate.playback().inv() {
+        // If our seconds value is coming from a float that results in very large
+        // numerator and denominator values, then we might be close to the max value an
+        // i64 can hold, and converting to rational frames might cause an overflow.
+        //
+        // In order to avoid that, we are going to cast our seconds to an i128 value,
+        // do our normalization to our fps framerate, then cast back down to an i64.
+        // let seconds128 = Ratio::<i128>::new(*seconds.numer() as i128, *seconds.denom() as i128);
+
+        // Self::new_with_i128rational_seconds(seconds128, rate)
+
+        let seconds = if seconds % rate.playback().inv() != Rational64::zero() {
             let frames = (seconds * rate.playback()).round();
             frames / rate.playback()
         } else {
