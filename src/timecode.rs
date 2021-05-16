@@ -2,12 +2,12 @@ use num::integer::div_mod_floor;
 use num::rational::Ratio;
 use num::{abs, FromPrimitive, Rational64, Signed, ToPrimitive, Zero};
 
-use crate::source_ppro_ticks::PremiereTicksSource;
 use crate::{
+    Framerate, FramesSource, Ntsc, SecondsSource, TimecodeParseError,
     consts::{FRAMES_PER_FOOT, PREMIERE_TICKS_PER_SECOND, SECONDS_PER_HOUR, SECONDS_PER_MINUTE},
     timecode_parse::round_seconds_to_frame,
+    source_ppro_ticks::PremiereTicksSource,
 };
-use crate::{Framerate, FramesSource, Ntsc, SecondsSource, TimecodeParseError};
 use std::cmp::Ordering;
 use std::fmt::{Display, Formatter};
 use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
