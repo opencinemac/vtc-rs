@@ -876,7 +876,7 @@ mod test {
                 Box::new(112858993584136800i64),
                 Box::new(112858993584136800u64),
             ],
-            rate: Framerate::new_with_playback(239.76, Ntsc::NonDropFrame).unwrap(),
+            rate: Framerate::with_playback(239.76, Ntsc::NonDropFrame).unwrap(),
             seconds: Rational64::new(106631702177, 240000),
             frames: 106525177,
             timecode: "123:17:34:217".to_string(),
@@ -888,19 +888,19 @@ mod test {
     fn test_parse_timecode(#[case] case: ParseCase) -> Result<(), TimecodeParseError> {
         for boxed in case.frames_sources.iter() {
             let source = boxed.deref();
-            let tc = Timecode::new_with_frames(source, case.rate)?;
+            let tc = Timecode::with_frames(source, case.rate)?;
             check_parsed(&case, tc, source, "frames")
         }
 
         for boxed in case.seconds_sources.iter() {
             let source = boxed.deref();
-            let tc = Timecode::new_with_seconds(source, case.rate)?;
+            let tc = Timecode::with_seconds(source, case.rate)?;
             check_parsed(&case, tc, source, "seconds")
         }
 
         for boxed in case.ticks_sources.iter() {
             let source = boxed.deref();
-            let tc = Timecode::new_with_premiere_ticks(source, case.rate)?;
+            let tc = Timecode::with_premiere_ticks(source, case.rate)?;
             check_parsed(&case, tc, source, "ppro_ticks")
         }
 
@@ -1005,7 +1005,7 @@ mod test {
         tc_out: "03:00:00:00".to_string(),
     })]
     fn test_parse_overflows(#[case] case: MalformedCase) -> Result<(), TimecodeParseError> {
-        let tc = Timecode::new_with_frames(case.tc_in, rates::F24)?;
+        let tc = Timecode::with_frames(case.tc_in, rates::F24)?;
 
         assert_eq!(case.tc_out, tc.timecode(), "parsed tc correct");
 
@@ -1047,7 +1047,7 @@ mod test {
         tc_out: "01:02:03:04".to_string(),
     })]
     fn test_parse_partial_tc(#[case] case: MalformedCase) -> Result<(), TimecodeParseError> {
-        let tc = Timecode::new_with_frames(case.tc_in, rates::F24)?;
+        let tc = Timecode::with_frames(case.tc_in, rates::F24)?;
 
         assert_eq!(case.tc_out, tc.timecode(), "parsed tc correct");
 
@@ -1088,7 +1088,7 @@ mod test {
         tc_out: "01:02:03:12".to_string(),
     })]
     fn test_parse_partial_runtime(#[case] case: MalformedCase) -> Result<(), TimecodeParseError> {
-        let tc = Timecode::new_with_seconds(case.tc_in, rates::F24)?;
+        let tc = Timecode::with_seconds(case.tc_in, rates::F24)?;
 
         assert_eq!(case.tc_out, tc.timecode(), "parsed tc correct");
 

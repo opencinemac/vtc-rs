@@ -44,7 +44,7 @@ impl fmt::Display for Ntsc {
     }
 }
 
-/// The [Result] type returned by [Framerate::new_with_playback] and [Framerate::new_with_timebase].
+/// The [Result] type returned by [Framerate::with_playback] and [Framerate::with_timebase].
 pub type FramerateParseResult = Result<Framerate, FramerateParseError>;
 
 /// The rate at which a video file frames are played back.
@@ -64,7 +64,7 @@ impl Framerate {
     ///
     /// ```rust
     /// use vtc::{Framerate, Ntsc};
-    /// let rate = Framerate::new_with_timebase("24/1", Ntsc::NonDropFrame).unwrap();
+    /// let rate = Framerate::with_timebase("24/1", Ntsc::NonDropFrame).unwrap();
     /// println!("{}", rate.playback())
     /// ```
     pub fn playback(&self) -> num::Rational64 {
@@ -79,7 +79,7 @@ impl Framerate {
     ///
     /// ```rust
     /// use vtc::{Framerate, Ntsc};
-    /// let rate = Framerate::new_with_playback("24000/1001", Ntsc::NonDropFrame).unwrap();
+    /// let rate = Framerate::with_playback("24000/1001", Ntsc::NonDropFrame).unwrap();
     /// println!("{}", rate.timebase())
     /// ```
     pub fn timebase(&self) -> num::Rational64 {
@@ -98,7 +98,7 @@ impl Framerate {
     ///
     /// ```rust
     /// use vtc::{Framerate, Ntsc};
-    /// let rate = Framerate::new_with_playback("24000/1001", Ntsc::NonDropFrame).unwrap();
+    /// let rate = Framerate::with_playback("24000/1001", Ntsc::NonDropFrame).unwrap();
     /// println!("{}", rate.ntsc())
     /// ```
     pub fn ntsc(&self) -> Ntsc {
@@ -133,7 +133,7 @@ impl Framerate {
     ///
     /// ```rust
     /// use vtc::{Framerate, FramerateSource, Ntsc};
-    /// let rate = Framerate::new_with_playback(23.98, Ntsc::NonDropFrame).unwrap();
+    /// let rate = Framerate::with_playback(23.98, Ntsc::NonDropFrame).unwrap();
     /// println!("PLAYBACK: {}", rate.playback());
     /// println!("TIMEBASE: {}", rate.timebase());
     /// println!("NTSC    : {}", rate.ntsc());
@@ -143,7 +143,7 @@ impl Framerate {
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
-    /// let rate = Framerate::new_with_playback(23.5, Ntsc::NonDropFrame).unwrap();
+    /// let rate = Framerate::with_playback(23.5, Ntsc::NonDropFrame).unwrap();
     /// println!("PLAYBACK: {}", rate.playback());
     /// println!("TIMEBASE: {}", rate.timebase());
     /// println!("NTSC    : {}", rate.ntsc());
@@ -153,7 +153,7 @@ impl Framerate {
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
-    /// let rate = Framerate::new_with_playback("23.98", Ntsc::NonDropFrame).unwrap();
+    /// let rate = Framerate::with_playback("23.98", Ntsc::NonDropFrame).unwrap();
     /// println!("PLAYBACK: {}", rate.playback());
     /// println!("TIMEBASE: {}", rate.timebase());
     /// println!("NTSC    : {}", rate.ntsc());
@@ -161,7 +161,7 @@ impl Framerate {
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
-    /// let rate = Framerate::new_with_playback("24000/1001", Ntsc::NonDropFrame).unwrap();
+    /// let rate = Framerate::with_playback("24000/1001", Ntsc::NonDropFrame).unwrap();
     /// println!("PLAYBACK: {}", rate.playback());
     /// println!("TIMEBASE: {}", rate.timebase());
     /// println!("NTSC    : {}", rate.ntsc());
@@ -172,7 +172,7 @@ impl Framerate {
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
-    /// let err = Framerate::new_with_playback("24/1", Ntsc::NonDropFrame);
+    /// let err = Framerate::with_playback("24/1", Ntsc::NonDropFrame);
     /// println!("ERR: {:?}", err);
     /// ```
     ///
@@ -180,7 +180,7 @@ impl Framerate {
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
-    /// let err = Framerate::new_with_playback(24, Ntsc::NonDropFrame);
+    /// let err = Framerate::with_playback(24, Ntsc::NonDropFrame);
     /// println!("ERR: {:?}", err);
     /// ```
     ///
@@ -189,7 +189,7 @@ impl Framerate {
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
-    /// let rate = Framerate::new_with_playback(24, Ntsc::None).unwrap();
+    /// let rate = Framerate::with_playback(24, Ntsc::None).unwrap();
     /// println!("PLAYBACK: {}", rate.playback());
     /// println!("TIMEBASE: {}", rate.timebase());
     /// println!("NTSC    : {}", rate.ntsc());
@@ -197,7 +197,7 @@ impl Framerate {
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
-    /// let rate = Framerate::new_with_playback("24", Ntsc::None).unwrap();
+    /// let rate = Framerate::with_playback("24", Ntsc::None).unwrap();
     /// println!("PLAYBACK: {}", rate.playback());
     /// println!("TIMEBASE: {}", rate.timebase());
     /// println!("NTSC    : {}", rate.ntsc());
@@ -205,7 +205,7 @@ impl Framerate {
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
-    /// let rate = Framerate::new_with_playback("3/1", Ntsc::None).unwrap();
+    /// let rate = Framerate::with_playback("3/1", Ntsc::None).unwrap();
     /// println!("PLAYBACK: {}", rate.playback());
     /// println!("TIMEBASE: {}", rate.timebase());
     /// println!("NTSC    : {}", rate.ntsc());
@@ -216,13 +216,13 @@ impl Framerate {
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
-    /// let err = Framerate::new_with_playback(23.98, Ntsc::NonDropFrame);
+    /// let err = Framerate::with_playback(23.98, Ntsc::NonDropFrame);
     /// println!("ERR: {:?}", err);
     /// ```
     ///
     /// For more information on why drop-frame timebases must be a multiple of 30000/1001, see
     /// [this blogpost](https://www.davidheidelberger.com/2010/06/10/drop-frame-timecode/).
-    pub fn new_with_playback<T: FramerateSource>(rate: T, ntsc: Ntsc) -> FramerateParseResult {
+    pub fn with_playback<T: FramerateSource>(rate: T, ntsc: Ntsc) -> FramerateParseResult {
         let rational = rate.to_playback(ntsc, false)?;
         let rate = Framerate {
             value: rational,
@@ -246,7 +246,7 @@ impl Framerate {
     ///
     /// ```rust
     /// use vtc::{Framerate, FramerateSource, Ntsc};
-    /// let rate = Framerate::new_with_timebase(24, Ntsc::NonDropFrame).unwrap();
+    /// let rate = Framerate::with_timebase(24, Ntsc::NonDropFrame).unwrap();
     /// println!("PLAYBACK: {}", rate.playback());
     /// println!("TIMEBASE: {}", rate.timebase());
     /// println!("NTSC    : {}", rate.ntsc());
@@ -256,7 +256,7 @@ impl Framerate {
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
-    /// let rate = Framerate::new_with_timebase(24.0, Ntsc::NonDropFrame).unwrap();
+    /// let rate = Framerate::with_timebase(24.0, Ntsc::NonDropFrame).unwrap();
     /// println!("PLAYBACK: {}", rate.playback());
     /// println!("TIMEBASE: {}", rate.timebase());
     /// println!("NTSC    : {}", rate.ntsc());
@@ -266,7 +266,7 @@ impl Framerate {
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
-    /// let rate = Framerate::new_with_timebase("24", Ntsc::NonDropFrame).unwrap();
+    /// let rate = Framerate::with_timebase("24", Ntsc::NonDropFrame).unwrap();
     /// println!("PLAYBACK: {}", rate.playback());
     /// println!("TIMEBASE: {}", rate.timebase());
     /// println!("NTSC    : {}", rate.ntsc());
@@ -274,7 +274,7 @@ impl Framerate {
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
-    /// let rate = Framerate::new_with_timebase("24.0", Ntsc::NonDropFrame).unwrap();
+    /// let rate = Framerate::with_timebase("24.0", Ntsc::NonDropFrame).unwrap();
     /// println!("PLAYBACK: {}", rate.playback());
     /// println!("TIMEBASE: {}", rate.timebase());
     /// println!("NTSC    : {}", rate.ntsc());
@@ -282,7 +282,7 @@ impl Framerate {
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
-    /// let rate = Framerate::new_with_timebase("24/1", Ntsc::NonDropFrame).unwrap();
+    /// let rate = Framerate::with_timebase("24/1", Ntsc::NonDropFrame).unwrap();
     /// println!("PLAYBACK: {}", rate.playback());
     /// println!("TIMEBASE: {}", rate.timebase());
     /// println!("NTSC    : {}", rate.ntsc());
@@ -293,7 +293,7 @@ impl Framerate {
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
-    /// let err = Framerate::new_with_timebase("24000/1001", Ntsc::NonDropFrame);
+    /// let err = Framerate::with_timebase("24000/1001", Ntsc::NonDropFrame);
     /// println!("ERR: {:?}", err);
     /// ```
     ///
@@ -301,7 +301,7 @@ impl Framerate {
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
-    /// let rate = Framerate::new_with_timebase("3/1", Ntsc::None).unwrap();
+    /// let rate = Framerate::with_timebase("3/1", Ntsc::None).unwrap();
     /// println!("PLAYBACK: {}", rate.playback());
     /// println!("TIMEBASE: {}", rate.timebase());
     /// println!("NTSC    : {}", rate.ntsc());
@@ -311,13 +311,13 @@ impl Framerate {
     ///
     /// ```rust
     /// # use vtc::{Framerate, FramerateSource, Ntsc};
-    /// let err = Framerate::new_with_timebase("24", Ntsc::DropFrame);
+    /// let err = Framerate::with_timebase("24", Ntsc::DropFrame);
     /// println!("ERR: {:?}", err);
     /// ```
     ///
     /// For more information on why drop-frame timebases must be a multiple of 30, see
     /// [this blogpost](https://www.davidheidelberger.com/2010/06/10/drop-frame-timecode/).
-    pub fn new_with_timebase<T: FramerateSource>(base: T, ntsc: Ntsc) -> FramerateParseResult {
+    pub fn with_timebase<T: FramerateSource>(base: T, ntsc: Ntsc) -> FramerateParseResult {
         let rational = base.to_playback(ntsc, true)?;
         let rate = Framerate {
             value: rational,

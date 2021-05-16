@@ -2,7 +2,7 @@
 // we need this here for the doc links, but clippy doesnt like that it isn't being used in code.
 use crate::Framerate;
 
-/// Returned from [Framerate::new_with_timebase] and [Framerate::new_with_playback] when there is an
+/// Returned from [Framerate::with_timebase] and [Framerate::with_playback] when there is an
 /// error parsing a framerate.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum FramerateParseError {

@@ -27,7 +27,7 @@ pub struct TimecodeSections {
     pub frames: i64,
 }
 
-/// The [Result] type returned by [Timecode::new_with_seconds] and [Timecode::new_with_frames].
+/// The [Result] type returned by [Timecode::with_seconds] and [Timecode::with_frames].
 pub type TimecodeParseResult = Result<Timecode, TimecodeParseError>;
 
 #[derive(Clone, Copy, Debug)]
@@ -189,21 +189,21 @@ impl Timecode {
     }
 
     /// Returns a new [Timecode] with a [Timecode::frames] return value equal to the frames arg.
-    pub fn new_with_frames<T: FramesSource>(frames: T, rate: Framerate) -> TimecodeParseResult {
+    pub fn with_frames<T: FramesSource>(frames: T, rate: Framerate) -> TimecodeParseResult {
         let frame_count = frames.to_frames(rate)?;
         Ok(Self::new_with_i64_frames(frame_count, rate))
     }
 
     /// Returns a new [Timecode] with a [Timecode::seconds] return value equal to the seconds arg
     /// (rounded to the nearest frame).
-    pub fn new_with_seconds<T: SecondsSource>(seconds: T, rate: Framerate) -> TimecodeParseResult {
+    pub fn with_seconds<T: SecondsSource>(seconds: T, rate: Framerate) -> TimecodeParseResult {
         let seconds_rat = seconds.to_seconds(rate)?;
         Ok(Self::new_with_rational_seconds(seconds_rat, rate))
     }
 
     /// Returns a new [Timecode] with a [Timecode::premiere_ticks] return value equal to the ticks
     /// arg.
-    pub fn new_with_premiere_ticks<T: PremiereTicksSource>(
+    pub fn with_premiere_ticks<T: PremiereTicksSource>(
         ticks: T,
         rate: Framerate,
     ) -> TimecodeParseResult {
@@ -214,7 +214,7 @@ impl Timecode {
         let seconds128 =
             Ratio::<i128>::from_integer(tick_count as i128) / PREMIERE_TICKS_PER_SECOND;
         let seconds = Rational64::new(*seconds128.numer() as i64, *seconds128.denom() as i64);
-        Self::new_with_seconds(seconds, rate)
+        Self::with_seconds(seconds, rate)
     }
 
     /// Used internally for creating new timecodes from i64 frame count values without

@@ -185,14 +185,14 @@ mod test {
             Ntsc::NonDropFrame
         };
 
-        let rate = Framerate::new_with_timebase(info.timebase, ntsc).unwrap();
-        let tc = Timecode::new_with_frames(&info.timecode, rate).unwrap();
+        let rate = Framerate::with_timebase(info.timebase, ntsc).unwrap();
+        let tc = Timecode::with_frames(&info.timecode, rate).unwrap();
         check_parsed_timecode(tc, info, event_num, tc_val, &info.timecode, "timecode");
 
-        let tc = Timecode::new_with_frames(&info.frame, rate).unwrap();
+        let tc = Timecode::with_frames(&info.frame, rate).unwrap();
         check_parsed_timecode(tc, info, event_num, tc_val, &info.frame, "frame numer");
 
-        let tc = Timecode::new_with_seconds(&info.seconds_rational.0, rate).unwrap();
+        let tc = Timecode::with_seconds(&info.seconds_rational.0, rate).unwrap();
         check_parsed_timecode(
             tc,
             info,
@@ -202,10 +202,10 @@ mod test {
             "seconds",
         );
 
-        let tc = Timecode::new_with_seconds(&info.runtime, rate).unwrap();
+        let tc = Timecode::with_seconds(&info.runtime, rate).unwrap();
         check_parsed_timecode(tc, info, event_num, tc_val, &info.runtime, "runtime");
 
-        let tc = Timecode::new_with_premiere_ticks(&info.ppro_ticks, rate).unwrap();
+        let tc = Timecode::with_premiere_ticks(&info.ppro_ticks, rate).unwrap();
         check_parsed_timecode(tc, info, event_num, tc_val, &info.ppro_ticks, "ppro ticks");
     }
 

@@ -441,8 +441,8 @@ mod test {
     })]
     fn test_parse_framerate<T: FramerateSource>(#[case] case: ParseCase<T>) {
         let result = match case.source_type {
-            SourceType::Playback => Framerate::new_with_playback(case.source, case.ntsc),
-            SourceType::Timebase => Framerate::new_with_timebase(case.source, case.ntsc),
+            SourceType::Playback => Framerate::with_playback(case.source, case.ntsc),
+            SourceType::Timebase => Framerate::with_timebase(case.source, case.ntsc),
         };
 
         if case.expected.is_err() {
@@ -462,12 +462,9 @@ mod test {
     }
 
     #[rstest]
-    #[case(Framerate::new_with_timebase(24, Ntsc::None), "[24]")]
-    #[case(
-        Framerate::new_with_timebase(24, Ntsc::NonDropFrame),
-        "[23.98 NTSC NDF]"
-    )]
-    #[case(Framerate::new_with_timebase(30, Ntsc::DropFrame), "[29.97 NTSC DF]")]
+    #[case(Framerate::with_timebase(24, Ntsc::None), "[24]")]
+    #[case(Framerate::with_timebase(24, Ntsc::NonDropFrame), "[23.98 NTSC NDF]")]
+    #[case(Framerate::with_timebase(30, Ntsc::DropFrame), "[29.97 NTSC DF]")]
     fn test_framerate_display(
         #[case] rate: Result<Framerate, FramerateParseError>,
         #[case] display_str: &str,
@@ -477,26 +474,17 @@ mod test {
     }
 
     #[rstest]
-    #[case::f23_98(Framerate::new_with_timebase(24, Ntsc::NonDropFrame), rates::F23_98)]
-    #[case::f24(Framerate::new_with_timebase(24, Ntsc::None), rates::F24)]
-    #[case::f29_97_ndf(
-        Framerate::new_with_timebase(30, Ntsc::NonDropFrame),
-        rates::F29_97_NDF
-    )]
-    #[case::f29_97_ndf(
-        Framerate::new_with_timebase(30, Ntsc::NonDropFrame),
-        rates::F29_97_NDF
-    )]
-    #[case::f29_97_df(Framerate::new_with_timebase(30, Ntsc::DropFrame), rates::F29_97_DF)]
-    #[case::f30(Framerate::new_with_timebase(30, Ntsc::None), rates::F30)]
-    #[case::f47_95(Framerate::new_with_timebase(48, Ntsc::NonDropFrame), rates::F47_95)]
-    #[case::f48(Framerate::new_with_timebase(48, Ntsc::None), rates::F48)]
-    #[case::f59_94_ndf(
-        Framerate::new_with_timebase(60, Ntsc::NonDropFrame),
-        rates::F59_94_NDF
-    )]
-    #[case::f59_94_df(Framerate::new_with_timebase(60, Ntsc::DropFrame), rates::F59_94_DF)]
-    #[case::f60(Framerate::new_with_timebase(60, Ntsc::None), rates::F60)]
+    #[case::f23_98(Framerate::with_timebase(24, Ntsc::NonDropFrame), rates::F23_98)]
+    #[case::f24(Framerate::with_timebase(24, Ntsc::None), rates::F24)]
+    #[case::f29_97_ndf(Framerate::with_timebase(30, Ntsc::NonDropFrame), rates::F29_97_NDF)]
+    #[case::f29_97_ndf(Framerate::with_timebase(30, Ntsc::NonDropFrame), rates::F29_97_NDF)]
+    #[case::f29_97_df(Framerate::with_timebase(30, Ntsc::DropFrame), rates::F29_97_DF)]
+    #[case::f30(Framerate::with_timebase(30, Ntsc::None), rates::F30)]
+    #[case::f47_95(Framerate::with_timebase(48, Ntsc::NonDropFrame), rates::F47_95)]
+    #[case::f48(Framerate::with_timebase(48, Ntsc::None), rates::F48)]
+    #[case::f59_94_ndf(Framerate::with_timebase(60, Ntsc::NonDropFrame), rates::F59_94_NDF)]
+    #[case::f59_94_df(Framerate::with_timebase(60, Ntsc::DropFrame), rates::F59_94_DF)]
+    #[case::f60(Framerate::with_timebase(60, Ntsc::None), rates::F60)]
     fn test_framerate_consts(
         #[case] expected: Result<Framerate, FramerateParseError>,
         #[case] const_value: Framerate,

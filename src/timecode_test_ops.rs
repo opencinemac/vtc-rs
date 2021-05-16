@@ -18,8 +18,8 @@ mod test {
     // case 1
     #[case(
         ComparisonCase{
-            tc1: Timecode::new_with_frames("01:00:00:00", rates::F24).unwrap(),
-            tc2: Timecode::new_with_frames("01:00:00:00", rates::F24).unwrap(),
+            tc1: Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
+            tc2: Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
             eq: true,
             lt: false,
         }
@@ -27,8 +27,8 @@ mod test {
     // case 2
     #[case(
         ComparisonCase{
-            tc1: Timecode::new_with_frames("01:00:00:00", rates::F24).unwrap(),
-            tc2: Timecode::new_with_frames("00:59:59:24", rates::F24).unwrap(),
+            tc1: Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
+            tc2: Timecode::with_frames("00:59:59:24", rates::F24).unwrap(),
             eq: true,
             lt: false,
         }
@@ -36,8 +36,8 @@ mod test {
     // case 3
     #[case(
         ComparisonCase{
-            tc1: Timecode::new_with_frames("01:00:00:00", rates::F24).unwrap(),
-            tc2: Timecode::new_with_frames("02:00:00:00", rates::F24).unwrap(),
+            tc1: Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
+            tc2: Timecode::with_frames("02:00:00:00", rates::F24).unwrap(),
             eq: false,
             lt: true,
         }
@@ -45,8 +45,8 @@ mod test {
     // case 4
     #[case(
         ComparisonCase{
-            tc1: Timecode::new_with_frames("01:00:00:00", rates::F24).unwrap(),
-            tc2: Timecode::new_with_frames("01:00:00:01", rates::F24).unwrap(),
+            tc1: Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
+            tc2: Timecode::with_frames("01:00:00:01", rates::F24).unwrap(),
             eq: false,
             lt: true,
         }
@@ -54,8 +54,8 @@ mod test {
     // case 5
     #[case(
         ComparisonCase{
-            tc1: Timecode::new_with_frames("01:00:00:00", rates::F24).unwrap(),
-            tc2: Timecode::new_with_frames("00:59:59:23", rates::F24).unwrap(),
+            tc1: Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
+            tc2: Timecode::with_frames("00:59:59:23", rates::F24).unwrap(),
             eq: false,
             lt: false,
         }
@@ -64,8 +64,8 @@ mod test {
     // case 6
     #[case(
         ComparisonCase{
-            tc1: Timecode::new_with_frames("01:00:00:00", rates::F23_98).unwrap(),
-            tc2: Timecode::new_with_frames("01:00:00:00", rates::F23_98).unwrap(),
+            tc1: Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap(),
+            tc2: Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap(),
             eq: true,
             lt: false,
         }
@@ -73,8 +73,8 @@ mod test {
     // case 7
     #[case(
         ComparisonCase{
-            tc1: Timecode::new_with_frames("01:00:00:00", rates::F23_98).unwrap(),
-            tc2: Timecode::new_with_frames("01:00:00:01", rates::F23_98).unwrap(),
+            tc1: Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap(),
+            tc2: Timecode::with_frames("01:00:00:01", rates::F23_98).unwrap(),
             eq: false,
             lt: true,
         }
@@ -82,8 +82,8 @@ mod test {
     // case 8
     #[case(
         ComparisonCase{
-            tc1: Timecode::new_with_frames("00:00:00:00", rates::F23_98).unwrap(),
-            tc2: Timecode::new_with_frames("02:00:00:01", rates::F23_98).unwrap(),
+            tc1: Timecode::with_frames("00:00:00:00", rates::F23_98).unwrap(),
+            tc2: Timecode::with_frames("02:00:00:01", rates::F23_98).unwrap(),
             eq: false,
             lt: true,
         }
@@ -92,8 +92,8 @@ mod test {
     // case 9
     #[case(
         ComparisonCase{
-            tc1: Timecode::new_with_frames("01:00:00:00", rates::F23_98).unwrap(),
-            tc2: Timecode::new_with_frames("01:00:00:01", rates::F24).unwrap(),
+            tc1: Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap(),
+            tc2: Timecode::with_frames("01:00:00:01", rates::F24).unwrap(),
             eq: false,
             lt: false,
         }
@@ -198,14 +198,14 @@ mod test {
     #[case(
         SortCase {
             tcs_in: vec![
-                Timecode::new_with_frames("00:01:00:00", rates::F23_98).unwrap(),
-                Timecode::new_with_frames("01:00:00:00", rates::F23_98).unwrap(),
-                Timecode::new_with_frames("00:00:10:00", rates::F23_98).unwrap(),
+                Timecode::with_frames("00:01:00:00", rates::F23_98).unwrap(),
+                Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap(),
+                Timecode::with_frames("00:00:10:00", rates::F23_98).unwrap(),
             ],
             tcs_out: vec![
-                Timecode::new_with_frames("00:00:10:00", rates::F23_98).unwrap(),
-                Timecode::new_with_frames("00:01:00:00", rates::F23_98).unwrap(),
-                Timecode::new_with_frames("01:00:00:00", rates::F23_98).unwrap(),
+                Timecode::with_frames("00:00:10:00", rates::F23_98).unwrap(),
+                Timecode::with_frames("00:01:00:00", rates::F23_98).unwrap(),
+                Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap(),
             ],
         }
     )]
@@ -238,9 +238,9 @@ mod test {
         expected: "00:30:00:00".to_string(),
     })]
     fn test_add(#[case] case: ArithmeticCase) -> Result<(), TimecodeParseError> {
-        let tc1 = Timecode::new_with_frames(case.tc1, rates::F24)?;
-        let tc2 = Timecode::new_with_frames(case.tc2, rates::F24)?;
-        let expected = Timecode::new_with_frames(case.expected, rates::F24)?;
+        let tc1 = Timecode::with_frames(case.tc1, rates::F24)?;
+        let tc2 = Timecode::with_frames(case.tc2, rates::F24)?;
+        let expected = Timecode::with_frames(case.expected, rates::F24)?;
 
         assert_eq!(tc1 + tc2, expected, "{} + {} == {}", tc1, tc2, expected);
 
@@ -264,9 +264,9 @@ mod test {
         expected: "01:30:00:00".to_string(),
     })]
     fn test_subtract(#[case] case: ArithmeticCase) -> Result<(), TimecodeParseError> {
-        let tc1 = Timecode::new_with_frames(case.tc1, rates::F24)?;
-        let tc2 = Timecode::new_with_frames(case.tc2, rates::F24)?;
-        let expected = Timecode::new_with_frames(case.expected, rates::F24)?;
+        let tc1 = Timecode::with_frames(case.tc1, rates::F24)?;
+        let tc2 = Timecode::with_frames(case.tc2, rates::F24)?;
+        let expected = Timecode::with_frames(case.expected, rates::F24)?;
 
         assert_eq!(tc1 - tc2, expected, "{} - {} == {}", tc1, tc2, expected);
 
@@ -286,51 +286,51 @@ mod test {
     #[rstest]
     // case 1
     #[case(MultiplyCase{
-        tc: Timecode::new_with_frames("01:00:00:00", rates::F24,).unwrap(),
+        tc: Timecode::with_frames("01:00:00:00", rates::F24,).unwrap(),
         multiplier: 2,
-        expected: Timecode::new_with_frames("02:00:00:00", rates::F24,).unwrap(),
+        expected: Timecode::with_frames("02:00:00:00", rates::F24,).unwrap(),
     })]
     // case 2
     #[case(MultiplyCase{
-        tc: Timecode::new_with_frames("01:00:00:00", rates::F24,).unwrap(),
+        tc: Timecode::with_frames("01:00:00:00", rates::F24,).unwrap(),
         multiplier: 2.0,
-        expected: Timecode::new_with_frames("02:00:00:00", rates::F24,).unwrap(),
+        expected: Timecode::with_frames("02:00:00:00", rates::F24,).unwrap(),
     })]
     // case 3
     #[case(MultiplyCase{
-        tc: Timecode::new_with_frames("01:00:00:00", rates::F24,).unwrap(),
+        tc: Timecode::with_frames("01:00:00:00", rates::F24,).unwrap(),
         multiplier: 1.5,
-        expected: Timecode::new_with_frames("01:30:00:00", rates::F24,).unwrap(),
+        expected: Timecode::with_frames("01:30:00:00", rates::F24,).unwrap(),
     })]
     // case 4
     #[case(MultiplyCase{
-        tc: Timecode::new_with_frames("01:00:00:00", rates::F24,).unwrap(),
+        tc: Timecode::with_frames("01:00:00:00", rates::F24,).unwrap(),
         multiplier: 0.5,
-        expected: Timecode::new_with_frames("00:30:00:00", rates::F24,).unwrap(),
+        expected: Timecode::with_frames("00:30:00:00", rates::F24,).unwrap(),
     })]
     // case 5
     #[case(MultiplyCase{
-        tc: Timecode::new_with_frames("01:00:00:00", rates::F24,).unwrap(),
+        tc: Timecode::with_frames("01:00:00:00", rates::F24,).unwrap(),
         multiplier: 0.0,
-        expected: Timecode::new_with_frames("00:00:00:00", rates::F24,).unwrap(),
+        expected: Timecode::with_frames("00:00:00:00", rates::F24,).unwrap(),
     })]
     // case 6
     #[case(MultiplyCase{
-        tc: Timecode::new_with_frames("01:00:00:00", rates::F24,).unwrap(),
+        tc: Timecode::with_frames("01:00:00:00", rates::F24,).unwrap(),
         multiplier: 0,
-        expected: Timecode::new_with_frames("00:00:00:00", rates::F24,).unwrap(),
+        expected: Timecode::with_frames("00:00:00:00", rates::F24,).unwrap(),
     })]
     // case 7
     #[case(MultiplyCase{
-        tc: Timecode::new_with_frames("00:00:00:00", rates::F24,).unwrap(),
+        tc: Timecode::with_frames("00:00:00:00", rates::F24,).unwrap(),
         multiplier: 10,
-        expected: Timecode::new_with_frames("00:00:00:00", rates::F24,).unwrap(),
+        expected: Timecode::with_frames("00:00:00:00", rates::F24,).unwrap(),
     })]
     // case 8
     #[case(MultiplyCase{
-        tc: Timecode::new_with_frames("00:00:00:00", rates::F24,).unwrap(),
+        tc: Timecode::with_frames("00:00:00:00", rates::F24,).unwrap(),
         multiplier: 10.0,
-        expected: Timecode::new_with_frames("00:00:00:00", rates::F24,).unwrap(),
+        expected: Timecode::with_frames("00:00:00:00", rates::F24,).unwrap(),
     })]
     fn test_multiply<T>(#[case] case: MultiplyCase<T>)
     where
@@ -374,94 +374,94 @@ mod test {
     #[rstest]
     // case 1
     #[case(DivRemCase{
-        tc: Timecode::new_with_frames("01:00:00:00", rates::F24).unwrap(),
+        tc: Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
         divisor: 2,
-        expected_div: Timecode::new_with_frames("00:30:00:00", rates::F24).unwrap(),
-        expected_rem: Timecode::new_with_frames("00:00:00:00", rates::F24).unwrap(),
+        expected_div: Timecode::with_frames("00:30:00:00", rates::F24).unwrap(),
+        expected_rem: Timecode::with_frames("00:00:00:00", rates::F24).unwrap(),
     })]
     #[case(DivRemCase{
-        tc: Timecode::new_with_frames("01:00:00:00", rates::F24).unwrap(),
+        tc: Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
         divisor: 2.0,
-        expected_div: Timecode::new_with_frames("00:30:00:00", rates::F24).unwrap(),
-        expected_rem: Timecode::new_with_frames("00:00:00:00", rates::F24).unwrap(),
+        expected_div: Timecode::with_frames("00:30:00:00", rates::F24).unwrap(),
+        expected_rem: Timecode::with_frames("00:00:00:00", rates::F24).unwrap(),
     })]
     #[case(DivRemCase{
-        tc: Timecode::new_with_frames("01:00:00:00", rates::F23_98).unwrap(),
+        tc: Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap(),
         divisor: 2,
-        expected_div: Timecode::new_with_frames("00:30:00:00", rates::F23_98).unwrap(),
-        expected_rem: Timecode::new_with_frames("00:00:00:00", rates::F23_98).unwrap(),
+        expected_div: Timecode::with_frames("00:30:00:00", rates::F23_98).unwrap(),
+        expected_rem: Timecode::with_frames("00:00:00:00", rates::F23_98).unwrap(),
     })]
     #[case(DivRemCase{
-        tc: Timecode::new_with_frames("01:00:00:00", rates::F23_98).unwrap(),
+        tc: Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap(),
         divisor: 2.0,
-        expected_div: Timecode::new_with_frames("00:30:00:00", rates::F23_98).unwrap(),
-        expected_rem: Timecode::new_with_frames("00:00:00:00", rates::F23_98).unwrap(),
+        expected_div: Timecode::with_frames("00:30:00:00", rates::F23_98).unwrap(),
+        expected_rem: Timecode::with_frames("00:00:00:00", rates::F23_98).unwrap(),
     })]
     #[case(DivRemCase{
-        tc: Timecode::new_with_frames("01:00:00:01", rates::F24).unwrap(),
+        tc: Timecode::with_frames("01:00:00:01", rates::F24).unwrap(),
         divisor: 2,
-        expected_div: Timecode::new_with_frames("00:30:00:00", rates::F24).unwrap(),
-        expected_rem: Timecode::new_with_frames("00:00:00:01", rates::F24).unwrap(),
+        expected_div: Timecode::with_frames("00:30:00:00", rates::F24).unwrap(),
+        expected_rem: Timecode::with_frames("00:00:00:01", rates::F24).unwrap(),
     })]
     #[case(DivRemCase{
-        tc: Timecode::new_with_frames("01:00:00:01", rates::F24).unwrap(),
+        tc: Timecode::with_frames("01:00:00:01", rates::F24).unwrap(),
         divisor: 2.0,
-        expected_div: Timecode::new_with_frames("00:30:00:00", rates::F24).unwrap(),
-        expected_rem: Timecode::new_with_frames("00:00:00:01", rates::F24).unwrap(),
+        expected_div: Timecode::with_frames("00:30:00:00", rates::F24).unwrap(),
+        expected_rem: Timecode::with_frames("00:00:00:01", rates::F24).unwrap(),
     })]
     #[case(DivRemCase{
-        tc: Timecode::new_with_frames("01:00:00:01", rates::F23_98).unwrap(),
+        tc: Timecode::with_frames("01:00:00:01", rates::F23_98).unwrap(),
         divisor: 2,
-        expected_div: Timecode::new_with_frames("00:30:00:00", rates::F23_98).unwrap(),
-        expected_rem: Timecode::new_with_frames("00:00:00:01", rates::F23_98).unwrap(),
+        expected_div: Timecode::with_frames("00:30:00:00", rates::F23_98).unwrap(),
+        expected_rem: Timecode::with_frames("00:00:00:01", rates::F23_98).unwrap(),
     })]
     #[case(DivRemCase{
-        tc: Timecode::new_with_frames("01:00:00:01", rates::F23_98).unwrap(),
+        tc: Timecode::with_frames("01:00:00:01", rates::F23_98).unwrap(),
         divisor: 2.0,
-        expected_div: Timecode::new_with_frames("00:30:00:00", rates::F23_98).unwrap(),
-        expected_rem: Timecode::new_with_frames("00:00:00:01", rates::F23_98).unwrap(),
+        expected_div: Timecode::with_frames("00:30:00:00", rates::F23_98).unwrap(),
+        expected_rem: Timecode::with_frames("00:00:00:01", rates::F23_98).unwrap(),
     })]
     #[case(DivRemCase{
-        tc: Timecode::new_with_frames("01:00:00:00", rates::F24).unwrap(),
+        tc: Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
         divisor: 4,
-        expected_div: Timecode::new_with_frames("00:15:00:00", rates::F24).unwrap(),
-        expected_rem: Timecode::new_with_frames("00:00:00:00", rates::F24).unwrap(),
+        expected_div: Timecode::with_frames("00:15:00:00", rates::F24).unwrap(),
+        expected_rem: Timecode::with_frames("00:00:00:00", rates::F24).unwrap(),
     })]
     #[case(DivRemCase{
-        tc: Timecode::new_with_frames("01:00:00:00", rates::F24).unwrap(),
+        tc: Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
         divisor: 4.0,
-        expected_div: Timecode::new_with_frames("00:15:00:00", rates::F24).unwrap(),
-        expected_rem: Timecode::new_with_frames("00:00:00:00", rates::F24).unwrap(),
+        expected_div: Timecode::with_frames("00:15:00:00", rates::F24).unwrap(),
+        expected_rem: Timecode::with_frames("00:00:00:00", rates::F24).unwrap(),
     })]
     #[case(DivRemCase{
-        tc: Timecode::new_with_frames("01:00:00:00", rates::F23_98).unwrap(),
+        tc: Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap(),
         divisor: 4,
-        expected_div: Timecode::new_with_frames("00:15:00:00", rates::F23_98).unwrap(),
-        expected_rem: Timecode::new_with_frames("00:00:00:00", rates::F23_98).unwrap(),
+        expected_div: Timecode::with_frames("00:15:00:00", rates::F23_98).unwrap(),
+        expected_rem: Timecode::with_frames("00:00:00:00", rates::F23_98).unwrap(),
     })]
     #[case(DivRemCase{
-        tc: Timecode::new_with_frames("01:00:00:00", rates::F23_98).unwrap(),
+        tc: Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap(),
         divisor: 4.0,
-        expected_div: Timecode::new_with_frames("00:15:00:00", rates::F23_98).unwrap(),
-        expected_rem: Timecode::new_with_frames("00:00:00:00", rates::F23_98).unwrap(),
+        expected_div: Timecode::with_frames("00:15:00:00", rates::F23_98).unwrap(),
+        expected_rem: Timecode::with_frames("00:00:00:00", rates::F23_98).unwrap(),
     })]
     #[case(DivRemCase{
-        tc: Timecode::new_with_frames("01:00:00:03", rates::F24).unwrap(),
+        tc: Timecode::with_frames("01:00:00:03", rates::F24).unwrap(),
         divisor: 4,
-        expected_div: Timecode::new_with_frames("00:15:00:00", rates::F24).unwrap(),
-        expected_rem: Timecode::new_with_frames("00:00:00:03", rates::F24).unwrap(),
+        expected_div: Timecode::with_frames("00:15:00:00", rates::F24).unwrap(),
+        expected_rem: Timecode::with_frames("00:00:00:03", rates::F24).unwrap(),
     })]
     #[case(DivRemCase{
-        tc: Timecode::new_with_frames("01:00:00:03", rates::F24).unwrap(),
+        tc: Timecode::with_frames("01:00:00:03", rates::F24).unwrap(),
         divisor: 4.0,
-        expected_div: Timecode::new_with_frames("00:15:00:00", rates::F24).unwrap(),
-        expected_rem: Timecode::new_with_frames("00:00:00:03", rates::F24).unwrap(),
+        expected_div: Timecode::with_frames("00:15:00:00", rates::F24).unwrap(),
+        expected_rem: Timecode::with_frames("00:00:00:03", rates::F24).unwrap(),
     })]
     #[case(DivRemCase{
-        tc: Timecode::new_with_frames("01:00:00:4", rates::F24).unwrap(),
+        tc: Timecode::with_frames("01:00:00:4", rates::F24).unwrap(),
         divisor: 1.5,
-        expected_div: Timecode::new_with_frames("00:40:00:02", rates::F24).unwrap(),
-        expected_rem: Timecode::new_with_frames("00:00:00:01", rates::F24).unwrap(),
+        expected_div: Timecode::with_frames("00:40:00:02", rates::F24).unwrap(),
+        expected_rem: Timecode::with_frames("00:00:00:01", rates::F24).unwrap(),
     })]
     fn test_divrem<T>(#[case] case: DivRemCase<T>)
     where
@@ -496,14 +496,14 @@ mod test {
     #[test]
     fn test_negative() {
         assert_eq!(
-            -Timecode::new_with_frames("01:00:00:00", rates::F24).unwrap(),
-            Timecode::new_with_frames("-01:00:00:00", rates::F24).unwrap(),
+            -Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
+            Timecode::with_frames("-01:00:00:00", rates::F24).unwrap(),
             "neg positive",
         );
 
         assert_eq!(
-            -Timecode::new_with_frames("-01:00:00:00", rates::F24).unwrap(),
-            Timecode::new_with_frames("01:00:00:00", rates::F24).unwrap(),
+            -Timecode::with_frames("-01:00:00:00", rates::F24).unwrap(),
+            Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
             "neg negative",
         )
     }
@@ -512,18 +512,18 @@ mod test {
     #[test]
     fn test_abs() {
         assert_eq!(
-            Timecode::new_with_frames("01:00:00:00", rates::F24)
+            Timecode::with_frames("01:00:00:00", rates::F24)
                 .unwrap()
                 .abs(),
-            Timecode::new_with_frames("01:00:00:00", rates::F24).unwrap(),
+            Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
             "abs positive",
         );
 
         assert_eq!(
-            Timecode::new_with_frames("-01:00:00:00", rates::F24)
+            Timecode::with_frames("-01:00:00:00", rates::F24)
                 .unwrap()
                 .abs(),
-            Timecode::new_with_frames("01:00:00:00", rates::F24).unwrap(),
+            Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
             "abs negative",
         )
     }
@@ -536,9 +536,9 @@ mod test {
 
     #[rstest]
     #[case(RebaseCase{
-        tc_in: Timecode::new_with_frames("01:00:00:00", rates::F24).unwrap(),
+        tc_in: Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
         new_rate: rates::F48,
-        expected: Timecode::new_with_frames("00:30:00:00", rates::F48).unwrap(),
+        expected: Timecode::with_frames("00:30:00:00", rates::F48).unwrap(),
     })]
     fn test_rebase(#[case] case: RebaseCase) {
         let rebased = case.tc_in.rebase(case.new_rate);
