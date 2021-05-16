@@ -180,25 +180,25 @@ impl Timecode {
     /// Returns a [Timecode] with the same number of frames running at a different
     /// [Framerate].
     pub fn rebase(&self, rate: Framerate) -> Self {
-        Timecode::new_with_i64_frames(self.frames(), rate)
+        Timecode::with_i64_frames(self.frames(), rate)
     }
 
     /// Returns the absolute value of the [Timecode] value.
     pub fn abs(&self) -> Self {
-        Timecode::new_with_rational_seconds(abs(self.seconds), self.rate)
+        Timecode::with_rational_seconds(abs(self.seconds), self.rate)
     }
 
     /// Returns a new [Timecode] with a [Timecode::frames] return value equal to the frames arg.
     pub fn with_frames<T: FramesSource>(frames: T, rate: Framerate) -> TimecodeParseResult {
         let frame_count = frames.to_frames(rate)?;
-        Ok(Self::new_with_i64_frames(frame_count, rate))
+        Ok(Self::with_i64_frames(frame_count, rate))
     }
 
     /// Returns a new [Timecode] with a [Timecode::seconds] return value equal to the seconds arg
     /// (rounded to the nearest frame).
     pub fn with_seconds<T: SecondsSource>(seconds: T, rate: Framerate) -> TimecodeParseResult {
         let seconds_rat = seconds.to_seconds(rate)?;
-        Ok(Self::new_with_rational_seconds(seconds_rat, rate))
+        Ok(Self::with_rational_seconds(seconds_rat, rate))
     }
 
     /// Returns a new [Timecode] with a [Timecode::premiere_ticks] return value equal to the ticks
@@ -219,14 +219,14 @@ impl Timecode {
 
     /// Used internally for creating new timecodes from i64 frame count values without
     /// an error return.
-    fn new_with_i64_frames(frame_count: i64, rate: Framerate) -> Timecode {
+    fn with_i64_frames(frame_count: i64, rate: Framerate) -> Timecode {
         let seconds = Rational64::from_integer(frame_count) / rate.playback();
-        Self::new_with_rational_seconds(seconds, rate)
+        Self::with_rational_seconds(seconds, rate)
     }
 
     /// Used internally for creating new timecodes from Rational64 seconds values
     /// without an error return.
-    fn new_with_rational_seconds(seconds: Rational64, rate: Framerate) -> Timecode {
+    fn with_rational_seconds(seconds: Rational64, rate: Framerate) -> Timecode {
         // If our seconds value is coming from a float that results in very large
         // numerator and denominator values, then we might be close to the max value an
         // i64 can hold, and converting to rational frames might cause an overflow.
@@ -274,7 +274,7 @@ impl Add for Timecode {
 
     fn add(self, rhs: Self) -> Self::Output {
         let new_seconds = self.seconds + rhs.seconds;
-        Timecode::new_with_rational_seconds(new_seconds, self.rate())
+        Timecode::with_rational_seconds(new_seconds, self.rate())
     }
 }
 
@@ -283,7 +283,7 @@ impl Sub for Timecode {
 
     fn sub(self, rhs: Self) -> Self::Output {
         let new_seconds = self.seconds - rhs.seconds;
-        Timecode::new_with_rational_seconds(new_seconds, self.rate)
+        Timecode::with_rational_seconds(new_seconds, self.rate)
     }
 }
 
@@ -293,7 +293,7 @@ impl Mul<f64> for Timecode {
     fn mul(self, rhs: f64) -> Self::Output {
         let rhs_rat = Rational64::from_f64(rhs).unwrap();
         let new_seconds = self.seconds * rhs_rat;
-        Timecode::new_with_rational_seconds(new_seconds, self.rate)
+        Timecode::with_rational_seconds(new_seconds, self.rate)
     }
 }
 
@@ -311,7 +311,7 @@ impl Mul<i64> for Timecode {
     fn mul(self, rhs: i64) -> Self::Output {
         let rhs_rat = Rational64::from_integer(rhs);
         let new_seconds = self.seconds * rhs_rat;
-        Timecode::new_with_rational_seconds(new_seconds, self.rate)
+        Timecode::with_rational_seconds(new_seconds, self.rate)
     }
 }
 
@@ -330,7 +330,7 @@ impl Div<Rational64> for Timecode {
         let mut frames_rat = Rational64::from_integer(self.frames());
         frames_rat /= rhs;
         frames_rat = frames_rat.floor();
-        Timecode::new_with_i64_frames(frames_rat.to_integer(), self.rate)
+        Timecode::with_i64_frames(frames_rat.to_integer(), self.rate)
     }
 }
 
@@ -341,7 +341,7 @@ impl Rem<Rational64> for Timecode {
         let mut frames_rat = Rational64::from_integer(self.frames());
         frames_rat %= rhs;
         frames_rat = frames_rat.round();
-        Timecode::new_with_i64_frames(frames_rat.to_integer(), self.rate)
+        Timecode::with_i64_frames(frames_rat.to_integer(), self.rate)
     }
 }
 
@@ -369,7 +369,7 @@ impl Div<i64> for Timecode {
 
     fn div(self, rhs: i64) -> Self::Output {
         let frames_divided = self.frames() / rhs;
-        Timecode::new_with_i64_frames(frames_divided, self.rate)
+        Timecode::with_i64_frames(frames_divided, self.rate)
     }
 }
 
@@ -378,7 +378,7 @@ impl Rem<i64> for Timecode {
 
     fn rem(self, rhs: i64) -> Self::Output {
         let frames_remainder = self.frames() % rhs;
-        Timecode::new_with_i64_frames(frames_remainder, self.rate)
+        Timecode::with_i64_frames(frames_remainder, self.rate)
     }
 }
 
@@ -386,7 +386,7 @@ impl Neg for Timecode {
     type Output = Self;
 
     fn neg(self) -> Self::Output {
-        Timecode::new_with_rational_seconds(-self.seconds, self.rate)
+        Timecode::with_rational_seconds(-self.seconds, self.rate)
     }
 }
 
