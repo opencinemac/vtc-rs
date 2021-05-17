@@ -3,7 +3,7 @@ mod test {
     use crate::{rates, Framerate, Timecode, TimecodeParseError};
     use rstest::rstest;
     use std::fmt::{Debug, Display};
-    use std::ops::{Div, Mul, Rem};
+    use std::ops::{Div, DivAssign, Mul, MulAssign, Rem, RemAssign};
 
     struct ComparisonCase {
         tc1: Timecode,
@@ -16,88 +16,70 @@ mod test {
     #[rstest]
     // 24 FPS ---------
     // case 1
-    #[case(
-        ComparisonCase{
-            tc1: Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
-            tc2: Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
-            eq: true,
-            lt: false,
-        }
-    )]
+    #[case(ComparisonCase{
+        tc1: Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
+        tc2: Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
+        eq: true,
+        lt: false,
+    })]
     // case 2
-    #[case(
-        ComparisonCase{
-            tc1: Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
-            tc2: Timecode::with_frames("00:59:59:24", rates::F24).unwrap(),
-            eq: true,
-            lt: false,
-        }
-    )]
+    #[case(ComparisonCase{
+        tc1: Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
+        tc2: Timecode::with_frames("00:59:59:24", rates::F24).unwrap(),
+        eq: true,
+        lt: false,
+    })]
     // case 3
-    #[case(
-        ComparisonCase{
-            tc1: Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
-            tc2: Timecode::with_frames("02:00:00:00", rates::F24).unwrap(),
-            eq: false,
-            lt: true,
-        }
-    )]
+    #[case(ComparisonCase{
+        tc1: Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
+        tc2: Timecode::with_frames("02:00:00:00", rates::F24).unwrap(),
+        eq: false,
+        lt: true,
+    })]
     // case 4
-    #[case(
-        ComparisonCase{
-            tc1: Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
-            tc2: Timecode::with_frames("01:00:00:01", rates::F24).unwrap(),
-            eq: false,
-            lt: true,
-        }
-    )]
+    #[case(ComparisonCase{
+        tc1: Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
+        tc2: Timecode::with_frames("01:00:00:01", rates::F24).unwrap(),
+        eq: false,
+        lt: true,
+    })]
     // case 5
-    #[case(
-        ComparisonCase{
-            tc1: Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
-            tc2: Timecode::with_frames("00:59:59:23", rates::F24).unwrap(),
-            eq: false,
-            lt: false,
-        }
-    )]
+    #[case(ComparisonCase{
+        tc1: Timecode::with_frames("01:00:00:00", rates::F24).unwrap(),
+        tc2: Timecode::with_frames("00:59:59:23", rates::F24).unwrap(),
+        eq: false,
+        lt: false,
+    })]
     // 23.98 ---------
     // case 6
-    #[case(
-        ComparisonCase{
-            tc1: Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap(),
-            tc2: Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap(),
-            eq: true,
-            lt: false,
-        }
-    )]
+    #[case(ComparisonCase{
+        tc1: Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap(),
+        tc2: Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap(),
+        eq: true,
+        lt: false,
+    })]
     // case 7
-    #[case(
-        ComparisonCase{
-            tc1: Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap(),
-            tc2: Timecode::with_frames("01:00:00:01", rates::F23_98).unwrap(),
-            eq: false,
-            lt: true,
-        }
-    )]
+    #[case(ComparisonCase{
+        tc1: Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap(),
+        tc2: Timecode::with_frames("01:00:00:01", rates::F23_98).unwrap(),
+        eq: false,
+        lt: true,
+    })]
     // case 8
-    #[case(
-        ComparisonCase{
-            tc1: Timecode::with_frames("00:00:00:00", rates::F23_98).unwrap(),
-            tc2: Timecode::with_frames("02:00:00:01", rates::F23_98).unwrap(),
-            eq: false,
-            lt: true,
-        }
-    )]
+    #[case(ComparisonCase{
+        tc1: Timecode::with_frames("00:00:00:00", rates::F23_98).unwrap(),
+        tc2: Timecode::with_frames("02:00:00:01", rates::F23_98).unwrap(),
+        eq: false,
+        lt: true,
+    })]
     // Mixed fps ------
     // case 9
-    #[case(
-        ComparisonCase{
-            tc1: Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap(),
-            tc2: Timecode::with_frames("01:00:00:01", rates::F24).unwrap(),
-            eq: false,
-            lt: false,
-        }
-    )]
+    #[case(ComparisonCase{
+        tc1: Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap(),
+        tc2: Timecode::with_frames("01:00:00:01", rates::F24).unwrap(),
+        eq: false,
+        lt: false,
+    })]
     fn test_comparison(#[case] case: ComparisonCase) {
         // eq
         assert_eq!(
@@ -195,20 +177,18 @@ mod test {
 
     /// tests that timecode comparisons lead to expected sorting behavior.
     #[rstest]
-    #[case(
-        SortCase {
-            tcs_in: vec![
-                Timecode::with_frames("00:01:00:00", rates::F23_98).unwrap(),
-                Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap(),
-                Timecode::with_frames("00:00:10:00", rates::F23_98).unwrap(),
-            ],
-            tcs_out: vec![
-                Timecode::with_frames("00:00:10:00", rates::F23_98).unwrap(),
-                Timecode::with_frames("00:01:00:00", rates::F23_98).unwrap(),
-                Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap(),
-            ],
-        }
-    )]
+    #[case(SortCase {
+        tcs_in: vec![
+            Timecode::with_frames("00:01:00:00", rates::F23_98).unwrap(),
+            Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap(),
+            Timecode::with_frames("00:00:10:00", rates::F23_98).unwrap(),
+        ],
+        tcs_out: vec![
+            Timecode::with_frames("00:00:10:00", rates::F23_98).unwrap(),
+            Timecode::with_frames("00:01:00:00", rates::F23_98).unwrap(),
+            Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap(),
+        ],
+    })]
     fn test_sort_timecodes(#[case] mut case: SortCase) {
         case.tcs_in.sort();
 
@@ -242,7 +222,11 @@ mod test {
         let tc2 = Timecode::with_frames(case.tc2, rates::F24)?;
         let expected = Timecode::with_frames(case.expected, rates::F24)?;
 
-        assert_eq!(tc1 + tc2, expected, "{} + {} == {}", tc1, tc2, expected);
+        assert_eq!(expected, tc1 + tc2, "{} + {} == {}", tc1, tc2, expected);
+
+        let mut tc = tc1;
+        tc += tc2;
+        assert_eq!(expected, tc, "{} += {} == {}", tc1, tc2, expected);
 
         Ok(())
     }
@@ -268,7 +252,11 @@ mod test {
         let tc2 = Timecode::with_frames(case.tc2, rates::F24)?;
         let expected = Timecode::with_frames(case.expected, rates::F24)?;
 
-        assert_eq!(tc1 - tc2, expected, "{} - {} == {}", tc1, tc2, expected);
+        assert_eq!(expected, tc1 - tc2, "{} - {} == {}", tc1, tc2, expected);
+
+        let mut tc = tc1;
+        tc -= tc2;
+        assert_eq!(expected, tc, "{} -= {} == {}", tc1, tc2, expected);
 
         Ok(())
     }
@@ -342,20 +330,32 @@ mod test {
         <Timecode as Mul<T>>::Output: PartialEq<<Timecode as Mul<T>>::Output>
             // It must also be comparable to the output of multiplying itself by timecode.
             + PartialEq<<T as Mul<Timecode>>::Output>
+            // It must be comparable to Timecode
+            + PartialEq<Timecode>
             + Debug
             + Display
             + Copy,
         // The output of multiplying T by our timecode must implement Debug.
         <T as Mul<Timecode>>::Output: Debug,
+        // T must be a timecode multiply + assign value
+        Timecode: MulAssign<T>,
     {
         let result = case.tc * case.multiplier;
-        assert_eq!(case.expected, result, " {} x {}", case.tc, case.multiplier);
+        assert_eq!(case.expected, result, "{} x {}", case.tc, case.multiplier);
 
         let result = case.multiplier * case.tc;
         assert_eq!(
             case.expected, result,
             "{} x {} (flipped)",
             case.multiplier, case.tc
+        );
+
+        let mut tc = case.tc;
+        tc *= case.multiplier;
+        assert_eq!(
+            case.expected, tc,
+            "{} x {} multiply assign",
+            case.tc, case.multiplier
         );
     }
 
@@ -468,14 +468,16 @@ mod test {
         T: Display + Debug + Copy,
         // T must be a timecode divisor.
         Timecode: Div<T>,
+        Timecode: DivAssign<T>,
         // T must be a timecode modulo.
         Timecode: Rem<T>,
+        Timecode: RemAssign<T>,
         // The output of dividing a timecode by T must be comparable to itself.
         <Timecode as Div<T>>::Output:
-            PartialEq<<Timecode as Div<T>>::Output> + Debug + Display + Copy,
+            PartialEq<<Timecode as Div<T>>::Output> + PartialEq<Timecode> + Debug + Display + Copy,
         // The output of moduloing a timecode by t must be comparable to itself.
         <Timecode as Rem<T>>::Output:
-            PartialEq<<Timecode as Rem<T>>::Output> + Debug + Display + Copy,
+            PartialEq<<Timecode as Rem<T>>::Output> + PartialEq<Timecode> + Debug + Display + Copy,
     {
         let result_div = case.tc / case.divisor;
         assert_eq!(
@@ -484,10 +486,26 @@ mod test {
             case.tc, case.divisor, case.expected_div
         );
 
+        let mut tc = case.tc;
+        tc /= case.divisor;
+        assert_eq!(
+            case.expected_div, tc,
+            " {} /= {:?} = {}",
+            case.tc, case.divisor, case.expected_div
+        );
+
         let result_rem = case.tc % case.divisor;
         assert_eq!(
             case.expected_rem, result_rem,
             " {} % {:?} = {}",
+            case.tc, case.divisor, case.expected_rem
+        );
+
+        tc = case.tc;
+        tc %= case.divisor;
+        assert_eq!(
+            case.expected_rem, tc,
+            " {} %= {:?} = {}",
             case.tc, case.divisor, case.expected_rem
         );
     }
