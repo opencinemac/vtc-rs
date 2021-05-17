@@ -121,7 +121,7 @@ mod test {
     /// Fields wich are not curently in use have been commented out.
     #[derive(Deserialize)]
     struct Event {
-        // duration_frames: i64,
+        duration_frames: i64,
         source_in: TimecodeInfo,
         source_out: TimecodeInfo,
         record_in: TimecodeInfo,
@@ -266,5 +266,57 @@ mod test {
             source,
             source_type,
         );
+    }
+
+    /// Tests that we can keep accurate running totals of a sequences events.
+    #[rstest]
+    fn test_sequence_totals(test_sequence: Sequence) {
+        // We're goingg to keep a running total of the expected out point here.
+        let mut current_out = parse_timecode(&test_sequence.start_time);
+
+        // We're going to store the total frames from adding up all our events here.
+        let mut current_total = Timecode::with_frames(0, current_out.rate()).unwrap();
+
+        for event in test_sequence.events.iter() {
+            let rec_in = parse_timecode(&event.record_in);
+            let rec_out = parse_timecode(&event.record_out);
+            let src_in = parse_timecode(&event.source_in);
+            let src_out = parse_timecode(&event.source_out);
+
+            let rec_duration = rec_out - rec_in;
+            let src_duration: Timecode = src_out - src_in;
+
+            assert_eq!(event.duration_frames, rec_duration.frames(), "rec duration");
+            assert_eq!(event.duration_frames, src_duration.frames(), "src duration");
+
+            current_out += src_duration;
+
+            assert_eq!(
+                event.record_out.timecode,
+                current_out.timecode(),
+                "rec out total expected"
+            );
+
+            current_total += rec_duration;
+        }
+
+        assert_eq!(
+            test_sequence.total_duration_frames,
+            current_total.frames(),
+            "total frames"
+        )
+    }
+
+    fn parse_timecode(info: &TimecodeInfo) -> Timecode {
+        let ntsc = if !info.ntsc {
+            Ntsc::None
+        } else if info.drop_frame {
+            Ntsc::DropFrame
+        } else {
+            Ntsc::NonDropFrame
+        };
+
+        let rate = Framerate::with_timebase(info.timebase, ntsc).unwrap();
+        Timecode::with_frames(&info.timecode, rate).unwrap()
     }
 }

@@ -8,9 +8,12 @@ use crate::{
     timecode_parse::round_seconds_to_frame,
     Framerate, FramesSource, Ntsc, SecondsSource, TimecodeParseError,
 };
-use std::cmp::Ordering;
-use std::fmt::{Display, Formatter};
-use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
+use std::ops::{Add, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub};
+use std::{cmp::Ordering, ops::AddAssign};
+use std::{
+    fmt::{Display, Formatter},
+    ops::SubAssign,
+};
 
 /// Holds the individual sections of a timecode for formatting / manipulation.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -37,12 +40,12 @@ pub struct Timecode {
 }
 
 impl Timecode {
-    /// returns the Framerate of the timecode.
+    /// Returns the Framerate of the timecode.
     pub fn rate(&self) -> Framerate {
         self.rate
     }
 
-    /// returns the rational representation of the real-world seconds that would have elapsed
+    /// Returns the rational representation of the real-world seconds that would have elapsed
     /// between 00:00:00:00 and this timecode.
     pub fn seconds(&self) -> Rational64 {
         self.seconds
@@ -82,7 +85,7 @@ impl Timecode {
         }
     }
 
-    /// returns the the formatted SMPTE timecode: (ex: 01:00:00:00).
+    /// Returns the the formatted SMPTE timecode: (ex: 01:00:00:00).
     pub fn timecode(&self) -> String {
         let sections = self.sections();
 
@@ -100,7 +103,7 @@ impl Timecode {
         )
     }
 
-    /// returns the number of frames that would have elapsed between 00:00:00:00 and this timecode.
+    /// Returns the number of frames that would have elapsed between 00:00:00:00 and this timecode.
     pub fn frames(&self) -> i64 {
         let rational_frames = self.seconds * self.rate.playback();
         if rational_frames.denom() == &1 {
@@ -110,7 +113,7 @@ impl Timecode {
         rational_frames.round().to_integer()
     }
 
-    /// returns the true runtime of the timecode in HH:MM:SS.FFFFFFFFF format.
+    /// Returns the true runtime of the timecode in HH:MM:SS.FFFFFFFFF format.
     pub fn runtime(&self, precision: usize) -> String {
         // We use the absolute seconds here so floor behaves as expected regardless of whether
         // this value is negative.
@@ -267,11 +270,38 @@ impl Add for Timecode {
     }
 }
 
+impl<T> AddAssign<T> for Timecode
+where
+    Timecode: Add<T, Output = Timecode>,
+{
+    fn add_assign(&mut self, rhs: T) {
+        *self = *self + rhs
+    }
+}
+
 impl Sub for Timecode {
     type Output = Timecode;
 
     fn sub(self, rhs: Self) -> Self::Output {
         let new_seconds = self.seconds - rhs.seconds;
+        Timecode::with_rational_seconds(new_seconds, self.rate)
+    }
+}
+
+impl<T> SubAssign<T> for Timecode
+where
+    Timecode: Sub<T, Output = Timecode>,
+{
+    fn sub_assign(&mut self, rhs: T) {
+        *self = *self - rhs
+    }
+}
+
+impl Mul<Rational64> for Timecode {
+    type Output = Timecode;
+
+    fn mul(self, rhs: Rational64) -> Self::Output {
+        let new_seconds = self.seconds * rhs;
         Timecode::with_rational_seconds(new_seconds, self.rate)
     }
 }
@@ -309,6 +339,15 @@ impl Mul<Timecode> for i64 {
 
     fn mul(self, rhs: Timecode) -> Self::Output {
         rhs * self
+    }
+}
+
+impl<T> MulAssign<T> for Timecode
+where
+    Timecode: Mul<T, Output = Timecode>,
+{
+    fn mul_assign(&mut self, rhs: T) {
+        *self = *self * rhs
     }
 }
 
@@ -368,6 +407,24 @@ impl Rem<i64> for Timecode {
     fn rem(self, rhs: i64) -> Self::Output {
         let frames_remainder = self.frames() % rhs;
         Timecode::with_i64_frames(frames_remainder, self.rate)
+    }
+}
+
+impl<T> DivAssign<T> for Timecode
+where
+    Timecode: Div<T, Output = Timecode>,
+{
+    fn div_assign(&mut self, rhs: T) {
+        *self = *self / rhs
+    }
+}
+
+impl<T> RemAssign<T> for Timecode
+where
+    Timecode: Rem<T, Output = Timecode>,
+{
+    fn rem_assign(&mut self, rhs: T) {
+        *self = *self % rhs
     }
 }
 
