@@ -4,6 +4,9 @@ use num::ToPrimitive;
 use std::fmt;
 use std::fmt::Formatter;
 
+#[allow(unused)] // for docs links
+use num::Rational64;
+
 /// The type of NTSC standard a [Framerate] adheres to.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Ntsc {
@@ -231,6 +234,12 @@ impl Framerate {
 
     For more information on why drop-frame timebases must be a multiple of 30000/1001, see
     [this blogpost](https://www.davidheidelberger.com/2010/06/10/drop-frame-timecode/).
+
+    # note
+
+    Using a float with [Ntsc::None] will result in an error. Floats are not precise, and without
+    the ntsc flag, vtc cannot know exactly what framerate you want. A [Rational64] value must
+    be used.
     */
     pub fn with_playback<T: FramerateSource>(rate: T, ntsc: Ntsc) -> FramerateParseResult {
         let rational = rate.to_playback(ntsc, false)?;
@@ -382,7 +391,7 @@ pub mod rates {
     use crate::Framerate;
     use crate::Ntsc;
 
-    /// 23.98 NTSC.
+    /// 23.98 NTSC Non-drop-frame.
     pub const F23_98: Framerate = Framerate {
         value: num::Rational64::new_raw(24000, 1001),
         ntsc: Ntsc::NonDropFrame,

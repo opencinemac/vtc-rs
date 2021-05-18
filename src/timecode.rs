@@ -188,17 +188,30 @@ impl Timecode {
         self.rate
     }
 
-    /// Returns the rational representation of the real-world seconds that would have elapsed
-    /// between 00:00:00:00 and this timecode.
-    ///
-    /// # Examples
-    ///
-    /// ```rust
-    /// # use vtc::{Timecode, rates};
-    /// use num::Rational64;
-    /// let tc = Timecode::with_seconds(3600.0, rates::F24).unwrap();
-    /// assert_eq!(Rational64::new(3600, 1), tc.seconds())
-    /// ```
+    /**
+    Returns the rational representation of the real-world seconds that would have elapsed
+    between 00:00:00:00 and this timecode.
+
+    # What it is
+
+    The number of real-world seconds that have elapsed between 00:00:00:00 and the timecode value.
+    With NTSC timecode, the timecode drifts from the real-world elapsed time.
+
+    # Where you see it
+
+    - Anywhere real-world time needs to be calculated.
+    - In code that needs to do lossless calculations of playback time not rely on frame count, like
+      adding two timecodes together with erent framerates.
+
+    # Examples
+
+    ```rust
+    # use vtc::{Timecode, rates};
+    use num::Rational64;
+    let tc = Timecode::with_seconds(3600.0, rates::F24).unwrap();
+    assert_eq!(Rational64::new(3600, 1), tc.seconds())
+    ```
+    */
     pub fn seconds(&self) -> Rational64 {
         self.seconds
     }
@@ -252,15 +265,32 @@ impl Timecode {
         }
     }
 
-    /// Returns the the formatted SMPTE timecode: (ex: 01:00:00:00).
-    ///
-    /// # Examples
-    ///
-    /// ```rust
-    /// # use vtc::{Timecode, rates};
-    /// let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
-    /// assert_eq!("01:00:00:00", tc.timecode())
-    /// ```
+    /**
+    Returns the the formatted SMPTE timecode: (ex: 01:00:00:00).
+
+    # What it is
+
+    Timecode is used as a human-readable way to represent the id of a given frame. It is formatted
+    to give a rough sense of where to find a frame: {HOURS}:{MINUTES}:{SECONDS}:{FRAME}. For more on
+    timecode, see Frame.io's
+    [excellent post](https://blog.frame.io/2017/07/17/timecode-and-frame-rates/) on the subject.
+
+    # Where you see it
+
+    Timecode is ubiquitous in video editing, a small sample of places you might see timecode:
+
+    - Source and Playback monitors in your favorite NLE.
+    - Burned into the footage for dailies.
+    - Cut lists like an EDL.
+
+    # Examples
+
+    ```rust
+    # use vtc::{Timecode, rates};
+    let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
+    assert_eq!("01:00:00:00", tc.timecode())
+    ```
+    */
     pub fn timecode(&self) -> String {
         let sections = self.sections();
 
@@ -278,15 +308,40 @@ impl Timecode {
         )
     }
 
-    /// Returns the number of frames that would have elapsed between 00:00:00:00 and this timecode.
-    ///
-    /// # Examples
-    ///
-    /// ```rust
-    /// # use vtc::{Timecode, rates};
-    /// let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
-    /// assert_eq!(86400, tc.frames())
-    /// ```
+    /**
+    Returns the number of frames that would have elapsed between 00:00:00:00 and this timecode.
+
+    # What it is
+
+    Frame number / frames count is the number of a frame if the timecode started at 00:00:00:00 and
+    had been running until the current value. A timecode of '00:00:00:10' has a frame number of 10.
+    A timecode of '01:00:00:00' has a frame number of 86400.
+
+    # Where you see it
+
+    - Frame-sequence files: 'my_vfx_shot.0086400.exr'
+    - FCP7XML cut lists:
+
+        ```xml
+        <timecode>
+            <rate>
+                <timebase>24</timebase>
+                <ntsc>TRUE</ntsc>
+            </rate>
+            <string>01:00:00:00</string>
+            <frame>86400</frame>  <!-- <====THIS LINE-->
+            <displayformat>NDF</displayformat>
+        </timecode>
+        ```
+
+    # Examples
+
+    ```rust
+    # use vtc::{Timecode, rates};
+    let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
+    assert_eq!(86400, tc.frames())
+    ```
+    */
     pub fn frames(&self) -> i64 {
         let rational_frames = self.seconds * self.rate.playback();
         if rational_frames.denom() == &1 {
@@ -296,27 +351,43 @@ impl Timecode {
         rational_frames.round().to_integer()
     }
 
-    /// Returns the true, real-world runtime of the timecode in HH:MM:SS.FFFFFFFFF format.
-    ///
-    /// # Arguments
-    ///
-    /// * `precision` - How many places to print after the decimal. Tailing 0's will be truncated
-    ///   rregardless of setting.
-    ///
-    /// # Examples
-    ///
-    /// ```rust
-    /// # use vtc::{Timecode, rates};
-    /// let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
-    /// assert_eq!("01:00:03.6", tc.runtime(9))
-    /// ```
-    ///
-    /// ## Note:
-    ///
-    /// Runtime and timecode will differ with NTSC framerates. NTSC reports timecode *as-if* it
-    /// were running at a whole-frame rate (so 23.98 is reported as if it were running at 24.)
-    ///
-    /// [Timecode::runtime] reports the true, real-world time elapsed since 00:00:00:00.
+    /**
+    Returns the true, real-world runtime of the timecode in HH:MM:SS.FFFFFFFFF format.
+
+    # Arguments
+
+    * `precision` - How many places to print after the decimal. Tailing 0's will be truncated
+      regardless of setting.
+
+    # What it is
+
+    The formatted version of seconds. It looks like timecode, but with a decimal seconds value
+    instead of a frame number place.
+
+    # Where you see it
+
+    - Anywhere real-world time is used.
+    - FFMPEG commands:
+
+        ```shell
+        ffmpeg -ss 00:00:30.5 -i input.mov -t 00:00:10.25 output.mp4
+        ```
+
+    # Examples
+
+    ```rust
+    # use vtc::{Timecode, rates};
+    let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
+    assert_eq!("01:00:03.6", tc.runtime(9))
+    ```
+
+    ## note:
+
+    Runtime and timecode will differ with NTSC framerates. NTSC reports timecode *as-if* it
+    were running at a whole-frame rate (so 23.98 is reported as if it were running at 24.)
+
+    [Timecode::runtime] reports the true, real-world time elapsed since 00:00:00:00.
+    */
     pub fn runtime(&self, precision: usize) -> String {
         // We use the absolute seconds here so floor behaves as expected regardless of whether
         // this value is negative.
@@ -347,30 +418,46 @@ impl Timecode {
         )
     }
 
-    /// Returns the number of elapsed ticks this timecode represents in Adobe Premiere Pro.
-    ///
-    /// Premiere uses ticks internally to track elapsed time. A second contains 254016000000 ticks,
-    /// regardless of framerate.
-    ///
-    /// These ticks are present in Premiere FCP7XML cutlists, and can sometimes be used for more
-    /// precise calculations during respeeds.
-    ///
-    /// Ticks are also used for scripting in Premiere Panels.
-    ///
-    /// # Examples
-    ///
-    /// ```rust
-    /// # use vtc::{Timecode, rates};
-    /// use num::Rational64;
-    /// let tc = Timecode::with_seconds(1.0, rates::F24).unwrap();
-    /// assert_eq!(254016000000, tc.premiere_ticks())
-    /// ```
-    ///
-    /// ```rust
-    /// # use vtc::{Timecode, rates};
-    /// let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
-    /// assert_eq!(915372057600000, tc.premiere_ticks())
-    /// ```
+    /**
+    Returns the number of elapsed ticks this timecode represents in Adobe Premiere Pro.
+
+    # What it is
+
+    Internally, Adobe Premiere Pro uses ticks to divide up a second, and keep track of how far into
+    that second we are. There are 254016000000 ticks in a second, regardless of framerate in
+    Premiere.
+
+    # Where you see it
+
+    - Premiere Pro Panel functions and scripts
+    - FCP7XML cutlists generated from Premiere:
+
+        ```xml
+        <clipitem id="clipitem-1">
+            ...
+            <in>158</in>
+            <out>1102</out>
+            <pproTicksIn>1673944272000</pproTicksIn>
+            <pproTicksOut>11675231568000</pproTicksOut>
+            ...
+        </clipitem>
+        ```
+
+    # Examples
+
+    ```rust
+    # use vtc::{Timecode, rates};
+    use num::Rational64;
+    let tc = Timecode::with_seconds(1.0, rates::F24).unwrap();
+    assert_eq!(254016000000, tc.premiere_ticks())
+    ```
+
+    ```rust
+    # use vtc::{Timecode, rates};
+    let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
+    assert_eq!(915372057600000, tc.premiere_ticks())
+    ```
+    */
     pub fn premiere_ticks(&self) -> i64 {
         // We need to jump up to a i128-based rat for a second to avoid an overflow
         // here.
@@ -384,18 +471,35 @@ impl Timecode {
         seconds_int as i64
     }
 
-    /// Returns the number of feet and frames this timecode represents if it were shot on 35mm
-    /// 4-perf film (16 frames per foot). ex: '5400+13'.
-    ///
-    /// Feet and frames is most commonly used as a reference in the sound mixing world.
-    ///
-    /// # Examples
-    ///
-    /// ```rust
-    /// # use vtc::{Timecode, rates};
-    /// let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
-    /// assert_eq!("5400+00", tc.feet_and_frames())
-    /// ```
+    /**
+    Returns the number of feet and frames this timecode represents if it were shot on 35mm
+    4-perf film (16 frames per foot). ex: '5400+13'.
+
+    # What it is
+
+    On physical film, each foot contains a certain number of frames. For 35mm, 4-perf film (the most
+    common type on Hollywood movies), this number is 16 frames per foot. Feet-And-Frames was often
+    used in place of Keycode to quickly reference a frame in the edit.
+
+    # Where you see it
+
+    For the most part, feet + frames has died out as a reference, because digital media is not
+    measured in feet. The most common place it is still used is Studio Sound Departments. Many Sound
+    Mixers and Designers intuitively think in feet + frames, and it is often burned into the
+    reference picture for them.
+
+    - Telecine.
+    - Sound turnover reference picture.
+    - Sound turnover change lists.
+
+    # Examples
+
+    ```rust
+    # use vtc::{Timecode, rates};
+    let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
+    assert_eq!("5400+00", tc.feet_and_frames())
+    ```
+    */
     pub fn feet_and_frames(&self) -> String {
         let result = div_mod_floor(abs(self.frames()), FRAMES_PER_FOOT);
         let feet = result.0;
