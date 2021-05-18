@@ -55,7 +55,7 @@ There are a number of opeations we can apply to [Timecode] values.
 ## Compare Timecodes
 
 ```rust
-# use vtc::{Timecode, rates};
+use vtc::{Timecode, rates};
 let tc1 = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
 let tc2 = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
 let tc3 = Timecode::with_frames("00:30:00:00", rates::F23_98).unwrap();
