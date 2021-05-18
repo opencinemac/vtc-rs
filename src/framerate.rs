@@ -24,9 +24,9 @@ impl Ntsc {
     ///
     /// ```rust
     /// use vtc::Ntsc;
-    /// println!("None: {}", vtc::Ntsc::None.is_ntsc());
-    /// println!("NonDropFrame: {}", vtc::Ntsc::NonDropFrame.is_ntsc());
-    /// println!("DropFrame: {}", vtc::Ntsc::DropFrame.is_ntsc());
+    /// assert!(!vtc::Ntsc::None.is_ntsc());
+    /// assert!(vtc::Ntsc::NonDropFrame.is_ntsc());
+    /// assert!(vtc::Ntsc::DropFrame.is_ntsc());
     /// ```
     pub fn is_ntsc(self) -> bool {
         self != Self::None

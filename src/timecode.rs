@@ -15,7 +15,9 @@ use std::{
     ops::SubAssign,
 };
 
-/// Holds the individual sections of a timecode for formatting / manipulation.
+/**
+Holds the individual sections of a timecode for formatting / manipulation.
+*/
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TimecodeSections {
     /// Whether the timecode is a negative value.
@@ -30,9 +32,142 @@ pub struct TimecodeSections {
     pub frames: i64,
 }
 
-/// The [Result] type returned by [Timecode::with_seconds] and [Timecode::with_frames].
+/// The [Result] type returned by [Timecode::with_seconds], [Timecode::with_frames], and
+/// [Timecode::with_premiere_ticks].
 pub type TimecodeParseResult = Result<Timecode, TimecodeParseError>;
 
+/**
+[Timecode] represents the frame at a particular time in a video.
+
+New [Timecode] values are created with the [Timecode::with_seconds], [Timecode::with_frames],
+and [Timecode::with_premiere_ticks] methods.
+
+[Timecode] is a [Copy] value.
+
+# Examples
+
+For timecode attribute examples, see the individual methods of the [Timecode] type, such as
+[Timecode::timecode]. For examples of how to construct a new timecode, see the examples on the
+contructor methods like [Timecode::with_frames].
+
+There are a number of opeations we can apply to [Timecode] values.
+
+## Compare Timecodes
+
+```rust
+# use vtc::{Timecode, rates};
+let tc1 = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
+let tc2 = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
+let tc3 = Timecode::with_frames("00:30:00:00", rates::F23_98).unwrap();
+let tc4 = Timecode::with_frames("01:30:00:00", rates::F23_98).unwrap();
+
+assert!(tc1 == tc2);
+assert!(tc1 > tc3);
+assert!(tc1 < tc4);
+```
+
+## Sort_Timecodes
+
+```rust
+# use vtc::{Timecode, rates};
+let tc1 = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
+let tc2 = Timecode::with_frames("01:30:00:00", rates::F23_98).unwrap();
+let tc3 = Timecode::with_frames("00:30:00:00", rates::F23_98).unwrap();
+
+let mut timecodes = vec![tc1, tc2, tc3];
+
+timecodes.sort();
+
+assert_eq!(timecodes[0], tc3);
+assert_eq!(timecodes[1], tc1);
+assert_eq!(timecodes[2], tc2);
+```
+
+## Add Timecodes
+
+```rust
+# use vtc::{Timecode, rates};
+let tc1 = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
+let tc2 = Timecode::with_frames("00:30:00:00", rates::F23_98).unwrap();
+
+let mut result = tc1 + tc2;
+
+assert_eq!("01:30:00:00", result.timecode());
+
+result += tc1;
+
+assert_eq!("02:30:00:00", result.timecode());
+```
+
+## Subtract Timecodes
+
+```rust
+# use vtc::{Timecode, rates};
+let tc1 = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
+let tc2 = Timecode::with_frames("00:30:00:00", rates::F23_98).unwrap();
+
+let mut result = tc1 - tc2;
+
+assert_eq!("00:30:00:00", result.timecode());
+
+result -= tc1;
+
+assert_eq!("-00:30:00:00", result.timecode());
+```
+
+## Multiply Timecodes
+
+```rust
+# use vtc::{Timecode, rates};
+let tc1 = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
+
+let mut result = tc1 * 1.5;
+
+assert_eq!("01:30:00:00", result.timecode());
+
+result *= 2;
+
+assert_eq!("03:00:00:00", result.timecode());
+```
+
+## Divide Timecodes
+
+Dividing always acts as if floor devision had been done on the frame count of the [Timecode].
+
+```rust
+# use vtc::{Timecode, rates};
+let tc1 = Timecode::with_frames("01:00:00:01", rates::F23_98).unwrap();
+
+let result = tc1 / 1.5;
+
+assert_eq!("00:40:00:00", result.timecode());
+```
+
+This allows divisions and remainders to give correct, complementary values:
+
+```rust
+# use vtc::{Timecode, rates};
+# let tc1 = Timecode::with_frames("01:00:00:01", rates::F23_98).unwrap();
+let result = tc1 % 1.5;
+
+assert_eq!("00:00:00:01", result.timecode());
+```
+
+[DivAssign] and [RemAssign] are also implemented for [Timecode]:
+
+```rust
+# use vtc::{Timecode, rates};
+let mut tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
+
+tc /= 2;
+
+assert_eq!("00:30:00:00", tc.timecode());
+
+tc %= 1.65;
+assert_eq!("00:00:00:01", tc.timecode())
+```
+
+*/
 #[derive(Clone, Copy, Debug)]
 pub struct Timecode {
     seconds: Rational64,
@@ -41,17 +176,49 @@ pub struct Timecode {
 
 impl Timecode {
     /// Returns the Framerate of the timecode.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use vtc::{Timecode, rates};
+    /// let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
+    /// assert_eq!(rates::F23_98, tc.rate())
+    /// ```
     pub fn rate(&self) -> Framerate {
         self.rate
     }
 
     /// Returns the rational representation of the real-world seconds that would have elapsed
     /// between 00:00:00:00 and this timecode.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use vtc::{Timecode, rates};
+    /// use num::Rational64;
+    /// let tc = Timecode::with_seconds(3600.0, rates::F24).unwrap();
+    /// assert_eq!(Rational64::new(3600, 1), tc.seconds())
+    /// ```
     pub fn seconds(&self) -> Rational64 {
         self.seconds
     }
 
     /// The individual sections of a timecode string as i64 values.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use vtc::{Timecode, rates, TimecodeSections};
+    /// let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
+    /// let expected = TimecodeSections{
+    ///     negative: false,
+    ///     hours: 1,
+    ///     minutes: 0,
+    ///     seconds: 0,
+    ///     frames: 0,
+    /// };
+    /// assert_eq!(expected, tc.sections())
+    /// ```
     pub fn sections(&self) -> TimecodeSections {
         // We use the absolute frame count here so floor behaves as expected regardless of whether
         // this value is negative.
@@ -86,6 +253,14 @@ impl Timecode {
     }
 
     /// Returns the the formatted SMPTE timecode: (ex: 01:00:00:00).
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use vtc::{Timecode, rates};
+    /// let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
+    /// assert_eq!("01:00:00:00", tc.timecode())
+    /// ```
     pub fn timecode(&self) -> String {
         let sections = self.sections();
 
@@ -104,6 +279,14 @@ impl Timecode {
     }
 
     /// Returns the number of frames that would have elapsed between 00:00:00:00 and this timecode.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use vtc::{Timecode, rates};
+    /// let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
+    /// assert_eq!(86400, tc.frames())
+    /// ```
     pub fn frames(&self) -> i64 {
         let rational_frames = self.seconds * self.rate.playback();
         if rational_frames.denom() == &1 {
@@ -113,7 +296,27 @@ impl Timecode {
         rational_frames.round().to_integer()
     }
 
-    /// Returns the true runtime of the timecode in HH:MM:SS.FFFFFFFFF format.
+    /// Returns the true, real-world runtime of the timecode in HH:MM:SS.FFFFFFFFF format.
+    ///
+    /// # Arguments
+    ///
+    /// * `precision` - How many places to print after the decimal. Tailing 0's will be truncated
+    ///   rregardless of setting.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use vtc::{Timecode, rates};
+    /// let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
+    /// assert_eq!("01:00:03.6", tc.runtime(9))
+    /// ```
+    ///
+    /// ## Note:
+    ///
+    /// Runtime and timecode will differ with NTSC framerates. NTSC reports timecode *as-if* it
+    /// were running at a whole-frame rate (so 23.98 is reported as if it were running at 24.)
+    ///
+    /// [Timecode::runtime] reports the true, real-world time elapsed since 00:00:00:00.
     pub fn runtime(&self, precision: usize) -> String {
         // We use the absolute seconds here so floor behaves as expected regardless of whether
         // this value is negative.
@@ -153,6 +356,21 @@ impl Timecode {
     /// precise calculations during respeeds.
     ///
     /// Ticks are also used for scripting in Premiere Panels.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use vtc::{Timecode, rates};
+    /// use num::Rational64;
+    /// let tc = Timecode::with_seconds(1.0, rates::F24).unwrap();
+    /// assert_eq!(254016000000, tc.premiere_ticks())
+    /// ```
+    ///
+    /// ```rust
+    /// # use vtc::{Timecode, rates};
+    /// let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
+    /// assert_eq!(915372057600000, tc.premiere_ticks())
+    /// ```
     pub fn premiere_ticks(&self) -> i64 {
         // We need to jump up to a i128-based rat for a second to avoid an overflow
         // here.
@@ -170,6 +388,14 @@ impl Timecode {
     /// 4-perf film (16 frames per foot). ex: '5400+13'.
     ///
     /// Feet and frames is most commonly used as a reference in the sound mixing world.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use vtc::{Timecode, rates};
+    /// let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
+    /// assert_eq!("5400+00", tc.feet_and_frames())
+    /// ```
     pub fn feet_and_frames(&self) -> String {
         let result = div_mod_floor(abs(self.frames()), FRAMES_PER_FOOT);
         let feet = result.0;
@@ -182,16 +408,78 @@ impl Timecode {
 
     /// Returns a [Timecode] with the same number of frames running at a different
     /// [Framerate].
+    ///
+    /// # Arguments
+    ///
+    /// * `rate` - The new framerate to apply to the frrame count..
+    ///
+    /// ```rust
+    /// # use vtc::{Timecode, rates};
+    /// let tc = Timecode::with_frames("01:00:00:00", rates::F24).unwrap();
+    /// let rebased = tc.rebase(rates::F48);
+    /// assert_eq!("00:30:00:00", rebased.timecode())
+    /// ```
     pub fn rebase(&self, rate: Framerate) -> Self {
         Timecode::with_i64_frames(self.frames(), rate)
     }
 
     /// Returns the absolute value of the [Timecode] value.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use vtc::{Timecode, rates};
+    /// use num::Rational64;
+    /// let tc = Timecode::with_frames("-01:00:00:00", rates::F23_98).unwrap();
+    /// assert_eq!("01:00:00:00", tc.abs().timecode())
+    /// ```
+    ///
+    /// ```rust
+    /// # use vtc::{Timecode, rates};
+    /// let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
+    /// assert_eq!("01:00:00:00", tc.abs().timecode())
+    /// ```
     pub fn abs(&self) -> Self {
         Timecode::with_rational_seconds(abs(self.seconds), self.rate)
     }
 
     /// Returns a new [Timecode] with a [Timecode::frames] return value equal to the frames arg.
+    ///
+    /// [Timecode::with_frames] takes many different formats (more than just numeric types) that
+    /// represent the frame count of the timecode.
+    ///
+    /// # Arguments
+    ///
+    /// * `frames` - A value which can be represented as a frame number / frame count.
+    ///
+    /// * `rate` - The Framerate at which the frames are being played back.
+    ///
+    /// # Examples
+    ///
+    /// Create a [Timecode] from a timecode string:
+    ///
+    /// ```rust
+    /// # use vtc::{Timecode, rates};
+    /// let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
+    /// assert_eq!("01:00:00:00", tc.timecode())
+    /// ```
+    ///
+    /// From am integer frame count:
+    ///
+    /// ```rust
+    /// # use vtc::{Timecode, rates};
+    /// let tc = Timecode::with_frames(86400, rates::F23_98).unwrap();
+    /// assert_eq!("01:00:00:00", tc.timecode())
+    /// ```
+    ///
+    /// From a feet+frames string:
+    ///
+    /// ```rust
+    /// # use vtc::{Timecode, rates};
+    /// use num::Rational64;
+    /// let tc = Timecode::with_frames("5400+00", rates::F23_98).unwrap();
+    /// assert_eq!("01:00:00:00", tc.timecode())
+    /// ```
     pub fn with_frames<T: FramesSource>(frames: T, rate: Framerate) -> TimecodeParseResult {
         let frame_count = frames.to_frames(rate)?;
         Ok(Self::with_i64_frames(frame_count, rate))
@@ -199,6 +487,54 @@ impl Timecode {
 
     /// Returns a new [Timecode] with a [Timecode::seconds] return value equal to the seconds arg
     /// (rounded to the nearest frame).
+    ///
+    /// [Timecode::with_seconds] takes many different formats (more than just numeric types) that
+    /// represent the frame count of the timecode.
+    ///
+    /// # Arguments
+    ///
+    /// * `seconds` - A value which can be represented as a number of seconds.
+    ///
+    /// * `rate` - The Framerate which seconds will be rounded to match the nearest frame with.
+    ///
+    /// # Examples
+    ///
+    /// From a float value:
+    ///
+    /// ```rust
+    /// # use vtc::{Timecode, rates};
+    /// let tc = Timecode::with_seconds(3600.0, rates::F24).unwrap();
+    /// assert_eq!("01:00:00:00", tc.timecode())
+    /// ```
+    ///
+    /// From a Rational64 value:
+    ///
+    /// ```rust
+    /// # use vtc::{Timecode, rates};
+    /// use num::Rational64;
+    /// let tc = Timecode::with_seconds(Rational64::new(3600, 1), rates::F24).unwrap();
+    /// assert_eq!("01:00:00:00", tc.timecode())
+    /// ```
+    ///
+    /// From a Rational64 runtime:
+    ///
+    /// ```rust
+    /// # use vtc::{Timecode, rates};
+    /// let tc = Timecode::with_seconds("01:00:00.0", rates::F24).unwrap();
+    /// assert_eq!("01:00:00:00", tc.timecode())
+    /// ```
+    ///
+    /// ## Note:
+    ///
+    /// Remember that seconds are rounded to the nearest whole frame, so what you get back may not
+    /// exactly match what you put in:
+    ///
+    /// ```rust
+    /// # use vtc::{Timecode, rates};
+    /// use num::Rational64;
+    /// let tc = Timecode::with_seconds(Rational64::new(3600, 1), rates::F23_98).unwrap();
+    /// assert_eq!(Rational64::new(43200157, 12000), tc.seconds())
+    /// ```
     pub fn with_seconds<T: SecondsSource>(seconds: T, rate: Framerate) -> TimecodeParseResult {
         let seconds_rat = seconds.to_seconds(rate)?;
         Ok(Self::with_rational_seconds(seconds_rat, rate))
@@ -206,6 +542,21 @@ impl Timecode {
 
     /// Returns a new [Timecode] with a [Timecode::premiere_ticks] return value equal to the ticks
     /// arg.
+    ///
+    /// # Arguments
+    ///
+    /// * `ticks` - A value which can be represented as a number Adobe Premiere Pro ticks.
+    ///
+    /// * `rate` - The Framerate which seconds will be rounded to match the nearest frame with.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use vtc::{Timecode, rates};
+    /// use num::Rational64;
+    /// let tc = Timecode::with_premiere_ticks(915372057600000i64, rates::F23_98).unwrap();
+    /// assert_eq!("01:00:00:00", tc.timecode())
+    /// ```
     pub fn with_premiere_ticks<T: PremiereTicksSource>(
         ticks: T,
         rate: Framerate,

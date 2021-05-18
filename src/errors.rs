@@ -1,9 +1,9 @@
 #[allow(unused)]
 // we need this here for the doc links, but clippy doesnt like that it isn't being used in code.
-use crate::Framerate;
+use crate::{Framerate, Timecode};
 
 /// Returned from [Framerate::with_timebase] and [Framerate::with_playback] when there is an
-/// error parsing a framerate.
+/// error parsing a [Framerate].
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum FramerateParseError {
     /// Returned when a bad NTSC playback or timebase rate is given.
@@ -24,6 +24,8 @@ pub enum FramerateParseError {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+/// Returned from [Timecode::with_frames], [Timecode::with_seconds], and
+/// [Timecode::with_premiere_ticks] when there is an error parsing a [Timecode].
 pub enum TimecodeParseError {
     /// Returned when there is an error doing an internal type conversion to create a new Timecode,
     /// such as a u64 value overflowing a [num::Rational64].
