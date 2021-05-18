@@ -1,10 +1,7 @@
 # Overview
 
 ``vtc-rs`` is inspired by years of scripting workflow solutions in a Hollywood cutting
-room. It is designed to support both quick, one-off scripts and higher level production
-code.
-
-vtc aims to capture all the ways in which timecode is used throughout the industry so
+room. It aims to capture all the ways in which timecode is used throughout the industry so
 users can spend more time on their workflow logic, and less time handling the
 corner-cases of parsing and calculating timecode.
 
