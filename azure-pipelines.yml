@@ -36,4 +36,4 @@ extends:
     buildType: LIBRARY
     publishDocs: false
     publishToCratesIO: true
-    timeoutInMinutes: 10
+    timeoutInMinutes: 15
