@@ -2,7 +2,7 @@ use crate::{Framerate, TimecodeParseError};
 use std::convert::TryFrom;
 use std::fmt::Debug;
 
-/// The result type of [PremiereTicksSource::to_frames].
+/// The result type of [PremiereTicksSource::to_ticks].
 pub type PremiereTicksSourceResult = Result<i64, TimecodeParseError>;
 
 /// Types implementing this trait can be converted into the number of Adobe Premiere Pro Ticks that
@@ -15,6 +15,7 @@ impl<T> PremiereTicksSource for &T
 where
     T: PremiereTicksSource,
 {
+    /// Returns the number of Adobe Premiere Pro ticks this value represents.
     fn to_ticks(&self, rate: Framerate) -> PremiereTicksSourceResult {
         (*self).to_ticks(rate)
     }

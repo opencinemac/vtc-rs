@@ -15,6 +15,7 @@ pub type FramesSourceResult = Result<i64, TimecodeParseError>;
 /// Types implementing this trait can be converted into the number of frames that have elapsed since
 /// a timecode value of 00:00:00:00.
 pub trait FramesSource: Debug {
+    /// Returns the number of frames this value represents.
     fn to_frames(&self, rate: Framerate) -> FramesSourceResult;
 }
 
