@@ -35,4 +35,4 @@ extends:
     language: RUST
     buildType: LIBRARY
     publishDocs: true
-    publishToCargo: true
+    publishToCratesIO: true
