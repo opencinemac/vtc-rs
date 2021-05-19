@@ -1,4 +1,18 @@
 /*!
+<p align="center">
+    <img height=150 class="heightSet" align="center" src="https://raw.githubusercontent.com/opencinemac/vtc-py/master/zdocs/source/_static/logo1.svg"/>
+</p>
+<p align="center">A SMPTE Timecode Library for Rust</p>
+<p align="center">
+    <a href="https://dev.azure.com/peake100/Open%20Cinema%20Collective/_build?definitionId=15"><img src="https://dev.azure.com/peake100/Open%20Cinema%20Collective/_apis/build/status/vtc-rs?repoName=opencinemac%2Fvtc-rs&branchName=dev" alt="click to see build pipeline"></a>
+    <a href="https://dev.azure.com/peake100/Open%20Cinema%20Collective/_build?definitionId=15"><img src="https://img.shields.io/azure-devops/tests/peake100/Open%20Cinema%20Collective/15/dev?compact_message" alt="click to see build pipeline"></a>
+    <a href="https://dev.azure.com/peake100/Open%20Cinema%20Collective/_build?definitionId=15"><img src="https://img.shields.io/azure-devops/coverage/peake100/Open%20Cinema%20Collective/15/dev?compact_message" alt="click to see build pipeline"></a>
+</p>
+<p align="center">
+    <a href="https://pypi.org/project/vtc/"><img src="https://img.shields.io/crates/v/vtc" alt="PyPI version" height="18"></a>
+    <a href="https://docs.rs/vtc"><img src="https://docs.rs/vtc/badge.svg" alt="Documentation"></a>
+</p>
+
 # Overview
 
 ``vtc-rs`` is inspired by years of scripting workflow solutions in a Hollywood cutting
