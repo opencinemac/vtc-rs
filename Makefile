@@ -13,5 +13,4 @@ test:
 
 .PHONY: doc
 doc:
-	-cargo doc --lib
-	open ./target/doc/vtc/index.html
+	-cargo doc --lib --open

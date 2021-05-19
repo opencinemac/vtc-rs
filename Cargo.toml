@@ -2,6 +2,10 @@
 name = "vtc"
 version = "0.1.0"
 edition = "2018"
+license = "MIT"
+repository = "https://github.com/opencinemac/vtc-rs"
+authors = ["Open Cinema Collective", "Billy Peake"]
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

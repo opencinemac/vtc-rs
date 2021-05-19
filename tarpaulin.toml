@@ -1,0 +1,7 @@
+[lib-coverage]
+run-types = ["AllTargets"]
+args = ["-Z", "unstable-options", "--format", "json", "--report-time"]
+
+[report]
+out = ["Html", "Xml"]
+output-dir = "zdevelop/tests/_reports"
