@@ -235,6 +235,6 @@ pub use errors::{FramerateParseError, TimecodeParseError};
 pub use framerate::{rates, Framerate, FramerateParseResult, Ntsc};
 pub use framerate_parse::{FramerateSource, FramerateSourceResult};
 pub use source_frames::{FramesSource, FramesSourceResult};
-pub use source_seconds::{SecondsSource, SecondsSourceResult};
 pub use source_ppro_ticks::{PremiereTicksSource, PremiereTicksSourceResult};
+pub use source_seconds::{SecondsSource, SecondsSourceResult};
 pub use timecode::{Timecode, TimecodeParseResult, TimecodeSections};
