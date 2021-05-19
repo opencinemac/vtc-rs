@@ -9,7 +9,7 @@
     <a href="https://dev.azure.com/peake100/Open%20Cinema%20Collective/_build?definitionId=15"><img src="https://img.shields.io/azure-devops/coverage/peake100/Open%20Cinema%20Collective/15/dev?compact_message" alt="click to see build pipeline"></a>
 </p>
 <p align="center">
-    <a href="https://pypi.org/project/vtc/"><img src="https://img.shields.io/crates/v/vtc" alt="PyPI version" height="18"></a>
+    <a href="https://crates.io/crates/vtc"><img src="https://img.shields.io/crates/v/vtc" alt="PyPI version" height="18"></a>
     <a href="https://docs.rs/vtc"><img src="https://docs.rs/vtc/badge.svg" alt="Documentation"></a>
 </p>
 
