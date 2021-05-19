@@ -15,6 +15,7 @@ pub type SecondsSourceResult = Result<num::Rational64, TimecodeParseError>;
 /// Types implementing this trait can be converted into the number of real-world seconds that
 /// have elapsed since a timecode value of 00:00:00:00.
 pub trait SecondsSource: Debug {
+    /// Returns the number of real-world seconds this value represents.
     fn to_seconds(&self, rate: Framerate) -> SecondsSourceResult;
 }
 
