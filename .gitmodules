@@ -1,0 +1,3 @@
+[submodule "zdevelop/tests/test-timelines"]
+	path = zdevelop/tests/test-timelines
+	url = https://github.com/opencinemac/test-timelines.git

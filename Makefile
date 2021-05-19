@@ -5,6 +5,7 @@ format:
 .PHONY: lint
 lint:
 	-cargo clippy
+	-rustfmt ./src/*.rs --check
 
 .PHONY: test
 test:

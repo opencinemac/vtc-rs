@@ -1,4 +1,3 @@
-/*!
 # Overview
 
 ``vtc-rs`` is inspired by years of scripting workflow solutions in a Hollywood cutting
@@ -124,23 +123,23 @@ assert_eq!(ntsc.timecode(), "02:00:00:00");
 
 ## Features
 
-  - SMPTE Conventions:
+- SMPTE Conventions:
     - [X] NTSC
     - [X] Drop-Frame
     - [ ] Interlaced timecode
-  - Timecode Representations:
+- Timecode Representations:
     - Timecode    | '01:00:00:00'
     - Frames      | 86400
     - Seconds     | 3600.0
     - Runtime     | '01:00:00.0'
     - Rational    | 18018/5
     - Feet+Frames | '5400+00'
-      - [X] 35mm, 4-perf
-      - [ ] 35mm, 3-perf
-      - [ ] 35mm, 2-perf
-      - [ ] 16mm
+        - [X] 35mm, 4-perf
+        - [ ] 35mm, 3-perf
+        - [ ] 35mm, 2-perf
+        - [ ] 16mm
     - Premiere Ticks | 15240960000000
-  - Operations:
+- Operations:
     - Comparisons (==, <, <=, >, >=)
     - Add
     - Subtract
@@ -150,12 +149,12 @@ assert_eq!(ntsc.timecode(), "02:00:00:00");
     - Negative
     - Absolute
     - Rebase (recalculate frame count at new framerate)
-  - Flexible Parsing:
+- Flexible Parsing:
     - Partial timecodes      | '1:12'
     - Partial runtimes       | '1.5'
     - Negative string values | '-1:12', '-3+00'
     - Poorly formatted tc    | '1:13:4'
-  - Built-in consts for common framerates.
+- Built-in consts for common framerates.
 
 ## Goals
 
@@ -167,74 +166,7 @@ assert_eq!(ntsc.timecode(), "02:00:00:00");
 
 - Real-time timecode generators.
 
-# Timecode: A History
+## Attributions
 
-But first: what is timecode?
-
-If you're already familiar with timecode, it's history, and it's flavors, feel free to
-skip this section.
-
-Back in the days of film, a running strip of numbers ran along the edge of the film
-stock to uniquely identify each frame, called
-[keycode](https://en.wikipedia.org/wiki/Keykode)
-
-Keycode was essential to the film editing process. The raw negative of a film is
-irreplaceable: you loose quality each time you make a copy. Editing film is necessarily
-a [destructive process](https://nofilmschool.com/2017/06/editing-on-a-flatbed), and
-often required multiple iterations. It would be just a tad nerve-wracking to take a pair
-of scissors and some glue to the one-of-a-kind film reels straight out of the camera
-on set, then running it over and over through a flatbed.
-
-To avoid potential disaster, editors made their cut of the film using copies of the
-raw negative, called a [work print](https://en.wikipedia.org/wiki/Workprint), allowing
-the editor to work without fear of sinking a project from slicing, dicing, and wearing
-at the film.
-
-When the edit was complete, it was necessary to know *exactly* where the edits had been
-made, so it could be recreated with the raw negative for finishing. A *cut list* would
-be written out, with the exact reels and keycodes for every cut, and would be used to
-make an exact duplicate of the editor's work print with the mint condition raw negative.
-
-In video and digital filmmaking, the same approach is used. Massive RAW files from a
-RED, ARRI, Sony, or other cinema camera are rendered down to more manageable files an
-Editor's machine won't choke on. Once the edit is complete, the raw files are
-re-assembled using a digital cutlist on a powerful machine for finishing out the film.
-
-In film, we referenced *keycode* to know exactly what frame was being displayed on
-screen at any given time. In digital video, we reference the *timecode* of a given
-frame.
-
-For a technical deep-dive into the many flavors of timecode, check out
-[Frame.io's](frame.io)
-[excellent blogpost](https://blog.frame.io/2017/07/17/timecode-and-frame-rates) on
-the subject.
-!*/
-
-mod consts;
-mod errors;
-
-mod framerate;
-mod framerate_parse;
-#[cfg(test)]
-mod framerate_test;
-
-mod timecode;
-mod timecode_parse;
-#[cfg(test)]
-mod timecode_test_ops;
-#[cfg(test)]
-mod timecode_test_parse;
-#[cfg(test)]
-mod timecode_test_table;
-
-mod source_frames;
-mod source_ppro_ticks;
-mod source_seconds;
-
-pub use errors::{FramerateParseError, TimecodeParseError};
-pub use framerate::{rates, Framerate, FramerateParseResult, Ntsc};
-pub use framerate_parse::{FramerateSource, FramerateSourceResult};
-pub use source_frames::{FramesSource, FramesSourceResult};
-pub use source_ppro_ticks::{PremiereTicksSource, PremiereTicksSourceResult};
-pub use source_seconds::{SecondsSource, SecondsSourceResult};
-pub use timecode::{Timecode, TimecodeParseResult, TimecodeSections};
+<div>Drop-frame calculations adapted from <a href="https://www.davidheidelberger.com/2010/06/10/drop-frame-timecode/">David Heidelberger's blog.</a></div>
+<div>Logo made by <a href="" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
