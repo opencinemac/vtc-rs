@@ -1,0 +1,4 @@
+packaging==20.9
+pyparsing==2.4.7
+toml==0.10.2
+-e git+https://github.com/opencinemac/vtc-rs@b746f045550a28dd4a0d4e52073ca7175231f214#egg=UNKNOWN
