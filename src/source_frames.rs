@@ -231,7 +231,7 @@ fn drop_frame_tc_adjustment(sections: TimecodeSections, rate: Framerate) -> Fram
     // We have a bad frame value if our 'frames' place is less than the drop_frames we
     // skip on minutes not divisible by 10.
     let has_bad_frames = sections.frames < drop_frames;
-    let is_tenth_minute = sections.minutes % 10 == 0 || sections.minutes == 0;
+    let is_tenth_minute = sections.minutes % 10 == 0;
 
     if has_bad_frames && !is_tenth_minute {
         return Err(TimecodeParseError::DropFrameValue(format!(

@@ -200,8 +200,8 @@ impl Timecode {
     # Where you see it
 
     - Anywhere real-world time needs to be calculated.
-    - In code that needs to do lossless calculations of playback time not rely on frame count, like
-      adding two timecodes together with erent framerates.
+    - In code that needs to do lossless calculations of playback time and not rely on frame count,
+      like adding two timecodes together with different framerates.
 
     # Examples
 
@@ -909,14 +909,14 @@ fn frame_num_to_drop_num(frame_number: i64, rate: Framerate) -> i64 {
 
     // Get the number frames-per-minute at the whole-frame rate.
     let frames_per_minute = timebase * 60;
-    // Get the number of frames we need to drop each time we drop frames (ex: 2 or 29.97).
+    // Get the number of frames we need to drop each time we drop frames (ex: 2 f or 29.97).
     let drop_frames = rate.drop_frames().unwrap();
 
     // Get the number of frames are in a minute where we have dropped frames at the
     // beginning.
     let frames_per_minute_drop = (timebase * 60) - drop_frames;
     // Get the number of actual frames in a 10-minute span for drop frame timecode. Since
-    // we drop 9 times a minute, it will be 9 drop-minute frame counts + 1 whole-minute
+    // we drop 9 times in 10 minute, it will be 9 drop-minute frame counts + 1 whole-minute
     // frame count.
     let frames_per_10minutes_drop = frames_per_minute_drop * 9 + frames_per_minute;
 
