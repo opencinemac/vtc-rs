@@ -44,7 +44,7 @@ impl SecondsSource for num::Rational64 {
 
 impl SecondsSource for f64 {
     fn to_seconds(&self, _: Framerate) -> SecondsSourceResult {
-        // Floats are ticky, as they can often result in rational values wich try to
+        // Floats are tricky, as they can often result in rational values which try to
         // capture their imprecision using every bit available in the numerator and
         // denominator integer values.
         //

@@ -18,7 +18,7 @@ mod test {
 
     /// ParseCase is a Parsing test case.
     struct ParseCase<T: FramerateSource> {
-        /// source is the source framerate value to parse frome.
+        /// source is the source framerate value to parse from.
         source: T,
         /// source_type is whether the source if a framerate or timebase.
         source_type: SourceType,

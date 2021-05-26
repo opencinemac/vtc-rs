@@ -98,7 +98,7 @@ mod test {
     /// Data about a real-world timecode observed in an NLE (non-linear editor like Premiere Pro)
     /// sequence.
     ///
-    /// Fields wich are not curently in use have been commented out.
+    /// Fields which are not currently in use have been commented out.
     #[derive(Deserialize)]
     struct TimecodeInfo {
         timebase: i32,
@@ -118,7 +118,7 @@ mod test {
 
     /// Data about a real-world event observed in an NLE sequence.
     ///
-    /// Fields wich are not curently in use have been commented out.
+    /// Fields which are not currently in use have been commented out.
     #[derive(Deserialize)]
     struct Event {
         duration_frames: i64,
