@@ -3,7 +3,8 @@ use num::rational::Ratio;
 use num::{abs, FromPrimitive, Rational64, Signed, ToPrimitive, Zero};
 
 use crate::{
-    consts::{FRAMES_PER_FOOT, PREMIERE_TICKS_PER_SECOND, SECONDS_PER_HOUR, SECONDS_PER_MINUTE},
+    consts::{FRAMES_PER_FOOT, PREMIERE_TICKS_PER_SECOND, SECONDS_PER_HOUR, 
+        SECONDS_PER_MINUTE, PERFS_PER_35MM_FOOT},
     source_ppro_ticks::PremiereTicksSource,
     timecode_parse::round_seconds_to_frame,
     Framerate, FramesSource, Ntsc, SecondsSource, TimecodeParseError,
@@ -508,6 +509,55 @@ impl Timecode {
         let sign = if self.seconds.is_negative() { "-" } else { "" };
 
         return format!("{}{}+{:02}", sign, feet, frames);
+    }
+
+    /**
+    Returns the number of feet and frames this timecode represents if it were shot on 35mm
+    film with 3-perf per-frame pulldown (64 perforations per foot). ex: '12+1.1'. 
+
+    3-perf footages are represented as a string with three terms, a number of feet, a
+    number of frames from the begining of the foot, and an final framing term preceded by
+    a period, indicating how many perfs were cut off the first frame of this foot.
+
+    # Examples
+
+    ```rust
+    # use vtc::{Timecode, rates};
+    let tc1 = Timecode::with_frames("00:00:00:00", rates::F24).unwrap();
+    assert_eq!("0+0.0", tc1.feet_and_frames_3perf());
+
+    let tc2 = Timecode::with_frames("00:00:01:00", rates::F24).unwrap();
+    assert_eq!("1+2.1", tc2.feet_and_frames_3perf());
+
+    let tc3 = Timecode::with_frames("00:00:00:23", rates::F24).unwrap();
+    assert_eq!("1+1.1", tc3.feet_and_frames_3perf());
+
+    let tc4 = Timecode::with_frames("00:00:00:22", rates::F24).unwrap();
+    assert_eq!("1+0.1", tc4.feet_and_frames_3perf());
+
+    let tc5 = Timecode::with_frames("00:00:00:21", rates::F24).unwrap();
+    assert_eq!("0+21.0", tc5.feet_and_frames_3perf());
+    ```
+
+    */
+
+    pub fn feet_and_frames_3perf(&self) -> String {
+
+        // this is a general formula for converting a frame count to a footage with any number of
+        // perfs per frame or perfs per foot
+        fn feet_frames(frame_count: i64, perfs_per_frame: i64, perfs_per_foot: i64) -> (i64, i64, i64) {
+            let total_perfs = frame_count * perfs_per_frame;
+            let feet_result = div_mod_floor(total_perfs, perfs_per_foot);
+            let frames_result = div_mod_floor(feet_result.1, perfs_per_frame);
+
+            ( feet_result.0, frames_result.0 , (perfs_per_frame - frames_result.1) % perfs_per_frame)
+        }
+
+        let perfs_per_frame = 3;
+        let result = feet_frames(abs(self.frames()), perfs_per_frame, PERFS_PER_35MM_FOOT);
+        let sign = if self.seconds.is_negative() { "-" } else { "" };
+        
+        return format!("{}{}+{}.{}", sign, result.0, result.1, result.2);
     }
 
     /// Returns a [Timecode] with the same number of frames running at a different
