@@ -5,7 +5,7 @@ use std::fmt::Debug;
 
 use crate::consts::{
     FEET_AND_FRAMES_REGEX, FRAMES_PER_FOOT, SECONDS_PER_HOUR_I64, SECONDS_PER_MINUTE_I64,
-    TIMECODE_REGEX,
+    TIMECODE_REGEX, PERFS_PER_35MM_FOOT
 };
 use crate::{timecode_parse, Framerate, Ntsc, TimecodeParseError, TimecodeSections};
 
@@ -256,12 +256,19 @@ fn parse_feet_and_frames_str(matched: regex::Captures) -> FramesSourceResult {
     let mut frames =
         timecode_parse::convert_tc_int(matched.name("frames").unwrap().as_str(), "frames")?;
 
-    // Get whether this value was a negative timecode value.
-    let is_negative = matched.name("negative").is_some();
+    if let Some(_) = matched.name("perf") {
+        // this is three-perf
+        let perfs_per_frame = 3;
+        let perfs = feet * PERFS_PER_35MM_FOOT + frames * perfs_per_frame;
+        frames = perfs / perfs_per_frame;
+    } else {
+        frames += feet * FRAMES_PER_FOOT;
+    }
 
-    frames += feet * FRAMES_PER_FOOT;
-    if is_negative {
+    // Get whether this value was a negative timecode value.
+    if let Some(_) = matched.name("negative") {
         frames = -frames;
     };
+    
     Ok(frames)
 }
