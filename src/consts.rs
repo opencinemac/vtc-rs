@@ -19,6 +19,9 @@ pub(super) const PERFS_PER_FOOT_35: i64 = 64;
 /// and there are 40 frames in a 16mm foot. 
 pub(super) const PERFS_PER_6INCHES_16: i64 = 20;
 
+/// The number of perfs in a foot fo 35mm film.
+pub(super) const PERFS_PER_35MM_FOOT: i64 = 64;
+
 /// The number of ticks Adobe Premiere Pro breaks a second ratio.
 pub(super) const PREMIERE_TICKS_PER_SECOND: Ratio<i128> = Ratio::<i128>::new_raw(254016000000, 1);
 
@@ -37,7 +40,7 @@ lazy_static! {
 lazy_static! {
     /// TIMECODE_REGEX is a regex for parsing timecode values.
     pub(super) static ref FEET_AND_FRAMES_REGEX: Regex = regex::Regex::new(
-        r"^(?P<negative>-)?(?P<feet>[0-9]+)\+(?P<frames>[0-9]+)$",
+        r"^(?P<negative>-)?(?P<feet>[0-9]+)\+(?P<frames>[0-9]+)(\.<perf>[0-2])?$",
     ).unwrap();
 }
 
