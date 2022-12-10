@@ -567,7 +567,7 @@ impl Timecode {
 
     /**
     Returns the number of feet and frames this timecode represents if it were shot on 35mm
-    film with 3-perf per-frame pulldown (64 perforations per foot). ex: '12+1.1'. 
+    film with 3-perf per-frame pulldown (64 perforations per foot). ex: '12+01.1'. 
 
     # What it is
 
@@ -579,7 +579,7 @@ impl Timecode {
 
     35mm 3-perf was popular in the 2000s due to it providing a 25% cost savings 
     on stock and processing per minute of shooting time, while essentially sacrificing
-    no grain or quality compared to Super35, it was very popular with filmmakers who
+    no grain or quality compared to Super35. It was very popular with filmmakers who
     intended to do a digital intermediate and completely grade their film digitally,
     and who did not need a 4:3 negative for standard definition TV. 
 
