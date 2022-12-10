@@ -4,7 +4,7 @@ use num::{abs, FromPrimitive, Rational64, Signed, ToPrimitive, Zero};
 
 use crate::consts::PERFS_PER_6INCHES_16;
 use crate::{
-    consts::{PERFS_PER_FOOT_35, PREMIERE_TICKS_PER_SECOND, SECONDS_PER_HOUR, 
+    consts::{PREMIERE_TICKS_PER_SECOND, SECONDS_PER_HOUR, 
         SECONDS_PER_MINUTE, PERFS_PER_35MM_FOOT},
     source_ppro_ticks::PremiereTicksSource,
     timecode_parse::round_seconds_to_frame,
@@ -503,7 +503,7 @@ impl Timecode {
     ```
     */
     pub fn feet_and_frames_35mm_4p(&self) -> String {
-        self.feet_and_frames_impl(4, PERFS_PER_FOOT_35)
+        self.feet_and_frames_impl(4, PERFS_PER_35MM_FOOT)
     }
 
 
@@ -562,7 +562,7 @@ impl Timecode {
      ```
      */
     pub fn feet_and_frames_35mm_2p(&self) -> String {
-        self.feet_and_frames_impl(2, PERFS_PER_FOOT_35)
+        self.feet_and_frames_impl(2, PERFS_PER_35MM_FOOT)
     }
 
     /**
@@ -588,22 +588,22 @@ impl Timecode {
     ```rust
     # use vtc::{Timecode, rates};
     let tc1 = Timecode::with_frames("00:00:00:00", rates::F24).unwrap();
-    assert_eq!("0+00.0", tc1.feet_and_frames_3perf());
+    assert_eq!("0+00.0", tc1.feet_and_frames_35mm_3p());
 
     let tc2 = Timecode::with_frames("00:00:01:00", rates::F24).unwrap();
-    assert_eq!("1+02.1", tc2.feet_and_frames_3perf());
+    assert_eq!("1+02.1", tc2.feet_and_frames_35mm_3p());
 
     let tc3 = Timecode::with_frames("00:00:00:23", rates::F24).unwrap();
-    assert_eq!("1+01.1", tc3.feet_and_frames_3perf());
+    assert_eq!("1+01.1", tc3.feet_and_frames_35mm_3p());
 
     let tc4 = Timecode::with_frames("00:00:00:22", rates::F24).unwrap();
-    assert_eq!("1+00.1", tc4.feet_and_frames_3perf());
+    assert_eq!("1+00.1", tc4.feet_and_frames_35mm_3p());
 
     let tc5 = Timecode::with_frames("00:00:00:21", rates::F24).unwrap();
-    assert_eq!("0+21.0", tc5.feet_and_frames_3perf());
+    assert_eq!("0+21.0", tc5.feet_and_frames_35mm_3p());
     ```
     */
-    pub fn feet_and_frames_3perf(&self) -> String {
+    pub fn feet_and_frames_35mm_3p(&self) -> String {
         self.feet_and_frames_impl(3, PERFS_PER_35MM_FOOT)
     }
 
