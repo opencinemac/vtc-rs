@@ -38,7 +38,7 @@ assert_eq!(tc.frames(), 1502234i64);
 assert_eq!(tc.seconds(), Rational64::new(751868117, 12000));
 assert_eq!(tc.runtime(3), "17:24:15.676");
 assert_eq!(tc.premiere_ticks(), 15915544300656000i64);
-assert_eq!(tc.feet_and_frames(), "93889+10");
+assert_eq!(tc.feet_and_frames_35mm_4p(), "93889+10");
 
 // We can inspect the framerate.
 assert_eq!(tc.rate().playback(), Rational64::new(24000, 1001));

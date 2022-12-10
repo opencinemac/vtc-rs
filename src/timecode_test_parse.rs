@@ -945,7 +945,7 @@ mod test {
         );
         assert_eq!(
             case.feet_and_frames,
-            tc.feet_and_frames(),
+            tc.feet_and_frames_35mm_4p(),
             "feet and frames for {} source {:?}",
             source_type,
             source
