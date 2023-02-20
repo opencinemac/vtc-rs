@@ -232,8 +232,9 @@ fn drop_frame_tc_adjustment(sections: TimecodeSections, rate: Framerate) -> Fram
     // skip on minutes not divisible by 10.
     let has_bad_frames = sections.frames < drop_frames;
     let is_tenth_minute = sections.minutes % 10 == 0;
+    let is_minute_boundary = sections.seconds == 0;
 
-    if has_bad_frames && !is_tenth_minute {
+    if has_bad_frames && is_minute_boundary && !is_tenth_minute {
         return Err(TimecodeParseError::DropFrameValue(format!(
             "drop-frame tc cannot have a frames value of less than {} on minutes not divisible by 10, found '{}'",
             drop_frames,
