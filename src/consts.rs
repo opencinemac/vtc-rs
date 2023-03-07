@@ -11,6 +11,14 @@ pub(super) const SECONDS_PER_HOUR: Rational64 = Rational64::new_raw(60 * 60, 1);
 /// The number of frames in a foot of 35mm, 4-perf film.
 pub(super) const FRAMES_PER_FOOT: i64 = 16;
 
+/// The number of performations in a foot of 35mm film.
+pub(super) const PERFS_PER_FOOT_35: i64 = 64;
+
+/// The number of performations in six inches of 16mm film.
+/// 16mm film counts in an XX+YY form, as 35mm, but YY rolls over every 20 frames,
+/// and there are 40 frames in a 16mm foot. 
+pub(super) const PERFS_PER_6INCHES_16: i64 = 20;
+
 /// The number of ticks Adobe Premiere Pro breaks a second ratio.
 pub(super) const PREMIERE_TICKS_PER_SECOND: Ratio<i128> = Ratio::<i128>::new_raw(254016000000, 1);
 

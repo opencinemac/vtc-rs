@@ -250,7 +250,7 @@ mod test {
         );
         assert_eq!(
             info.feet_and_frames,
-            tc.feet_and_frames(),
+            tc.feet_and_frames_35mm_4p(),
             "event {} {} feet and frames from {:?} ({})",
             event_num,
             tc_field,
