@@ -47,7 +47,7 @@ impl FramesSource for isize {
             Err(err) => {
                 return Err(TimecodeParseError::Conversion(format!(
                     "error converting isize to i64 : {}",
-                    err.to_string()
+                    err
                 )))
             }
         };
@@ -63,7 +63,7 @@ impl FramesSource for usize {
             Err(err) => {
                 return Err(TimecodeParseError::Conversion(format!(
                     "error converting usize to i64 : {}",
-                    err.to_string()
+                    err
                 )))
             }
         };
@@ -79,7 +79,7 @@ impl FramesSource for u64 {
             Err(err) => {
                 return Err(TimecodeParseError::Conversion(format!(
                     "error converting u64 to i64 : {}",
-                    err.to_string()
+                    err
                 )))
             }
         };

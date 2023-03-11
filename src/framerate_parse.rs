@@ -106,7 +106,7 @@ impl FramerateSource for &dyn FramerateSource {
 
 impl FramerateSource for Rational64 {
     fn to_playback(&self, ntsc: Ntsc, is_timebase: bool) -> FramerateSourceResult {
-        validate_ntsc_value(&self, ntsc, is_timebase)?;
+        validate_ntsc_value(self, ntsc, is_timebase)?;
 
         let value = if is_timebase && ntsc.is_ntsc() {
             self.round() * 1000 / 1001
@@ -142,7 +142,7 @@ impl FramerateSource for u64 {
             Err(err) => {
                 return Err(FramerateParseError::Conversion(format!(
                     "error converting u64 to i64 : {}",
-                    err.to_string()
+                    err
                 )))
             }
         };

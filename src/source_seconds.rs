@@ -135,7 +135,7 @@ fn parse_runtime_str(matched: regex::Captures, rate: Framerate) -> SecondsSource
     let maybe_fractal = seconds_split.get(1);
     let seconds_fractal_str = if let Some(seconds_fractal_str) = maybe_fractal {
         let mut fixed_fractal = "0.".to_string();
-        fixed_fractal.push_str(&seconds_fractal_str);
+        fixed_fractal.push_str(seconds_fractal_str);
         fixed_fractal
     } else {
         "0.0".to_string()
@@ -147,7 +147,7 @@ fn parse_runtime_str(matched: regex::Captures, rate: Framerate) -> SecondsSource
         Err(err) => {
             return Err(TimecodeParseError::Conversion(format!(
                 "error conversion seconds of runtime to f64: {}",
-                err.to_string(),
+                err
             )))
         }
     };

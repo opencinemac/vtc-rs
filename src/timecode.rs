@@ -507,7 +507,7 @@ impl Timecode {
 
         let sign = if self.seconds.is_negative() { "-" } else { "" };
 
-        return format!("{}{}+{:02}", sign, feet, frames);
+        format!("{}{}+{:02}", sign, feet, frames)
     }
 
     /// Returns a [Timecode] with the same number of frames running at a different
