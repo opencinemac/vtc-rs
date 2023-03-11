@@ -4,7 +4,7 @@ format:
 
 .PHONY: lint
 lint:
-	-cargo clippy
+	-cargo clippy -- --deny warnings
 	-rustfmt ./src/*.rs --check
 	-find . -type f | grep -e \.rs$ | grep -v /target | xargs misspell -error
 

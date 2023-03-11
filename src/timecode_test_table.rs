@@ -5,7 +5,6 @@ mod test {
     use rstest::{fixture, rstest};
     use serde::de::{Error, Visitor};
     use serde::{Deserialize, Deserializer};
-    use serde_json;
     use std::fmt::{self, Debug, Formatter};
     use std::fs;
     use std::str::FromStr;
@@ -189,10 +188,10 @@ mod test {
         let tc = Timecode::with_frames(&info.timecode, rate).unwrap();
         check_parsed_timecode(tc, info, event_num, tc_val, &info.timecode, "timecode");
 
-        let tc = Timecode::with_frames(&info.frame, rate).unwrap();
+        let tc = Timecode::with_frames(info.frame, rate).unwrap();
         check_parsed_timecode(tc, info, event_num, tc_val, &info.frame, "frame numer");
 
-        let tc = Timecode::with_seconds(&info.seconds_rational.0, rate).unwrap();
+        let tc = Timecode::with_seconds(info.seconds_rational.0, rate).unwrap();
         check_parsed_timecode(
             tc,
             info,
@@ -205,7 +204,7 @@ mod test {
         let tc = Timecode::with_seconds(&info.runtime, rate).unwrap();
         check_parsed_timecode(tc, info, event_num, tc_val, &info.runtime, "runtime");
 
-        let tc = Timecode::with_premiere_ticks(&info.ppro_ticks, rate).unwrap();
+        let tc = Timecode::with_premiere_ticks(info.ppro_ticks, rate).unwrap();
         check_parsed_timecode(tc, info, event_num, tc_val, &info.ppro_ticks, "ppro ticks");
     }
 
