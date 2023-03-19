@@ -16,7 +16,7 @@ pub(super) const PERFS_PER_FOOT_35: i64 = 64;
 
 /// The number of performations in six inches of 16mm film.
 /// 16mm film counts in an XX+YY form, as 35mm, but YY rolls over every 20 frames,
-/// and there are 40 frames in a 16mm foot. 
+/// and there are 40 frames in a 16mm foot.
 pub(super) const PERFS_PER_6INCHES_16: i64 = 20;
 
 /// The number of ticks Adobe Premiere Pro breaks a second ratio.
