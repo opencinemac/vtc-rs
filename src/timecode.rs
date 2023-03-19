@@ -611,9 +611,9 @@ impl Timecode {
         let sign = if self.seconds.is_negative() { "-" } else { "" };
 
         if perfs_per_foot % perfs_per_frame != 0 {
-            return format!("{}{}+{:02}.{}", sign, feet, frames, feet % perfs_per_frame);
+            format!("{}{}+{:02}.{}", sign, feet, frames, feet % perfs_per_frame)
         } else {
-            return format!("{}{}+{:02}", sign, feet, frames);
+            format!("{}{}+{:02}", sign, feet, frames)
         }
     }
 
