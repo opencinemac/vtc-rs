@@ -569,7 +569,7 @@ impl Timecode {
     # What it is
 
     3-perf footages are represented as a string with three terms, a number of feet, a
-    number of frames from the begining of the foot, and an final framing term preceded by
+    number of frames from the beginning of the foot, and an final framing term preceded by
     a period, indicating how many perfs were cut off the first frame of this foot.
 
     # Where you see it
