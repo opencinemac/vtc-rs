@@ -505,14 +505,13 @@ impl Timecode {
         self.feet_and_frames_impl(4, PERFS_PER_FOOT_35)
     }
 
-
     /**
      Returns the feet and frames representation in 16mm footage.
-      
+
      # What it is
 
      On 16mm film, there are forty frames of film in each foot, one perforation
-     per frame. However, 16mm film is edge coded every six inches, with twenty 
+     per frame. However, 16mm film is edge coded every six inches, with twenty
      frames per code, so the footage "1+19" is succeeded by "2+0".
 
      # Where you see it
@@ -532,40 +531,40 @@ impl Timecode {
     }
 
     /**
-     Returns the feet and frames representation in 35mm, 2-perf footage.
+    Returns the feet and frames representation in 35mm, 2-perf footage.
 
-     # What it is
+    # What it is
 
-     35mm 2-perf film records 32 frames in a foot of film, instead of the usual 16.
-     This creates a negative image with a wide aspect ratio using standard spherical 
-     lenses and consumes half the footage per minute running time as standard 35mm, 
-     while having a grain profile somewhat better than 16mm while not as good as
-     standard 35mm.
+    35mm 2-perf film records 32 frames in a foot of film, instead of the usual 16.
+    This creates a negative image with a wide aspect ratio using standard spherical
+    lenses and consumes half the footage per minute running time as standard 35mm,
+    while having a grain profile somewhat better than 16mm while not as good as
+    standard 35mm.
 
-     # Where you see it
+    # Where you see it
 
-     35mm 2-perf formats are uncommon though still find occasional use, the process is 
-     usually marketed as "Techniscope", the original trademark for Technicolor Italia's 
-     2-perf format. It was historically very common in the Italian film industry prior
-     to digital filmmaking, and is used on some contemporary films to obtain a film look 
-     while keeping stock and processing costs down. 
+    35mm 2-perf formats are uncommon though still find occasional use, the process is
+    usually marketed as "Techniscope", the original trademark for Technicolor Italia's
+    2-perf format. It was historically very common in the Italian film industry prior
+    to digital filmmaking, and is used on some contemporary films to obtain a film look
+    while keeping stock and processing costs down.
 
-     # Example
-     ```rust
-     # use vtc::{Timecode, rates};
-     let tc = Timecode::with_frames("00:00:01:00", rates::F23_98).unwrap();
-     assert_eq!("0+24", tc.feet_and_frames_35mm_2p());
-     let tc2 = Timecode::with_frames("00:00:02:00", rates::F23_98).unwrap();
-     assert_eq!("1+16", tc2.feet_and_frames_35mm_2p());
-     ```
-     */
+    # Example
+    ```rust
+    # use vtc::{Timecode, rates};
+    let tc = Timecode::with_frames("00:00:01:00", rates::F23_98).unwrap();
+    assert_eq!("0+24", tc.feet_and_frames_35mm_2p());
+    let tc2 = Timecode::with_frames("00:00:02:00", rates::F23_98).unwrap();
+    assert_eq!("1+16", tc2.feet_and_frames_35mm_2p());
+    ```
+    */
     pub fn feet_and_frames_35mm_2p(&self) -> String {
         self.feet_and_frames_impl(2, PERFS_PER_FOOT_35)
     }
 
     /**
     Returns the number of feet and frames this timecode represents if it were shot on 35mm
-    film with 3-perf per-frame pulldown (64 perforations per foot). ex: '12+01.1'. 
+    film with 3-perf per-frame pulldown (64 perforations per foot). ex: '12+01.1'.
 
     # What it is
 
@@ -602,7 +601,7 @@ impl Timecode {
     }
 
     // Implements conversion to feet+frames
-    fn feet_and_frames_impl(&self, perfs_per_frame: i64, perfs_per_foot: i64 ) -> String {
+    fn feet_and_frames_impl(&self, perfs_per_frame: i64, perfs_per_foot: i64) -> String {
         let perfs_result = div_mod_floor(abs(self.frames() * perfs_per_frame), perfs_per_foot);
         let frames_result: (i64, i64) = div_mod_floor(perfs_result.1, perfs_per_frame);
         let feet = perfs_result.0;
