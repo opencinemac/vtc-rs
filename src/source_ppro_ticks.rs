@@ -40,7 +40,7 @@ impl PremiereTicksSource for u64 {
             Err(err) => {
                 return Err(TimecodeParseError::Conversion(format!(
                     "error converting u64 to i64 : {}",
-                    err.to_string()
+                    err
                 )))
             }
         };

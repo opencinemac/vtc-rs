@@ -43,3 +43,4 @@ sdist/
 var/
 .installed.cfg
 .idea/
+.vscode/
