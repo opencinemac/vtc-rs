@@ -5,7 +5,7 @@ description = "A SMPTE timeoce library for Rust"
 edition = "2018"
 license = "MIT"
 repository = "https://github.com/opencinemac/vtc-rs"
-authors = ["Open Cinema Collective", "Billy Peake"]
+authors = ["Open Cinema Collective", "Billy Peake", "Jamie Hardt"]
 readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
