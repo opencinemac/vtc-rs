@@ -156,17 +156,14 @@ impl<'a> FeetFrames<'a> {
     }
 }
 
-trait IntoFeetFrames<'a> {
+pub trait IntoFeetFrames<'a> {
     /// Consumes the receiver and returns a new [FeetFrames] structure.
     fn into_feet_frames(self, format: FeetFramesFormat) -> FeetFrames<'a>;
 }
 
 impl<'a> IntoFeetFrames<'a> for &'a str {
     fn into_feet_frames(self, format: FeetFramesFormat) -> FeetFrames<'a> {
-        FeetFrames {
-            input: self,
-            format,
-        }
+        FeetFrames::from_string(self, format)
     }
 }
 

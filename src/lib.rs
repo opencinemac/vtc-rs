@@ -25,7 +25,7 @@ corner-cases of parsing and calculating timecode.
 Let's take a quick high-level look at what you can do with vtc-rs:
 
 ```rust
-use vtc::{Timecode, Framerate, Ntsc, rates, FeetFramesFormat};
+use vtc::{Timecode, Framerate, Ntsc, rates, FeetFramesFormat, FeetFrames, IntoFeetFrames};
 use num::Rational64;
 
 // It's easy to make a new 23.98 NTSC timecode. We use the with_frames constructor here since
@@ -67,6 +67,24 @@ assert_eq!(parsed.timecode(), "00:00:01:00");
 // Feet + Frames:
 let parsed = Timecode::with_frames("1+08", rates::F23_98).unwrap();
 assert_eq!(parsed.timecode(), "00:00:01:00");
+
+// By default, Feet + Frames parsing infers 4-perf 35mm film, or
+// 3-perf 35mm film if there is a final offset after a period...
+
+let parsed = Timecode::with_frames("2+5.1", rates::F24).unwrap();
+assert_eq!(parsed.timecode(), "00:00:01:23");
+
+// If you want to do calculations with unusual footage formants,
+// you can hint the Feet + Frames parser with a FeetFrames struct.
+
+let feet_frames : FeetFrames = "22+1".into_feet_frames(FeetFramesFormat::FF16mm);
+let parsed = Timecode::with_frames(feet_frames, rates::F24).unwrap();
+assert_eq!(parsed.timecode(), "00:00:18:09");
+
+// And then these timecode objects can be turned back into footages.
+
+let ff = parsed.feet_and_frames(FeetFramesFormat::FF35mm4perf);
+assert_eq!(ff, "27+09");
 
 // We can add two timecodes
 tc += Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
@@ -252,4 +270,6 @@ pub use framerate_parse::{FramerateSource, FramerateSourceResult};
 pub use source_frames::{FramesSource, FramesSourceResult};
 pub use source_ppro_ticks::{PremiereTicksSource, PremiereTicksSourceResult};
 pub use source_seconds::{SecondsSource, SecondsSourceResult};
-pub use timecode::{FeetFrames, FeetFramesFormat, Timecode, TimecodeParseResult, TimecodeSections};
+pub use timecode::{
+    FeetFrames, FeetFramesFormat, IntoFeetFrames, Timecode, TimecodeParseResult, TimecodeSections,
+};
