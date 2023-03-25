@@ -3,8 +3,10 @@ use num::rational::Ratio;
 use num::{abs, FromPrimitive, Rational64, Signed, ToPrimitive, Zero};
 
 use crate::{
-    consts::{PERFS_PER_6INCHES_16, PERFS_PER_FOOT_35, 
-        PREMIERE_TICKS_PER_SECOND, SECONDS_PER_HOUR, SECONDS_PER_MINUTE},
+    consts::{
+        PERFS_PER_6INCHES_16, PERFS_PER_FOOT_35, PREMIERE_TICKS_PER_SECOND, SECONDS_PER_HOUR,
+        SECONDS_PER_MINUTE,
+    },
     source_ppro_ticks::PremiereTicksSource,
     timecode_parse::round_seconds_to_frame,
     Framerate, FramesSource, Ntsc, SecondsSource, TimecodeParseError,
@@ -570,7 +572,12 @@ impl Timecode {
 
     */
     pub fn feet_and_frames(&self, rep: FeetFramesRep) -> String {
-        fn feet_and_frames_impl(frames : i64, is_negative: bool, perfs_per_frame: i64, perfs_per_foot: i64) -> String {
+        fn feet_and_frames_impl(
+            frames: i64,
+            is_negative: bool,
+            perfs_per_frame: i64,
+            perfs_per_foot: i64,
+        ) -> String {
             let perfs_result = div_mod_floor(abs(frames * perfs_per_frame), perfs_per_foot);
             let frames_result: (i64, i64) = div_mod_floor(perfs_result.1, perfs_per_frame);
             let feet = perfs_result.0;
@@ -588,10 +595,18 @@ impl Timecode {
         let negative = self.seconds.is_negative();
 
         match rep {
-            FeetFramesRep::FF35mm4perf => feet_and_frames_impl(frames, negative, 4, PERFS_PER_FOOT_35),
-            FeetFramesRep::FF35mm3perf => feet_and_frames_impl(frames, negative, 3, PERFS_PER_FOOT_35),
-            FeetFramesRep::FF35mm2perf => feet_and_frames_impl(frames, negative, 2, PERFS_PER_FOOT_35),
-            FeetFramesRep::FF16mm => feet_and_frames_impl(frames, negative, 1, PERFS_PER_6INCHES_16),
+            FeetFramesRep::FF35mm4perf => {
+                feet_and_frames_impl(frames, negative, 4, PERFS_PER_FOOT_35)
+            }
+            FeetFramesRep::FF35mm3perf => {
+                feet_and_frames_impl(frames, negative, 3, PERFS_PER_FOOT_35)
+            }
+            FeetFramesRep::FF35mm2perf => {
+                feet_and_frames_impl(frames, negative, 2, PERFS_PER_FOOT_35)
+            }
+            FeetFramesRep::FF16mm => {
+                feet_and_frames_impl(frames, negative, 1, PERFS_PER_6INCHES_16)
+            }
         }
     }
 

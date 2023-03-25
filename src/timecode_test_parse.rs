@@ -4,8 +4,8 @@ mod test {
     use rstest::rstest;
 
     use crate::{
-        rates, source_ppro_ticks::PremiereTicksSource, Framerate, FramesSource, Ntsc,
-        SecondsSource, Timecode, TimecodeParseError, FeetFramesRep
+        rates, source_ppro_ticks::PremiereTicksSource, FeetFramesRep, Framerate, FramesSource,
+        Ntsc, SecondsSource, Timecode, TimecodeParseError,
     };
     use std::fmt::Debug;
     use std::ops::Deref;
