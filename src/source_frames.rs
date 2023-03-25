@@ -4,11 +4,12 @@ use std::convert::TryFrom;
 use std::fmt::Debug;
 
 use crate::consts::{
-    FEET_AND_FRAMES_REGEX, SECONDS_PER_HOUR_I64, SECONDS_PER_MINUTE_I64,
-    TIMECODE_REGEX,
+    FEET_AND_FRAMES_REGEX, SECONDS_PER_HOUR_I64, SECONDS_PER_MINUTE_I64, TIMECODE_REGEX,
 };
-use crate::{timecode_parse, Framerate, Ntsc, TimecodeParseError, TimecodeSections,
-    FeetFramesFormat, FeetFrames};
+use crate::{
+    timecode_parse, FeetFrames, FeetFramesFormat, Framerate, Ntsc, TimecodeParseError,
+    TimecodeSections,
+};
 
 /// The result type of [FramesSource::to_frames].
 pub type FramesSourceResult = Result<i64, TimecodeParseError>;
@@ -145,13 +146,13 @@ impl FramesSource for &str {
 impl<'a> FramesSource for FeetFrames<'a> {
     fn to_frames(&self, _rate: Framerate) -> FramesSourceResult {
         if let Some(matched) = FEET_AND_FRAMES_REGEX.captures(self.input) {
-           return parse_feet_and_frames_str(matched, Some(self.format));
+            return parse_feet_and_frames_str(matched, Some(self.format));
         } else {
             Err(TimecodeParseError::UnknownStrFormat(format!(
-               "{} is not a known frame-count timecode format",
+                "{} is not a known frame-count timecode format",
                 self.input
             )))
-        } 
+        }
     }
 }
 
@@ -264,14 +265,16 @@ fn drop_frame_tc_adjustment(sections: TimecodeSections, rate: Framerate) -> Fram
     Ok(-adjustment)
 }
 
-fn parse_feet_and_frames_str(matched: regex::Captures, format: Option<FeetFramesFormat>) -> FramesSourceResult {
+fn parse_feet_and_frames_str(
+    matched: regex::Captures,
+    format: Option<FeetFramesFormat>,
+) -> FramesSourceResult {
     // If we got a match, these groups had to be present, so we can unwrap them.
-    
 
     let feet = timecode_parse::convert_tc_int(matched.name("feet").unwrap().as_str(), "feet")?;
     let frames =
         timecode_parse::convert_tc_int(matched.name("frames").unwrap().as_str(), "frames")?;
-    
+
     let perfs = matched.name("perf");
 
     // Get whether this value was a negative timecode value.
