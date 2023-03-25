@@ -2,9 +2,9 @@ use num::integer::div_mod_floor;
 use num::rational::Ratio;
 use num::{abs, FromPrimitive, Rational64, Signed, ToPrimitive, Zero};
 
-use crate::consts::PERFS_PER_6INCHES_16;
 use crate::{
-    consts::{PERFS_PER_FOOT_35, PREMIERE_TICKS_PER_SECOND, SECONDS_PER_HOUR, SECONDS_PER_MINUTE},
+    consts::{PERFS_PER_6INCHES_16, PERFS_PER_FOOT_35, 
+        PREMIERE_TICKS_PER_SECOND, SECONDS_PER_HOUR, SECONDS_PER_MINUTE},
     source_ppro_ticks::PremiereTicksSource,
     timecode_parse::round_seconds_to_frame,
     Framerate, FramesSource, Ntsc, SecondsSource, TimecodeParseError,
