@@ -33,6 +33,85 @@ pub struct TimecodeSections {
     pub frames: i64,
 }
 
+/// Feet and Frames Representations
+///
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum FeetFramesRep {
+    /**
+    35mm 4-perf film (16 frames per foot). ex: '5400+13'.
+
+    # What it is
+
+    On physical film, each foot contains a certain number of frames. For 35mm, 4-perf film (the most
+    common type on Hollywood movies), this number is 16 frames per foot. Feet-And-Frames was often
+    used in place of Keycode to quickly reference a frame in the edit.
+
+    # Where you see it
+
+    For the most part, feet + frames has died out as a reference, because digital media is not
+    measured in feet. The most common place it is still used is Studio Sound Departments. Many Sound
+    Mixers and Designers intuitively think in feet + frames, and it is often burned into the
+    reference picture for them.
+
+    - Telecine.
+    - Sound turnover reference picture.
+    - Sound turnover change lists.
+
+    */
+    FF35mm4perf,
+
+    /**
+    35mm film with 3-perf per-frame pulldown (64 perforations per foot). ex: '12+01.1'.
+
+    # What it is
+
+    3-perf footages are represented as a string with three terms, a number of feet, a
+    number of frames from the beginning of the foot, and an final framing term preceded by
+    a period, indicating how many perfs were cut off the first frame of this foot.
+
+    # Where you see it
+
+    Avid cutlists and pull lists on Avid 3 perf projects.
+    */
+    FF35mm3perf,
+
+    /**
+    35mm, 2-perf footage.
+
+    # What it is
+
+    35mm 2-perf film records 32 frames in a foot of film, instead of the usual 16.
+    This creates a negative image with a wide aspect ratio using standard spherical
+    lenses and consumes half the footage per minute running time as standard 35mm,
+    while having a grain profile somewhat better than 16mm while not as good as
+    standard 35mm.
+
+    # Where you see it
+
+    35mm 2-perf formats are uncommon though still find occasional use, the process is
+    usually marketed as "Techniscope", the original trademark for Technicolor Italia's
+    2-perf format. It was historically very common in the Italian film industry prior
+    to digital filmmaking, and is used on some contemporary films to obtain a film look
+    while keeping stock and processing costs down.
+    */
+    FF35mm2perf,
+
+    /**
+    16mm footage
+
+    # What it is
+
+    On 16mm film, there are forty frames of film in each foot, one perforation
+    per frame. However, 16mm film is edge coded every six inches, with twenty
+    frames per code, so the footage "1+19" is succeeded by "2+0".
+
+    # Where you see it
+
+    16mm telecines, 16mm edge codes.
+    */
+    FF16mm,
+}
+
 /// The [Result] type returned by [Timecode::with_seconds], [Timecode::with_frames], and
 /// [Timecode::with_premiere_ticks].
 pub type TimecodeParseResult = Result<Timecode, TimecodeParseError>;
@@ -473,146 +552,44 @@ impl Timecode {
     }
 
     /**
-    Returns the number of feet and frames this timecode represents if it were shot on 35mm
-    4-perf film (16 frames per foot). ex: '5400+13'.
+    Create a feet+frames string of `self`.
 
     # What it is
 
-    On physical film, each foot contains a certain number of frames. For 35mm, 4-perf film (the most
-    common type on Hollywood movies), this number is 16 frames per foot. Feet-And-Frames was often
-    used in place of Keycode to quickly reference a frame in the edit.
+    The customary text representation of frame-accurate film footage.
+
+    The `rep` parameter selects the film format. 35mm, 4-perf vertical
+    pulldown is by far the most common, but other footages and pulldowns
+    are supported. See the [[FeetFramesRep]] enum for all available formats.
 
     # Where you see it
 
-    For the most part, feet + frames has died out as a reference, because digital media is not
-    measured in feet. The most common place it is still used is Studio Sound Departments. Many Sound
-    Mixers and Designers intuitively think in feet + frames, and it is often burned into the
-    reference picture for them.
+    - Film assembly and pull lists, chronologs and camera reports
+    - FLX and ALE telecine log files
+    - Avid film pull lists, cut lists and change lists
 
-    - Telecine.
-    - Sound turnover reference picture.
-    - Sound turnover change lists.
-
-    # Examples
-
-    ```rust
-    # use vtc::{Timecode, rates};
-    let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
-    assert_eq!("5400+00", tc.feet_and_frames_35mm_4p())
-    ```
     */
-    pub fn feet_and_frames_35mm_4p(&self) -> String {
-        self.feet_and_frames_impl(4, PERFS_PER_FOOT_35)
-    }
+    pub fn feet_and_frames(&self, rep: FeetFramesRep) -> String {
+        fn feet_and_frames_impl(s: &Timecode, perfs_per_frame: i64, perfs_per_foot: i64) -> String {
+            let perfs_result = div_mod_floor(abs(s.frames() * perfs_per_frame), perfs_per_foot);
+            let frames_result: (i64, i64) = div_mod_floor(perfs_result.1, perfs_per_frame);
+            let feet = perfs_result.0;
+            let frames = frames_result.0;
 
-    /**
-     Returns the feet and frames representation in 16mm footage.
+            let sign = if s.seconds.is_negative() { "-" } else { "" };
 
-     # What it is
+            if perfs_per_foot % perfs_per_frame != 0 {
+                format!("{}{}+{:02}.{}", sign, feet, frames, feet % perfs_per_frame)
+            } else {
+                format!("{}{}+{:02}", sign, feet, frames)
+            }
+        }
 
-     On 16mm film, there are forty frames of film in each foot, one perforation
-     per frame. However, 16mm film is edge coded every six inches, with twenty
-     frames per code, so the footage "1+19" is succeeded by "2+0".
-
-     # Where you see it
-
-     16mm telecines, 16mm edge codes.
-
-     # Examples
-
-    ```rust
-    # use vtc::{Timecode, rates};
-    let tc = Timecode::with_frames("00:00:01:00", rates::F23_98).unwrap();
-    assert_eq!("1+04", tc.feet_and_frames_16mm())
-    ```
-     */
-    pub fn feet_and_frames_16mm(&self) -> String {
-        self.feet_and_frames_impl(1, PERFS_PER_6INCHES_16)
-    }
-
-    /**
-    Returns the feet and frames representation in 35mm, 2-perf footage.
-
-    # What it is
-
-    35mm 2-perf film records 32 frames in a foot of film, instead of the usual 16.
-    This creates a negative image with a wide aspect ratio using standard spherical
-    lenses and consumes half the footage per minute running time as standard 35mm,
-    while having a grain profile somewhat better than 16mm while not as good as
-    standard 35mm.
-
-    # Where you see it
-
-    35mm 2-perf formats are uncommon though still find occasional use, the process is
-    usually marketed as "Techniscope", the original trademark for Technicolor Italia's
-    2-perf format. It was historically very common in the Italian film industry prior
-    to digital filmmaking, and is used on some contemporary films to obtain a film look
-    while keeping stock and processing costs down.
-
-    # Example
-    ```rust
-    # use vtc::{Timecode, rates};
-    let tc = Timecode::with_frames("00:00:01:00", rates::F23_98).unwrap();
-    assert_eq!("0+24", tc.feet_and_frames_35mm_2p());
-    let tc2 = Timecode::with_frames("00:00:02:00", rates::F23_98).unwrap();
-    assert_eq!("1+16", tc2.feet_and_frames_35mm_2p());
-    ```
-    */
-    pub fn feet_and_frames_35mm_2p(&self) -> String {
-        self.feet_and_frames_impl(2, PERFS_PER_FOOT_35)
-    }
-
-    /**
-    Returns the number of feet and frames this timecode represents if it were shot on 35mm
-    film with 3-perf per-frame pulldown (64 perforations per foot). ex: '12+01.1'.
-
-    # What it is
-
-    3-perf footages are represented as a string with three terms, a number of feet, a
-    number of frames from the beginning of the foot, and an final framing term preceded by
-    a period, indicating how many perfs were cut off the first frame of this foot.
-
-    # Where you see it
-
-    Avid cutlists and pull lists on Avid 3 perf projects.
-
-    # Examples
-
-    ```rust
-    # use vtc::{Timecode, rates};
-    let tc1 = Timecode::with_frames("00:00:00:00", rates::F24).unwrap();
-    assert_eq!("0+00.0", tc1.feet_and_frames_35mm_3p());
-
-    let tc2 = Timecode::with_frames("00:00:01:00", rates::F24).unwrap();
-    assert_eq!("1+02.1", tc2.feet_and_frames_35mm_3p());
-
-    let tc3 = Timecode::with_frames("00:00:00:23", rates::F24).unwrap();
-    assert_eq!("1+01.1", tc3.feet_and_frames_35mm_3p());
-
-    let tc4 = Timecode::with_frames("00:00:00:22", rates::F24).unwrap();
-    assert_eq!("1+00.1", tc4.feet_and_frames_35mm_3p());
-
-    let tc5 = Timecode::with_frames("00:00:00:21", rates::F24).unwrap();
-    assert_eq!("0+21.0", tc5.feet_and_frames_35mm_3p());
-    ```
-    */
-    pub fn feet_and_frames_35mm_3p(&self) -> String {
-        self.feet_and_frames_impl(3, PERFS_PER_FOOT_35)
-    }
-
-    // Implements conversion to feet+frames
-    fn feet_and_frames_impl(&self, perfs_per_frame: i64, perfs_per_foot: i64) -> String {
-        let perfs_result = div_mod_floor(abs(self.frames() * perfs_per_frame), perfs_per_foot);
-        let frames_result: (i64, i64) = div_mod_floor(perfs_result.1, perfs_per_frame);
-        let feet = perfs_result.0;
-        let frames = frames_result.0;
-
-        let sign = if self.seconds.is_negative() { "-" } else { "" };
-
-        if perfs_per_foot % perfs_per_frame != 0 {
-            format!("{}{}+{:02}.{}", sign, feet, frames, feet % perfs_per_frame)
-        } else {
-            format!("{}{}+{:02}", sign, feet, frames)
+        match rep {
+            FeetFramesRep::FF35mm4perf => feet_and_frames_impl(&self, 4, PERFS_PER_FOOT_35),
+            FeetFramesRep::FF35mm3perf => feet_and_frames_impl(&self, 3, PERFS_PER_FOOT_35),
+            FeetFramesRep::FF35mm2perf => feet_and_frames_impl(&self, 2, PERFS_PER_FOOT_35),
+            FeetFramesRep::FF16mm => feet_and_frames_impl(&self, 1, PERFS_PER_6INCHES_16),
         }
     }
 
@@ -1053,4 +1030,49 @@ fn frame_num_to_drop_num(frame_number: i64, rate: Framerate) -> i64 {
 
     // Return our original frame number adjusted by our calculated adjustment.
     frame_number + adjustment
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::rates;
+
+    #[test]
+    fn test_35mm4p() {
+        let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
+        assert_eq!("5400+00", tc.feet_and_frames(FeetFramesRep::FF35mm4perf))
+    }
+
+    #[test]
+    fn test_35mm3perf() {
+        let rep = FeetFramesRep::FF35mm3perf;
+        let tc1 = Timecode::with_frames("00:00:00:00", rates::F24).unwrap();
+        assert_eq!("0+00.0", tc1.feet_and_frames(rep));
+
+        let tc2 = Timecode::with_frames("00:00:01:00", rates::F24).unwrap();
+        assert_eq!("1+02.1", tc2.feet_and_frames(rep));
+
+        let tc3 = Timecode::with_frames("00:00:00:23", rates::F24).unwrap();
+        assert_eq!("1+01.1", tc3.feet_and_frames(rep));
+
+        let tc4 = Timecode::with_frames("00:00:00:22", rates::F24).unwrap();
+        assert_eq!("1+00.1", tc4.feet_and_frames(rep));
+
+        let tc5 = Timecode::with_frames("00:00:00:21", rates::F24).unwrap();
+        assert_eq!("0+21.0", tc5.feet_and_frames(rep));
+    }
+
+    #[test]
+    fn test_16mm() {
+        let tc = Timecode::with_frames("00:00:01:00", rates::F23_98).unwrap();
+        assert_eq!("1+04", tc.feet_and_frames(FeetFramesRep::FF16mm))
+    }
+
+    #[test]
+    fn test_35mm2p() {
+        let tc = Timecode::with_frames("00:00:01:00", rates::F23_98).unwrap();
+        assert_eq!("0+24", tc.feet_and_frames(FeetFramesRep::FF35mm2perf));
+        let tc2 = Timecode::with_frames("00:00:02:00", rates::F23_98).unwrap();
+        assert_eq!("1+16", tc2.feet_and_frames(FeetFramesRep::FF35mm2perf));
+    }
 }

@@ -5,7 +5,7 @@ mod test {
 
     use crate::{
         rates, source_ppro_ticks::PremiereTicksSource, Framerate, FramesSource, Ntsc,
-        SecondsSource, Timecode, TimecodeParseError,
+        SecondsSource, Timecode, TimecodeParseError, FeetFramesRep
     };
     use std::fmt::Debug;
     use std::ops::Deref;
@@ -945,7 +945,7 @@ mod test {
         );
         assert_eq!(
             case.feet_and_frames,
-            tc.feet_and_frames_35mm_4p(),
+            tc.feet_and_frames(FeetFramesRep::FF35mm4perf),
             "feet and frames for {} source {:?}",
             source_type,
             source

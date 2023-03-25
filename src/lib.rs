@@ -25,7 +25,7 @@ corner-cases of parsing and calculating timecode.
 Let's take a quick high-level look at what you can do with vtc-rs:
 
 ```rust
-use vtc::{Timecode, Framerate, Ntsc, rates};
+use vtc::{Timecode, Framerate, Ntsc, rates, FeetFramesRep};
 use num::Rational64;
 
 // It's easy to make a new 23.98 NTSC timecode. We use the with_frames constructor here since
@@ -38,7 +38,8 @@ assert_eq!(tc.frames(), 1502234i64);
 assert_eq!(tc.seconds(), Rational64::new(751868117, 12000));
 assert_eq!(tc.runtime(3), "17:24:15.676");
 assert_eq!(tc.premiere_ticks(), 15915544300656000i64);
-assert_eq!(tc.feet_and_frames_35mm_4p(), "93889+10");
+assert_eq!(tc.feet_and_frames(FeetFramesRep::FF35mm4perf), "93889+10");
+assert_eq!(tc.feet_and_frames(FeetFramesRep::FF35mm3perf), "70417+04.1");
 
 // We can inspect the framerate.
 assert_eq!(tc.rate().playback(), Rational64::new(24000, 1001));
@@ -251,4 +252,4 @@ pub use framerate_parse::{FramerateSource, FramerateSourceResult};
 pub use source_frames::{FramesSource, FramesSourceResult};
 pub use source_ppro_ticks::{PremiereTicksSource, PremiereTicksSourceResult};
 pub use source_seconds::{SecondsSource, SecondsSourceResult};
-pub use timecode::{Timecode, TimecodeParseResult, TimecodeSections};
+pub use timecode::{FeetFramesRep, Timecode, TimecodeParseResult, TimecodeSections};
