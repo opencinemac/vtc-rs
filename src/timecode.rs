@@ -38,7 +38,7 @@ pub struct TimecodeSections {
 /// Feet and Frames Representations
 ///
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
-pub enum FeetFramesRep {
+pub enum FeetFramesFormat {
     /**
     35mm 4-perf film (16 frames per foot). ex: '5400+13'.
 
@@ -112,6 +112,10 @@ pub enum FeetFramesRep {
     16mm telecines, 16mm edge codes.
     */
     FF16mm,
+}
+
+pub struct FeetFrames {
+
 }
 
 /// The [Result] type returned by [Timecode::with_seconds], [Timecode::with_frames], and
@@ -571,7 +575,7 @@ impl Timecode {
     - Avid film pull lists, cut lists and change lists
 
     */
-    pub fn feet_and_frames(&self, rep: FeetFramesRep) -> String {
+    pub fn feet_and_frames(&self, rep: FeetFramesFormat) -> String {
         fn feet_and_frames_impl(
             frames: i64,
             is_negative: bool,
@@ -595,16 +599,16 @@ impl Timecode {
         let negative = self.seconds.is_negative();
 
         match rep {
-            FeetFramesRep::FF35mm4perf => {
+            FeetFramesFormat::FF35mm4perf => {
                 feet_and_frames_impl(frames, negative, 4, PERFS_PER_FOOT_35)
             }
-            FeetFramesRep::FF35mm3perf => {
+            FeetFramesFormat::FF35mm3perf => {
                 feet_and_frames_impl(frames, negative, 3, PERFS_PER_FOOT_35)
             }
-            FeetFramesRep::FF35mm2perf => {
+            FeetFramesFormat::FF35mm2perf => {
                 feet_and_frames_impl(frames, negative, 2, PERFS_PER_FOOT_35)
             }
-            FeetFramesRep::FF16mm => {
+            FeetFramesFormat::FF16mm => {
                 feet_and_frames_impl(frames, negative, 1, PERFS_PER_6INCHES_16)
             }
         }
@@ -1057,12 +1061,12 @@ mod test {
     #[test]
     fn test_35mm4p() {
         let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
-        assert_eq!("5400+00", tc.feet_and_frames(FeetFramesRep::FF35mm4perf))
+        assert_eq!("5400+00", tc.feet_and_frames(FeetFramesFormat::FF35mm4perf))
     }
 
     #[test]
     fn test_35mm3perf() {
-        let rep = FeetFramesRep::FF35mm3perf;
+        let rep = FeetFramesFormat::FF35mm3perf;
         let tc1 = Timecode::with_frames("00:00:00:00", rates::F24).unwrap();
         assert_eq!("0+00.0", tc1.feet_and_frames(rep));
 
@@ -1082,14 +1086,14 @@ mod test {
     #[test]
     fn test_16mm() {
         let tc = Timecode::with_frames("00:00:01:00", rates::F23_98).unwrap();
-        assert_eq!("1+04", tc.feet_and_frames(FeetFramesRep::FF16mm))
+        assert_eq!("1+04", tc.feet_and_frames(FeetFramesFormat::FF16mm))
     }
 
     #[test]
     fn test_35mm2p() {
         let tc = Timecode::with_frames("00:00:01:00", rates::F23_98).unwrap();
-        assert_eq!("0+24", tc.feet_and_frames(FeetFramesRep::FF35mm2perf));
+        assert_eq!("0+24", tc.feet_and_frames(FeetFramesFormat::FF35mm2perf));
         let tc2 = Timecode::with_frames("00:00:02:00", rates::F23_98).unwrap();
-        assert_eq!("1+16", tc2.feet_and_frames(FeetFramesRep::FF35mm2perf));
+        assert_eq!("1+16", tc2.feet_and_frames(FeetFramesFormat::FF35mm2perf));
     }
 }
