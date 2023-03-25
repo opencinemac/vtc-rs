@@ -312,6 +312,35 @@ mod test {
             premiere_ticks: 0,
         }
     )]
+    #[case::t00_01_01_00_f29_97_df(
+        ParseCase{
+            frames_sources: vec![
+                Box::new("00:01:01;00".to_string()),
+                Box::new("1828".to_string()),
+                Box::new("114+04".to_string()),
+                Box::new(1828i64),
+                Box::new(1828u64),
+                Box::new(1828i32),
+                Box::new(1828u32),
+                Box::new(1828i16),
+                Box::new(1828u16),
+            ],
+            seconds_sources: vec![
+                Box::new(Rational64::new(457_457, 7500)),
+                Box::new(Rational64::new(457_457, 7500).to_f64().unwrap()),
+                Box::new(Rational64::new(457_457, 7500).to_f32().unwrap()),
+                Box::new("00:01:00.994266667".to_string()),
+            ],
+            ticks_sources: vec![],
+            rate: rates::F29_97_DF,
+            seconds: Rational64::new(457_457, 7500),
+            frames: 1828,
+            timecode: "00:01:01;00".to_string(),
+            runtime: "00:01:00.994266667".to_string(),
+            feet_and_frames: "114+04".to_string(),
+            premiere_ticks: 15_493_519_641_600,
+        }
+    )]
     #[case::t00_00_02_02_f29_97_df(
         ParseCase{
             frames_sources: vec![
