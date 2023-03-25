@@ -145,7 +145,7 @@ impl FramesSource for &str {
 impl<'a> FramesSource for FeetFrames<'a> {
     fn to_frames(&self, _rate: Framerate) -> FramesSourceResult {
         if let Some(matched) = FEET_AND_FRAMES_REGEX.captures(self.input) {
-           todo!()
+           return parse_feet_and_frames_str(matched, Some(self.format));
         } else {
             Err(TimecodeParseError::UnknownStrFormat(format!(
                "{} is not a known frame-count timecode format",
