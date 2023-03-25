@@ -559,7 +559,7 @@ impl Timecode {
     The customary text representation of frame-accurate film footage.
 
     The `rep` parameter selects the film format. 35mm, 4-perf vertical
-    pulldown is by far the most common, but other footages and pulldowns
+    pulldown is by far the most common, but other film gauges and pulldowns
     are supported. See the [FeetFramesRep] enum for all available formats.
 
     # Where you see it
