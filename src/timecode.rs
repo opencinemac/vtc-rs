@@ -570,13 +570,13 @@ impl Timecode {
 
     */
     pub fn feet_and_frames(&self, rep: FeetFramesRep) -> String {
-        fn feet_and_frames_impl(s: &Timecode, perfs_per_frame: i64, perfs_per_foot: i64) -> String {
-            let perfs_result = div_mod_floor(abs(s.frames() * perfs_per_frame), perfs_per_foot);
+        fn feet_and_frames_impl(frames : i64, is_negative: bool, perfs_per_frame: i64, perfs_per_foot: i64) -> String {
+            let perfs_result = div_mod_floor(abs(frames * perfs_per_frame), perfs_per_foot);
             let frames_result: (i64, i64) = div_mod_floor(perfs_result.1, perfs_per_frame);
             let feet = perfs_result.0;
             let frames = frames_result.0;
 
-            let sign = if s.seconds.is_negative() { "-" } else { "" };
+            let sign = if is_negative { "-" } else { "" };
 
             if perfs_per_foot % perfs_per_frame != 0 {
                 format!("{}{}+{:02}.{}", sign, feet, frames, feet % perfs_per_frame)
@@ -584,12 +584,14 @@ impl Timecode {
                 format!("{}{}+{:02}", sign, feet, frames)
             }
         }
+        let frames = self.frames();
+        let negative = self.seconds.is_negative();
 
         match rep {
-            FeetFramesRep::FF35mm4perf => feet_and_frames_impl(&self, 4, PERFS_PER_FOOT_35),
-            FeetFramesRep::FF35mm3perf => feet_and_frames_impl(&self, 3, PERFS_PER_FOOT_35),
-            FeetFramesRep::FF35mm2perf => feet_and_frames_impl(&self, 2, PERFS_PER_FOOT_35),
-            FeetFramesRep::FF16mm => feet_and_frames_impl(&self, 1, PERFS_PER_6INCHES_16),
+            FeetFramesRep::FF35mm4perf => feet_and_frames_impl(frames, negative, 4, PERFS_PER_FOOT_35),
+            FeetFramesRep::FF35mm3perf => feet_and_frames_impl(frames, negative, 3, PERFS_PER_FOOT_35),
+            FeetFramesRep::FF35mm2perf => feet_and_frames_impl(frames, negative, 2, PERFS_PER_FOOT_35),
+            FeetFramesRep::FF16mm => feet_and_frames_impl(frames, negative, 1, PERFS_PER_6INCHES_16),
         }
     }
 
