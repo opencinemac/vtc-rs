@@ -114,8 +114,60 @@ pub enum FeetFramesFormat {
     FF16mm,
 }
 
-pub struct FeetFrames {
+impl FeetFramesFormat {
+    /// Utility function mapping self to number
+    /// of perfs per (logical) foot in this case.
+    pub fn perfs_per_foot(&self) -> i64 {
+        match self {
+            FeetFramesFormat::FF16mm => PERFS_PER_6INCHES_16,
+            FeetFramesFormat::FF35mm4perf
+            | FeetFramesFormat::FF35mm3perf
+            | FeetFramesFormat::FF35mm2perf => PERFS_PER_FOOT_35,
+        }
+    }
 
+    /// Utility function mapping self to number of
+    /// perfs per frame in this case.
+    pub fn perfs_per_frame(&self) -> i64 {
+        match self {
+            FeetFramesFormat::FF16mm => 1,
+            FeetFramesFormat::FF35mm4perf => 4,
+            FeetFramesFormat::FF35mm3perf => 3,
+            FeetFramesFormat::FF35mm2perf => 2,
+        }
+    }
+}
+
+/// A struct that bundles a str together with a format, to hint parsing
+///
+/// This struct, which implelements [FrameSource], allows you to include
+/// a format hint tothe footage parser, which will override its default
+/// inference
+#[derive(Debug)]
+pub struct FeetFrames<'a> {
+    pub(crate) input: &'a str,
+    pub(crate) format: FeetFramesFormat,
+}
+
+impl<'a> FeetFrames<'a> {
+    /// Create a [FeetFrames] object from a string and a [FeetFramesFormat]
+    pub fn from_string(input: &'a str, format: FeetFramesFormat) -> Self {
+        FeetFrames { input, format }
+    }
+}
+
+trait IntoFeetFrames<'a> {
+    /// Consumes the receiver and returns a new [FeetFrames] structure.
+    fn into_feet_frames(self, format: FeetFramesFormat) -> FeetFrames<'a>;
+}
+
+impl<'a> IntoFeetFrames<'a> for &'a str {
+    fn into_feet_frames(self, format: FeetFramesFormat) -> FeetFrames<'a> {
+        FeetFrames {
+            input: self,
+            format,
+        }
+    }
 }
 
 /// The [Result] type returned by [Timecode::with_seconds], [Timecode::with_frames], and
@@ -595,23 +647,16 @@ impl Timecode {
                 format!("{}{}+{:02}", sign, feet, frames)
             }
         }
+
         let frames = self.frames();
         let negative = self.seconds.is_negative();
 
-        match rep {
-            FeetFramesFormat::FF35mm4perf => {
-                feet_and_frames_impl(frames, negative, 4, PERFS_PER_FOOT_35)
-            }
-            FeetFramesFormat::FF35mm3perf => {
-                feet_and_frames_impl(frames, negative, 3, PERFS_PER_FOOT_35)
-            }
-            FeetFramesFormat::FF35mm2perf => {
-                feet_and_frames_impl(frames, negative, 2, PERFS_PER_FOOT_35)
-            }
-            FeetFramesFormat::FF16mm => {
-                feet_and_frames_impl(frames, negative, 1, PERFS_PER_6INCHES_16)
-            }
-        }
+        feet_and_frames_impl(
+            frames,
+            negative,
+            rep.perfs_per_frame(),
+            rep.perfs_per_foot(),
+        )
     }
 
     /// Returns a [Timecode] with the same number of frames running at a different

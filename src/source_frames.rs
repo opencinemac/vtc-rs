@@ -7,7 +7,8 @@ use crate::consts::{
     FEET_AND_FRAMES_REGEX, FRAMES_PER_FOOT, SECONDS_PER_HOUR_I64, SECONDS_PER_MINUTE_I64,
     TIMECODE_REGEX,
 };
-use crate::{timecode_parse, Framerate, Ntsc, TimecodeParseError, TimecodeSections};
+use crate::{timecode_parse, Framerate, Ntsc, TimecodeParseError, TimecodeSections,
+    FeetFramesFormat, FeetFrames};
 
 /// The result type of [FramesSource::to_frames].
 pub type FramesSourceResult = Result<i64, TimecodeParseError>;
@@ -131,13 +132,26 @@ impl FramesSource for &str {
         }
 
         if let Some(matched) = FEET_AND_FRAMES_REGEX.captures(self) {
-            return parse_feet_and_frames_str(matched);
+            return parse_feet_and_frames_str(matched, None);
         }
 
         Err(TimecodeParseError::UnknownStrFormat(format!(
             "{} is not a known frame-count timecode format",
             self
         )))
+    }
+}
+
+impl<'a> FramesSource for FeetFrames<'a> {
+    fn to_frames(&self, _rate: Framerate) -> FramesSourceResult {
+        if let Some(matched) = FEET_AND_FRAMES_REGEX.captures(self.input) {
+           todo!()
+        } else {
+            Err(TimecodeParseError::UnknownStrFormat(format!(
+               "{} is not a known frame-count timecode format",
+                self.input
+            )))
+        } 
     }
 }
 
@@ -250,18 +264,28 @@ fn drop_frame_tc_adjustment(sections: TimecodeSections, rate: Framerate) -> Fram
     Ok(-adjustment)
 }
 
-fn parse_feet_and_frames_str(matched: regex::Captures) -> FramesSourceResult {
+fn parse_feet_and_frames_str(matched: regex::Captures, format: Option<FeetFramesFormat>) -> FramesSourceResult {
     // If we got a match, these groups had to be present, so we can unwrap them.
+    
+
     let feet = timecode_parse::convert_tc_int(matched.name("feet").unwrap().as_str(), "feet")?;
-    let mut frames =
+    let frames =
         timecode_parse::convert_tc_int(matched.name("frames").unwrap().as_str(), "frames")?;
+    
+    let perfs = matched.name("perf");
 
     // Get whether this value was a negative timecode value.
     let is_negative = matched.name("negative").is_some();
 
-    frames += feet * FRAMES_PER_FOOT;
-    if is_negative {
-        frames = -frames;
+    let final_format = match (format, perfs) {
+        (Some(f), _) => f,
+        (_, Some(_)) => FeetFramesFormat::FF35mm3perf,
+        (_, _) => FeetFramesFormat::FF35mm4perf,
     };
-    Ok(frames)
+
+    let mut perfs = feet * final_format.perfs_per_foot() + frames * final_format.perfs_per_frame();
+    if is_negative {
+        perfs = -perfs;
+    };
+    Ok(perfs / final_format.perfs_per_frame())
 }

@@ -37,7 +37,7 @@ lazy_static! {
 lazy_static! {
     /// TIMECODE_REGEX is a regex for parsing timecode values.
     pub(super) static ref FEET_AND_FRAMES_REGEX: Regex = regex::Regex::new(
-        r"^(?P<negative>-)?(?P<feet>[0-9]+)\+(?P<frames>[0-9]+)$",
+        r"^(?P<negative>-)?(?P<feet>[0-9]+)\+(?P<frames>[0-9]+)(\.P<perf>[0-9])?$",
     ).unwrap();
 }
 
