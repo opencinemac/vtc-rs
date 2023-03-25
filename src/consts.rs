@@ -8,9 +8,6 @@ pub(super) const SECONDS_PER_MINUTE: Rational64 = Rational64::new_raw(60, 1);
 /// The number of seconds in an hour as a Rational64.
 pub(super) const SECONDS_PER_HOUR: Rational64 = Rational64::new_raw(60 * 60, 1);
 
-/// The number of frames in a foot of 35mm, 4-perf film.
-pub(super) const FRAMES_PER_FOOT: i64 = 16;
-
 /// The number of performations in a foot of 35mm film.
 pub(super) const PERFS_PER_FOOT_35: i64 = 64;
 

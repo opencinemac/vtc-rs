@@ -4,7 +4,7 @@ use std::convert::TryFrom;
 use std::fmt::Debug;
 
 use crate::consts::{
-    FEET_AND_FRAMES_REGEX, FRAMES_PER_FOOT, SECONDS_PER_HOUR_I64, SECONDS_PER_MINUTE_I64,
+    FEET_AND_FRAMES_REGEX, SECONDS_PER_HOUR_I64, SECONDS_PER_MINUTE_I64,
     TIMECODE_REGEX,
 };
 use crate::{timecode_parse, Framerate, Ntsc, TimecodeParseError, TimecodeSections,
