@@ -560,7 +560,7 @@ impl Timecode {
 
     The `rep` parameter selects the film format. 35mm, 4-perf vertical
     pulldown is by far the most common, but other footages and pulldowns
-    are supported. See the [[FeetFramesRep]] enum for all available formats.
+    are supported. See the [FeetFramesRep] enum for all available formats.
 
     # Where you see it
 
