@@ -1,4 +1,4 @@
-use num::integer::div_mod_floor;
+use num::integer::{div_mod_floor, div_rem};
 use num::rational::Ratio;
 use num::{abs, FromPrimitive, Rational64, Signed, ToPrimitive, Zero};
 
@@ -235,14 +235,15 @@ impl Timecode {
     pub fn sections(&self) -> TimecodeSections {
         // We use the absolute frame count here so floor behaves as expected regardless of whether
         // this value is negative.
-        let mut frames = Rational64::from(abs(self.frames()));
+        let mut frames_int = abs(self.frames());
         let timebase = self.rate.timebase();
 
         if self.rate.ntsc() == Ntsc::DropFrame {
             // Convert the frame number to an adjusted one for drop-frame display values.
-            let frames_int = frame_num_to_drop_num(frames.to_integer(), self.rate);
-            frames = Rational64::from_integer(frames_int)
+            frames_int += drop_frame_adjustment(frames_int, self.rate);
         }
+
+        let mut frames = Rational64::from_integer(frames_int);
 
         let frames_per_minute = timebase * SECONDS_PER_MINUTE;
         let frames_per_hour = timebase * SECONDS_PER_HOUR;
@@ -903,48 +904,26 @@ impl Neg for Timecode {
 /// used in the normal timecode calculation.
 ///
 /// ***WARNING:*** This method will panic if passed a non-drop-frame framerate.
-fn frame_num_to_drop_num(frame_number: i64, rate: Framerate) -> i64 {
-    // Get the timebase as an i64. NTSC timebases are always whole-frame.
-    let timebase = rate.timebase().to_integer();
+fn drop_frame_adjustment(mut frame_number: i64, rate: Framerate) -> i64 {
+    let framerate = rate.playback().to_f64().unwrap();
 
-    // Get the number frames-per-minute at the whole-frame rate.
-    let frames_per_minute = timebase * 60;
-    // Get the number of frames we need to drop each time we drop frames (ex: 2 f or 29.97).
-    let drop_frames = rate.drop_frames().unwrap();
+    let dropped_per_min = rate.drop_frames_per_minute().unwrap();
+    let frames_per_hour = (framerate * 60.0 * 60.0).round().to_i64().unwrap();
+    let frames_per_24_hours = frames_per_hour * 24;
+    let frames_per_10_min = (framerate * 60.0 * 10.0).round().to_i64().unwrap();
+    let frames_per_min = (framerate * 60.0).round().to_i64().unwrap();
 
-    // Get the number of frames are in a minute where we have dropped frames at the
-    // beginning.
-    let frames_per_minute_drop = (timebase * 60) - drop_frames;
-    // Get the number of actual frames in a 10-minute span for drop frame timecode. Since
-    // we drop 9 times in 10 minute, it will be 9 drop-minute frame counts + 1 whole-minute
-    // frame count.
-    let frames_per_10minutes_drop = frames_per_minute_drop * 9 + frames_per_minute;
+    frame_number %= frames_per_24_hours;
 
-    // Get the number of 10s of minutes in this count, and the remaining frames.
-    let result = div_mod_floor(frame_number, frames_per_10minutes_drop);
-    let tens_of_minutes = result.0;
-    let mut frames = result.1;
+    let (tens_of_mins, remaining_mins) = div_rem(frame_number, frames_per_10_min);
+    let tens_of_mins_adjustment = dropped_per_min * 9 * tens_of_mins;
 
-    // Create an adjustment for the number of 10s of minutes. It will be 9 times the
-    // drop value (we drop for the first 9 minutes, then leave the 10th alone).
-    let mut adjustment = 9 * drop_frames * tens_of_minutes;
+    if remaining_mins > dropped_per_min {
+        let remaining_minutes_adjustment =
+            dropped_per_min * (remaining_mins - dropped_per_min) / frames_per_min;
 
-    // If our remaining frames are less than a whole minute, we aren't going to drop
-    // again. Add the adjustment and return.
-    if frames < frames_per_minute {
-        return frame_number + adjustment;
-    };
-
-    // Remove the first full minute (we don't drop until the next minute) and add the
-    // drop-rate to the adjustment.
-    frames -= timebase;
-    adjustment += drop_frames;
-
-    // Get the number of remaining drop-minutes present, and add a drop adjustment for
-    // each.
-    let minutes_drop = frames / frames_per_minute_drop;
-    adjustment += minutes_drop * drop_frames;
-
-    // Return our original frame number adjusted by our calculated adjustment.
-    frame_number + adjustment
+        tens_of_mins_adjustment + remaining_minutes_adjustment
+    } else {
+        tens_of_mins_adjustment
+    }
 }
