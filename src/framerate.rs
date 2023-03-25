@@ -110,16 +110,16 @@ impl Framerate {
         self.ntsc
     }
 
-    /// drop_frames returns the number o frames to skip on non-10th minutes in drop frame timecodes.
-    /// This method will return None on non-dop Framerates
+    /// drop_frames returns the number of frames to skip on non-10th minutes in drop
+    /// frame timecodes. This method will return None on non-dop Framerates
     ///
     /// Algorithm adapted from: https://www.davidheidelberger.com/2010/06/10/drop-frame-timecode/
-    pub(crate) fn drop_frames(&self) -> Option<i64> {
+    pub(crate) fn drop_frames_per_minute(&self) -> Option<i64> {
         if self.ntsc != Ntsc::DropFrame {
             return None;
         }
 
-        let drop_frames = self.timebase().to_integer() as f64 * 0.066666;
+        let drop_frames = self.timebase().round().to_integer() as f64 * 0.066666;
         Some(drop_frames.round() as i64)
     }
 
