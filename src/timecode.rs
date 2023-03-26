@@ -120,9 +120,9 @@ impl FilmFormat {
     pub fn perfs_per_foot(&self) -> i64 {
         match self {
             FilmFormat::FF16mm => PERFS_PER_6INCHES_16,
-            FilmFormat::FF35mm4perf
-            | FilmFormat::FF35mm3perf
-            | FilmFormat::FF35mm2perf => PERFS_PER_FOOT_35,
+            FilmFormat::FF35mm4perf | FilmFormat::FF35mm3perf | FilmFormat::FF35mm2perf => {
+                PERFS_PER_FOOT_35
+            }
         }
     }
 
