@@ -312,6 +312,35 @@ mod test {
             premiere_ticks: 0,
         }
     )]
+    #[case::t00_01_01_00_f29_97_df(
+        ParseCase{
+            frames_sources: vec![
+                Box::new("00:01:01;00".to_string()),
+                Box::new("1828".to_string()),
+                Box::new("114+04".to_string()),
+                Box::new(1828i64),
+                Box::new(1828u64),
+                Box::new(1828i32),
+                Box::new(1828u32),
+                Box::new(1828i16),
+                Box::new(1828u16),
+            ],
+            seconds_sources: vec![
+                Box::new(Rational64::new(457_457, 7500)),
+                Box::new(Rational64::new(457_457, 7500).to_f64().unwrap()),
+                Box::new(Rational64::new(457_457, 7500).to_f32().unwrap()),
+                Box::new("00:01:00.994266667".to_string()),
+            ],
+            ticks_sources: vec![],
+            rate: rates::F29_97_DF,
+            seconds: Rational64::new(457_457, 7500),
+            frames: 1828,
+            timecode: "00:01:01;00".to_string(),
+            runtime: "00:01:00.994266667".to_string(),
+            feet_and_frames: "114+04".to_string(),
+            premiere_ticks: 15_493_519_641_600,
+        }
+    )]
     #[case::t00_00_02_02_f29_97_df(
         ParseCase{
             frames_sources: vec![
@@ -820,6 +849,23 @@ mod test {
             premiere_ticks: 15256200960000,
         }
     )]
+    // Less than 4 frames past a minute should parse OK
+    #[case::t00_01_00_04_f59_94_df(
+        ParseCase{
+            frames_sources: vec![
+                Box::new("00:01:01;03".to_string()),
+            ],
+            seconds_sources: vec![],
+            ticks_sources: vec![],
+            rate: rates::F59_94_DF,
+            seconds: Rational64::new(3662659, 60000),
+            frames: 3659,
+            timecode: "00:01:01;03".to_string(),
+            runtime: "00:01:01.044316667".to_string(),
+            feet_and_frames: "228+11".to_string(),
+            premiere_ticks: 15506233142400,
+        }
+    )]
     #[case::t00_01_00_04_f59_94_df_negative(
         ParseCase{
             frames_sources: vec![
@@ -1008,6 +1054,26 @@ mod test {
         let tc = Timecode::with_frames(case.tc_in, rates::F24)?;
 
         assert_eq!(case.tc_out, tc.timecode(), "parsed tc correct");
+
+        Ok(())
+    }
+
+    /// tests that bad drop frame values fail to parse
+    #[rstest]
+    #[case("00:09:00:01", rates::F29_97_DF)]
+    #[case("00:08:00:01", rates::F59_94_DF)]
+    #[case("00:08:00:02", rates::F59_94_DF)]
+    #[case("00:08:00:03", rates::F59_94_DF)]
+    #[case("01:09:00:01", rates::F29_97_DF)]
+    #[case("02:08:00:01", rates::F59_94_DF)]
+    #[case("03:08:00:02", rates::F59_94_DF)]
+    #[case("26:08:00:03", rates::F59_94_DF)]
+    fn test_parse_bad_drop_frame(
+        #[case] tc_str: &str,
+        #[case] rate: Framerate,
+    ) -> Result<(), TimecodeParseError> {
+        let tc = Timecode::with_frames(tc_str, rate);
+        assert!(tc.is_err());
 
         Ok(())
     }

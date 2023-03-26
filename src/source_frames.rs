@@ -241,14 +241,15 @@ fn parse_timecode_string(matched: regex::Captures, rate: Framerate) -> FramesSou
 /// **WARNING** this method will panic if a non-drop-frame Framerate is passed to it.
 fn drop_frame_tc_adjustment(sections: TimecodeSections, rate: Framerate) -> FramesSourceResult {
     // Get the number of frames we need to drop each time we drop frames (ex: 2 for 29.97)
-    let drop_frames = rate.drop_frames().unwrap();
+    let drop_frames = rate.drop_frames_per_minute().unwrap();
 
     // We have a bad frame value if our 'frames' place is less than the drop_frames we
     // skip on minutes not divisible by 10.
     let has_bad_frames = sections.frames < drop_frames;
     let is_tenth_minute = sections.minutes % 10 == 0;
+    let is_minute_boundary = sections.seconds == 0;
 
-    if has_bad_frames && !is_tenth_minute {
+    if has_bad_frames && is_minute_boundary && !is_tenth_minute {
         return Err(TimecodeParseError::DropFrameValue(format!(
             "drop-frame tc cannot have a frames value of less than {} on minutes not divisible by 10, found '{}'",
             drop_frames,
