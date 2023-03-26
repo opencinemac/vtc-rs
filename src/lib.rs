@@ -25,7 +25,7 @@ corner-cases of parsing and calculating timecode.
 Let's take a quick high-level look at what you can do with vtc-rs:
 
 ```rust
-use vtc::{Timecode, Framerate, Ntsc, rates, FilmFormat, FeetFrames, IntoFeetFrames};
+use vtc::{Timecode, Framerate, Ntsc, rates, FilmFormat, FeetFramesStr};
 use num::Rational64;
 
 // It's easy to make a new 23.98 NTSC timecode. We use the with_frames constructor here since
@@ -77,7 +77,7 @@ assert_eq!(parsed.timecode(), "00:00:01:23");
 // If you want to do calculations with unusual footage formants,
 // you can hint the Feet + Frames parser with a FeetFrames struct.
 
-let feet_frames : FeetFrames = "22+1".into_feet_frames(FilmFormat::FF16mm);
+let feet_frames : FeetFramesStr = FeetFramesStr::new("22+1", FilmFormat::FF16mm);
 let parsed = Timecode::with_frames(feet_frames, rates::F24).unwrap();
 assert_eq!(parsed.timecode(), "00:00:18:09");
 
@@ -271,5 +271,5 @@ pub use source_frames::{FramesSource, FramesSourceResult};
 pub use source_ppro_ticks::{PremiereTicksSource, PremiereTicksSourceResult};
 pub use source_seconds::{SecondsSource, SecondsSourceResult};
 pub use timecode::{
-    FeetFrames, FilmFormat, IntoFeetFrames, Timecode, TimecodeParseResult, TimecodeSections,
+    FeetFramesStr, FilmFormat, Timecode, TimecodeParseResult, TimecodeSections,
 };

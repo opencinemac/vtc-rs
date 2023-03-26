@@ -7,7 +7,7 @@ use crate::consts::{
     FEET_AND_FRAMES_REGEX, SECONDS_PER_HOUR_I64, SECONDS_PER_MINUTE_I64, TIMECODE_REGEX,
 };
 use crate::{
-    timecode_parse, FeetFrames, FilmFormat, Framerate, Ntsc, TimecodeParseError,
+    timecode_parse, FeetFramesStr, FilmFormat, Framerate, Ntsc, TimecodeParseError,
     TimecodeSections,
 };
 
@@ -143,7 +143,7 @@ impl FramesSource for &str {
     }
 }
 
-impl<'a> FramesSource for FeetFrames<'a> {
+impl<'a> FramesSource for FeetFramesStr<'a> {
     fn to_frames(&self, _rate: Framerate) -> FramesSourceResult {
         if let Some(matched) = FEET_AND_FRAMES_REGEX.captures(self.input) {
             parse_feet_and_frames_str(matched, Some(self.format))

@@ -144,26 +144,15 @@ impl FilmFormat {
 /// a format hint tothe footage parser, which will override its default
 /// inference
 #[derive(Debug)]
-pub struct FeetFrames<'a> {
+pub struct FeetFramesStr<'a> {
     pub(crate) input: &'a str,
     pub(crate) format: FilmFormat,
 }
 
-impl<'a> FeetFrames<'a> {
-    /// Create a [FeetFrames] object from a string and a [FeetFramesFormat]
-    pub fn from_string(input: &'a str, format: FilmFormat) -> Self {
-        FeetFrames { input, format }
-    }
-}
-
-pub trait IntoFeetFrames<'a> {
-    /// Consumes the receiver and returns a new [FeetFrames] structure.
-    fn into_feet_frames(self, format: FilmFormat) -> FeetFrames<'a>;
-}
-
-impl<'a> IntoFeetFrames<'a> for &'a str {
-    fn into_feet_frames(self, format: FilmFormat) -> FeetFrames<'a> {
-        FeetFrames::from_string(self, format)
+impl<'a> FeetFramesStr<'a> {
+    /// Create a [FeetFramesStr] object from a string and a [FilmFormat]
+    pub fn new(input: &'a str, format: FilmFormat) -> Self {
+        FeetFramesStr { input, format }
     }
 }
 
