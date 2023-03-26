@@ -130,7 +130,7 @@ assert_eq!(tc.timecode(), "17:23:13:02");
 // We can make dropframe timecode for 29.97 or 59.94 using one of the pre-set framerates.
 // We can use an int to parse 15000 frames.
 let drop_frame = Timecode::with_frames(15000, rates::F29_97_DF).unwrap();
-assert_eq!(drop_frame.timecode(), "00:08:20;18");
+assert_eq!(drop_frame.timecode(), "00:08:20;16");
 assert_eq!(drop_frame.rate().ntsc(), Ntsc::DropFrame);
 
 // We can make new timecodes with arbitrary framerates if we want:
