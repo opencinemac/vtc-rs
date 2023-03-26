@@ -7,7 +7,7 @@ use crate::consts::{
     FEET_AND_FRAMES_REGEX, SECONDS_PER_HOUR_I64, SECONDS_PER_MINUTE_I64, TIMECODE_REGEX,
 };
 use crate::{
-    timecode_parse, FeetFrames, FeetFramesFormat, Framerate, Ntsc, TimecodeParseError,
+    timecode_parse, FeetFrames, FilmFormat, Framerate, Ntsc, TimecodeParseError,
     TimecodeSections,
 };
 
@@ -267,7 +267,7 @@ fn drop_frame_tc_adjustment(sections: TimecodeSections, rate: Framerate) -> Fram
 
 fn parse_feet_and_frames_str(
     matched: regex::Captures,
-    format: Option<FeetFramesFormat>,
+    format: Option<FilmFormat>,
 ) -> FramesSourceResult {
     // If we got a match, these groups had to be present, so we can unwrap them.
 
@@ -282,8 +282,8 @@ fn parse_feet_and_frames_str(
 
     let final_format = match (format, perfs) {
         (Some(f), _) => f,
-        (_, Some(_)) => FeetFramesFormat::FF35mm3perf,
-        (_, _) => FeetFramesFormat::FF35mm4perf,
+        (_, Some(_)) => FilmFormat::FF35mm3perf,
+        (_, _) => FilmFormat::FF35mm4perf,
     };
 
     let mut perfs = feet * final_format.perfs_per_foot() + frames * final_format.perfs_per_frame();

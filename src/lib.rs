@@ -25,7 +25,7 @@ corner-cases of parsing and calculating timecode.
 Let's take a quick high-level look at what you can do with vtc-rs:
 
 ```rust
-use vtc::{Timecode, Framerate, Ntsc, rates, FeetFramesFormat, FeetFrames, IntoFeetFrames};
+use vtc::{Timecode, Framerate, Ntsc, rates, FilmFormat, FeetFrames, IntoFeetFrames};
 use num::Rational64;
 
 // It's easy to make a new 23.98 NTSC timecode. We use the with_frames constructor here since
@@ -38,8 +38,8 @@ assert_eq!(tc.frames(), 1502234i64);
 assert_eq!(tc.seconds(), Rational64::new(751868117, 12000));
 assert_eq!(tc.runtime(3), "17:24:15.676");
 assert_eq!(tc.premiere_ticks(), 15915544300656000i64);
-assert_eq!(tc.feet_and_frames(FeetFramesFormat::FF35mm4perf), "93889+10");
-assert_eq!(tc.feet_and_frames(FeetFramesFormat::FF35mm3perf), "70417+04.1");
+assert_eq!(tc.feet_and_frames(FilmFormat::FF35mm4perf), "93889+10");
+assert_eq!(tc.feet_and_frames(FilmFormat::FF35mm3perf), "70417+04.1");
 
 // We can inspect the framerate.
 assert_eq!(tc.rate().playback(), Rational64::new(24000, 1001));
@@ -77,13 +77,13 @@ assert_eq!(parsed.timecode(), "00:00:01:23");
 // If you want to do calculations with unusual footage formants,
 // you can hint the Feet + Frames parser with a FeetFrames struct.
 
-let feet_frames : FeetFrames = "22+1".into_feet_frames(FeetFramesFormat::FF16mm);
+let feet_frames : FeetFrames = "22+1".into_feet_frames(FilmFormat::FF16mm);
 let parsed = Timecode::with_frames(feet_frames, rates::F24).unwrap();
 assert_eq!(parsed.timecode(), "00:00:18:09");
 
 // And then these timecode objects can be turned back into footages.
 
-let ff = parsed.feet_and_frames(FeetFramesFormat::FF35mm4perf);
+let ff = parsed.feet_and_frames(FilmFormat::FF35mm4perf);
 assert_eq!(ff, "27+09");
 
 // We can add two timecodes
@@ -271,5 +271,5 @@ pub use source_frames::{FramesSource, FramesSourceResult};
 pub use source_ppro_ticks::{PremiereTicksSource, PremiereTicksSourceResult};
 pub use source_seconds::{SecondsSource, SecondsSourceResult};
 pub use timecode::{
-    FeetFrames, FeetFramesFormat, IntoFeetFrames, Timecode, TimecodeParseResult, TimecodeSections,
+    FeetFrames, FilmFormat, IntoFeetFrames, Timecode, TimecodeParseResult, TimecodeSections,
 };

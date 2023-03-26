@@ -38,7 +38,7 @@ pub struct TimecodeSections {
 /// Feet and Frames Representations
 ///
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
-pub enum FeetFramesFormat {
+pub enum FilmFormat {
     /**
     35mm 4-perf film (16 frames per foot). ex: '5400+13'.
 
@@ -114,15 +114,15 @@ pub enum FeetFramesFormat {
     FF16mm,
 }
 
-impl FeetFramesFormat {
+impl FilmFormat {
     /// Utility function mapping self to number
     /// of perfs per (logical) foot in this case.
     pub fn perfs_per_foot(&self) -> i64 {
         match self {
-            FeetFramesFormat::FF16mm => PERFS_PER_6INCHES_16,
-            FeetFramesFormat::FF35mm4perf
-            | FeetFramesFormat::FF35mm3perf
-            | FeetFramesFormat::FF35mm2perf => PERFS_PER_FOOT_35,
+            FilmFormat::FF16mm => PERFS_PER_6INCHES_16,
+            FilmFormat::FF35mm4perf
+            | FilmFormat::FF35mm3perf
+            | FilmFormat::FF35mm2perf => PERFS_PER_FOOT_35,
         }
     }
 
@@ -130,10 +130,10 @@ impl FeetFramesFormat {
     /// perfs per frame in this case.
     pub fn perfs_per_frame(&self) -> i64 {
         match self {
-            FeetFramesFormat::FF16mm => 1,
-            FeetFramesFormat::FF35mm4perf => 4,
-            FeetFramesFormat::FF35mm3perf => 3,
-            FeetFramesFormat::FF35mm2perf => 2,
+            FilmFormat::FF16mm => 1,
+            FilmFormat::FF35mm4perf => 4,
+            FilmFormat::FF35mm3perf => 3,
+            FilmFormat::FF35mm2perf => 2,
         }
     }
 }
@@ -146,23 +146,23 @@ impl FeetFramesFormat {
 #[derive(Debug)]
 pub struct FeetFrames<'a> {
     pub(crate) input: &'a str,
-    pub(crate) format: FeetFramesFormat,
+    pub(crate) format: FilmFormat,
 }
 
 impl<'a> FeetFrames<'a> {
     /// Create a [FeetFrames] object from a string and a [FeetFramesFormat]
-    pub fn from_string(input: &'a str, format: FeetFramesFormat) -> Self {
+    pub fn from_string(input: &'a str, format: FilmFormat) -> Self {
         FeetFrames { input, format }
     }
 }
 
 pub trait IntoFeetFrames<'a> {
     /// Consumes the receiver and returns a new [FeetFrames] structure.
-    fn into_feet_frames(self, format: FeetFramesFormat) -> FeetFrames<'a>;
+    fn into_feet_frames(self, format: FilmFormat) -> FeetFrames<'a>;
 }
 
 impl<'a> IntoFeetFrames<'a> for &'a str {
-    fn into_feet_frames(self, format: FeetFramesFormat) -> FeetFrames<'a> {
+    fn into_feet_frames(self, format: FilmFormat) -> FeetFrames<'a> {
         FeetFrames::from_string(self, format)
     }
 }
@@ -624,7 +624,7 @@ impl Timecode {
     - Avid film pull lists, cut lists and change lists
 
     */
-    pub fn feet_and_frames(&self, rep: FeetFramesFormat) -> String {
+    pub fn feet_and_frames(&self, rep: FilmFormat) -> String {
         fn feet_and_frames_impl(
             frames: i64,
             is_negative: bool,
@@ -1103,12 +1103,12 @@ mod test {
     #[test]
     fn test_35mm4p() {
         let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
-        assert_eq!("5400+00", tc.feet_and_frames(FeetFramesFormat::FF35mm4perf))
+        assert_eq!("5400+00", tc.feet_and_frames(FilmFormat::FF35mm4perf))
     }
 
     #[test]
     fn test_35mm3perf() {
-        let rep = FeetFramesFormat::FF35mm3perf;
+        let rep = FilmFormat::FF35mm3perf;
         let tc1 = Timecode::with_frames("00:00:00:00", rates::F24).unwrap();
         assert_eq!("0+00.0", tc1.feet_and_frames(rep));
 
@@ -1128,14 +1128,14 @@ mod test {
     #[test]
     fn test_16mm() {
         let tc = Timecode::with_frames("00:00:01:00", rates::F23_98).unwrap();
-        assert_eq!("1+04", tc.feet_and_frames(FeetFramesFormat::FF16mm))
+        assert_eq!("1+04", tc.feet_and_frames(FilmFormat::FF16mm))
     }
 
     #[test]
     fn test_35mm2p() {
         let tc = Timecode::with_frames("00:00:01:00", rates::F23_98).unwrap();
-        assert_eq!("0+24", tc.feet_and_frames(FeetFramesFormat::FF35mm2perf));
+        assert_eq!("0+24", tc.feet_and_frames(FilmFormat::FF35mm2perf));
         let tc2 = Timecode::with_frames("00:00:02:00", rates::F23_98).unwrap();
-        assert_eq!("1+16", tc2.feet_and_frames(FeetFramesFormat::FF35mm2perf));
+        assert_eq!("1+16", tc2.feet_and_frames(FilmFormat::FF35mm2perf));
     }
 }
