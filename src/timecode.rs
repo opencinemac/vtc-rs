@@ -35,82 +35,83 @@ pub struct TimecodeSections {
     pub frames: i64,
 }
 
-/// Feet and Frames Representations
-///
+/** Feet and Frames Representations
+
+[[FF35mm4perf]]
+
+35mm 4-perf film (16 frames per foot). ex: '5400+13'.
+
+# What it is
+
+On physical film, each foot contains a certain number of frames. For 35mm, 4-perf film (the most
+common type on Hollywood movies), this number is 16 frames per foot. Feet-And-Frames was often
+used in place of Keycode to quickly reference a frame in the edit.
+
+# Where you see it
+
+For the most part, feet + frames has died out as a reference, because digital media is not
+measured in feet. The most common place it is still used is Studio Sound Departments. Many Sound
+Mixers and Designers intuitively think in feet + frames, and it is often burned into the
+reference picture for them.
+
+- Telecine.
+- Sound turnover reference picture.
+- Sound turnover change lists.
+
+[[FF35mm3perf]]
+
+35mm film with 3-perf per-frame pulldown (64 perforations per foot). ex: '12+01.1'.
+
+# What it is
+
+3-perf footages are represented as a string with three terms, a number of feet, a
+number of frames from the beginning of the foot, and an final framing term preceded by
+a period, indicating how many perfs were cut off the first frame of this foot.
+
+# Where you see it
+
+Avid cutlists and pull lists on Avid 3 perf projects.
+
+[[FF35mm2perf]]
+
+# What it is
+
+35mm 2-perf film records 32 frames in a foot of film, instead of the usual 16.
+This creates a negative image with a wide aspect ratio using standard spherical
+lenses and consumes half the footage per minute running time as standard 35mm,
+while having a grain profile somewhat better than 16mm while not as good as
+standard 35mm.
+
+# Where you see it
+
+35mm 2-perf formats are uncommon though still find occasional use, the process is
+usually marketed as "Techniscope", the original trademark for Technicolor Italia's
+2-perf format. It was historically very common in the Italian film industry prior
+to digital filmmaking, and is used on some contemporary films to obtain a film look
+while keeping stock and processing costs down.
+
+[[FF16mm]]
+
+# What it is
+
+On 16mm film, there are forty frames of film in each foot, one perforation
+per frame. However, 16mm film is edge coded every six inches, with twenty
+frames per code, so the footage "1+19" is succeeded by "2+0".
+
+# Where you see it
+
+16mm telecines, 16mm edge codes.
+
+*/
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum FilmFormat {
-    /**
-    35mm 4-perf film (16 frames per foot). ex: '5400+13'.
-
-    # What it is
-
-    On physical film, each foot contains a certain number of frames. For 35mm, 4-perf film (the most
-    common type on Hollywood movies), this number is 16 frames per foot. Feet-And-Frames was often
-    used in place of Keycode to quickly reference a frame in the edit.
-
-    # Where you see it
-
-    For the most part, feet + frames has died out as a reference, because digital media is not
-    measured in feet. The most common place it is still used is Studio Sound Departments. Many Sound
-    Mixers and Designers intuitively think in feet + frames, and it is often burned into the
-    reference picture for them.
-
-    - Telecine.
-    - Sound turnover reference picture.
-    - Sound turnover change lists.
-
-    */
+    /// 35mm, 4-perf footage
     FF35mm4perf,
-
-    /**
-    35mm film with 3-perf per-frame pulldown (64 perforations per foot). ex: '12+01.1'.
-
-    # What it is
-
-    3-perf footages are represented as a string with three terms, a number of feet, a
-    number of frames from the beginning of the foot, and an final framing term preceded by
-    a period, indicating how many perfs were cut off the first frame of this foot.
-
-    # Where you see it
-
-    Avid cutlists and pull lists on Avid 3 perf projects.
-    */
+    /// 35mm, 3-perf footage
     FF35mm3perf,
-
-    /**
-    35mm, 2-perf footage.
-
-    # What it is
-
-    35mm 2-perf film records 32 frames in a foot of film, instead of the usual 16.
-    This creates a negative image with a wide aspect ratio using standard spherical
-    lenses and consumes half the footage per minute running time as standard 35mm,
-    while having a grain profile somewhat better than 16mm while not as good as
-    standard 35mm.
-
-    # Where you see it
-
-    35mm 2-perf formats are uncommon though still find occasional use, the process is
-    usually marketed as "Techniscope", the original trademark for Technicolor Italia's
-    2-perf format. It was historically very common in the Italian film industry prior
-    to digital filmmaking, and is used on some contemporary films to obtain a film look
-    while keeping stock and processing costs down.
-    */
+    /// 35mm, 2-perf footage
     FF35mm2perf,
-
-    /**
-    16mm footage
-
-    # What it is
-
-    On 16mm film, there are forty frames of film in each foot, one perforation
-    per frame. However, 16mm film is edge coded every six inches, with twenty
-    frames per code, so the footage "1+19" is succeeded by "2+0".
-
-    # Where you see it
-
-    16mm telecines, 16mm edge codes.
-    */
+    /// 16mm footage
     FF16mm,
 }
 
@@ -138,11 +139,11 @@ impl FilmFormat {
     }
 }
 
-/// A struct that bundles a str together with a format, to hint parsing
+/// A struct that bundles a str together with a format, to hint parsing.
 ///
 /// This struct, which implelements [FrameSource], allows you to include
-/// a format hint tothe footage parser, which will override its default
-/// inference
+/// a format hint to the footage parser, which will override its default
+/// inference.
 #[derive(Debug)]
 pub struct FeetFramesStr<'a> {
     pub(crate) input: &'a str,
@@ -150,7 +151,7 @@ pub struct FeetFramesStr<'a> {
 }
 
 impl<'a> FeetFramesStr<'a> {
-    /// Create a [FeetFramesStr] object from a string and a [FilmFormat]
+    /// Create a [FeetFramesStr] object from a string and a [FilmFormat].
     pub fn new(input: &'a str, format: FilmFormat) -> Self {
         FeetFramesStr { input, format }
     }

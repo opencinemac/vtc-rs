@@ -19,7 +19,7 @@ mod test {
         frames: i64,
         timecode: String,
         runtime: String,
-        feet_and_frames: String,
+        feet_and_frames_35mm_4perf: String,
         premiere_ticks: i64,
     }
 
@@ -55,7 +55,7 @@ mod test {
             frames: 86400,
             timecode: "01:00:00:00".to_string(),
             runtime: "01:00:03.6".to_string(),
-            feet_and_frames: "5400+00".to_string(),
+            feet_and_frames_35mm_4perf: "5400+00".to_string(),
             premiere_ticks: 915372057600000i64,
         }
     )]
@@ -84,7 +84,7 @@ mod test {
             frames: -86400,
             timecode: "-01:00:00:00".to_string(),
             runtime: "-01:00:03.6".to_string(),
-            feet_and_frames: "-5400+00".to_string(),
+            feet_and_frames_35mm_4perf: "-5400+00".to_string(),
             premiere_ticks: -915372057600000i64,
         }
     )]
@@ -117,7 +117,7 @@ mod test {
             frames: 57600,
             timecode: "00:40:00:00".to_string(),
             runtime: "00:40:02.4".to_string(),
-            feet_and_frames: "3600+00".to_string(),
+            feet_and_frames_35mm_4perf: "3600+00".to_string(),
             premiere_ticks: 610248038400000,
         }
     )]
@@ -146,7 +146,7 @@ mod test {
             frames: -57600,
             timecode: "-00:40:00:00".to_string(),
             runtime: "-00:40:02.4".to_string(),
-            feet_and_frames: "-3600+00".to_string(),
+            feet_and_frames_35mm_4perf: "-3600+00".to_string(),
             premiere_ticks: -610248038400000,
         }
     )]
@@ -182,7 +182,7 @@ mod test {
             frames: 86400,
             timecode: "01:00:00:00".to_string(),
             runtime: "01:00:00.0".to_string(),
-            feet_and_frames: "5400+00".to_string(),
+            feet_and_frames_35mm_4perf: "5400+00".to_string(),
             premiere_ticks: 914457600000000,
         }
     )]
@@ -211,7 +211,7 @@ mod test {
             frames: -86400,
             timecode: "-01:00:00:00".to_string(),
             runtime: "-01:00:00.0".to_string(),
-            feet_and_frames: "-5400+00".to_string(),
+            feet_and_frames_35mm_4perf: "-5400+00".to_string(),
             premiere_ticks: -914457600000000,
         }
     )]
@@ -245,7 +245,7 @@ mod test {
             frames: 57600,
             timecode: "00:40:00:00".to_string(),
             runtime: "00:40:00.0".to_string(),
-            feet_and_frames: "3600+00".to_string(),
+            feet_and_frames_35mm_4perf: "3600+00".to_string(),
             premiere_ticks: 609638400000000,
         }
     )]
@@ -275,7 +275,7 @@ mod test {
             frames: -57600,
             timecode: "-00:40:00:00".to_string(),
             runtime: "-00:40:00.0".to_string(),
-            feet_and_frames: "-3600+00".to_string(),
+            feet_and_frames_35mm_4perf: "-3600+00".to_string(),
             premiere_ticks: -609638400000000,
         }
     )]
@@ -308,7 +308,7 @@ mod test {
             frames: 0,
             timecode: "00:00:00;00".to_string(),
             runtime: "00:00:00.0".to_string(),
-            feet_and_frames: "0+00".to_string(),
+            feet_and_frames_35mm_4perf: "0+00".to_string(),
             premiere_ticks: 0,
         }
     )]
@@ -337,7 +337,7 @@ mod test {
             frames: 1828,
             timecode: "00:01:01;00".to_string(),
             runtime: "00:01:00.994266667".to_string(),
-            feet_and_frames: "114+04".to_string(),
+            feet_and_frames_35mm_4perf: "114+04".to_string(),
             premiere_ticks: 15_493_519_641_600,
         }
     )]
@@ -372,7 +372,7 @@ mod test {
             frames: 62,
             timecode: "00:00:02;02".to_string(),
             runtime: "00:00:02.068733333".to_string(),
-            feet_and_frames: "3+14".to_string(),
+            feet_and_frames_35mm_4perf: "3+14".to_string(),
             premiere_ticks: 525491366400,
         }
     )]
@@ -402,7 +402,7 @@ mod test {
             frames: -62,
             timecode: "-00:00:02;02".to_string(),
             runtime: "-00:00:02.068733333".to_string(),
-            feet_and_frames: "-3+14".to_string(),
+            feet_and_frames_35mm_4perf: "-3+14".to_string(),
             premiere_ticks: -525491366400,
         }
     )]
@@ -435,7 +435,7 @@ mod test {
             frames: 1800,
             timecode: "00:01:00;02".to_string(),
             runtime: "00:01:00.06".to_string(),
-            feet_and_frames: "112+08".to_string(),
+            feet_and_frames_35mm_4perf: "112+08".to_string(),
             premiere_ticks: 15256200960000,
         }
     )]
@@ -464,7 +464,7 @@ mod test {
             frames: -1800,
             timecode: "-00:01:00;02".to_string(),
             runtime: "-00:01:00.06".to_string(),
-            feet_and_frames: "-112+08".to_string(),
+            feet_and_frames_35mm_4perf: "-112+08".to_string(),
             premiere_ticks: -15256200960000,
         }
     )]
@@ -497,7 +497,7 @@ mod test {
             frames: 17982,
             timecode: "00:10:00;00".to_string(),
             runtime: "00:09:59.9994".to_string(),
-            feet_and_frames: "1123+14".to_string(),
+            feet_and_frames_35mm_4perf: "1123+14".to_string(),
             premiere_ticks: 152409447590400,
         }
     )]
@@ -526,7 +526,7 @@ mod test {
             frames: -17982,
             timecode: "-00:10:00;00".to_string(),
             runtime: "-00:09:59.9994".to_string(),
-            feet_and_frames: "-1123+14".to_string(),
+            feet_and_frames_35mm_4perf: "-1123+14".to_string(),
             premiere_ticks: -152409447590400,
         }
     )]
@@ -559,7 +559,7 @@ mod test {
             frames: 19782,
             timecode: "00:11:00;02".to_string(),
             runtime: "00:11:00.0594".to_string(),
-            feet_and_frames: "1236+06".to_string(),
+            feet_and_frames_35mm_4perf: "1236+06".to_string(),
             premiere_ticks: 167665648550400,
         }
     )]
@@ -588,7 +588,7 @@ mod test {
             frames: -19782,
             timecode: "-00:11:00;02".to_string(),
             runtime: "-00:11:00.0594".to_string(),
-            feet_and_frames: "-1236+06".to_string(),
+            feet_and_frames_35mm_4perf: "-1236+06".to_string(),
             premiere_ticks: -167665648550400,
         }
     )]
@@ -619,7 +619,7 @@ mod test {
             frames: 107892,
             timecode: "01:00:00;00".to_string(),
             runtime: "00:59:59.9964".to_string(),
-            feet_and_frames: "6743+04".to_string(),
+            feet_and_frames_35mm_4perf: "6743+04".to_string(),
             premiere_ticks: 914456685542400,
         }
     )]
@@ -647,7 +647,7 @@ mod test {
             frames: -107892,
             timecode: "-01:00:00;00".to_string(),
             runtime: "-00:59:59.9964".to_string(),
-            feet_and_frames: "-6743+04".to_string(),
+            feet_and_frames_35mm_4perf: "-6743+04".to_string(),
             premiere_ticks: -914456685542400,
         }
     )]
@@ -680,7 +680,7 @@ mod test {
             frames: 0,
             timecode: "00:00:00;00".to_string(),
             runtime: "00:00:00.0".to_string(),
-            feet_and_frames: "0+00".to_string(),
+            feet_and_frames_35mm_4perf: "0+00".to_string(),
             premiere_ticks: 0,
         }
     )]
@@ -715,7 +715,7 @@ mod test {
             frames: 61,
             timecode: "00:00:01;01".to_string(),
             runtime: "00:00:01.017683333".to_string(),
-            feet_and_frames: "3+13".to_string(),
+            feet_and_frames_35mm_4perf: "3+13".to_string(),
             premiere_ticks: 258507849600,
         }
     )]
@@ -745,7 +745,7 @@ mod test {
             frames: -61,
             timecode: "-00:00:01;01".to_string(),
             runtime: "-00:00:01.017683333".to_string(),
-            feet_and_frames: "-3+13".to_string(),
+            feet_and_frames_35mm_4perf: "-3+13".to_string(),
             premiere_ticks: -258507849600,
         }
     )]
@@ -780,7 +780,7 @@ mod test {
             frames: 63,
             timecode: "00:00:01;03".to_string(),
             runtime: "00:00:01.05105".to_string(),
-            feet_and_frames: "3+15".to_string(),
+            feet_and_frames_35mm_4perf: "3+15".to_string(),
             premiere_ticks: 266983516800,
         }
     )]
@@ -810,7 +810,7 @@ mod test {
             frames: -63,
             timecode: "-00:00:01;03".to_string(),
             runtime: "-00:00:01.05105".to_string(),
-            feet_and_frames: "-3+15".to_string(),
+            feet_and_frames_35mm_4perf: "-3+15".to_string(),
             premiere_ticks: -266983516800,
         }
     )]
@@ -845,7 +845,7 @@ mod test {
             frames: 3600,
             timecode: "00:01:00;04".to_string(),
             runtime: "00:01:00.06".to_string(),
-            feet_and_frames: "225+00".to_string(),
+            feet_and_frames_35mm_4perf: "225+00".to_string(),
             premiere_ticks: 15256200960000,
         }
     )]
@@ -862,7 +862,7 @@ mod test {
             frames: 3659,
             timecode: "00:01:01;03".to_string(),
             runtime: "00:01:01.044316667".to_string(),
-            feet_and_frames: "228+11".to_string(),
+            feet_and_frames_35mm_4perf: "228+11".to_string(),
             premiere_ticks: 15506233142400,
         }
     )]
@@ -891,7 +891,7 @@ mod test {
             frames: -3600,
             timecode: "-00:01:00;04".to_string(),
             runtime: "-00:01:00.06".to_string(),
-            feet_and_frames: "-225+00".to_string(),
+            feet_and_frames_35mm_4perf: "-225+00".to_string(),
             premiere_ticks: -15256200960000,
         }
     )]
@@ -927,7 +927,7 @@ mod test {
             frames: 106525177,
             timecode: "123:17:34:217".to_string(),
             runtime: "123:24:58.759070833".to_string(),
-            feet_and_frames: "6657823+09".to_string(),
+            feet_and_frames_35mm_4perf: "6657823+09".to_string(),
             premiere_ticks: 112858993584136800,
         }
     )]
@@ -990,7 +990,7 @@ mod test {
             source
         );
         assert_eq!(
-            case.feet_and_frames,
+            case.feet_and_frames_35mm_4perf,
             tc.feet_and_frames(FilmFormat::FF35mm4perf),
             "feet and frames for {} source {:?}",
             source_type,
