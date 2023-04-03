@@ -616,35 +616,22 @@ impl Timecode {
 
     */
     pub fn feet_and_frames(&self, rep: FilmFormat) -> String {
-        fn feet_and_frames_impl(
-            frames: i64,
-            is_negative: bool,
-            perfs_per_frame: i64,
-            perfs_per_foot: i64,
-        ) -> String {
-            let perfs_result = div_mod_floor(abs(frames * perfs_per_frame), perfs_per_foot);
-            let frames_result: (i64, i64) = div_mod_floor(perfs_result.1, perfs_per_frame);
-            let feet = perfs_result.0;
-            let frames = frames_result.0;
-
-            let sign = if is_negative { "-" } else { "" };
-
-            if perfs_per_foot % perfs_per_frame != 0 {
-                format!("{}{}+{:02}.{}", sign, feet, frames, feet % perfs_per_frame)
-            } else {
-                format!("{}{}+{:02}", sign, feet, frames)
-            }
-        }
 
         let frames = self.frames();
         let negative = self.seconds.is_negative();
+        let (perfs_per_frame, perfs_per_foot) = (rep.perfs_per_frame(), rep.perfs_per_foot());
+        let perfs_result = div_mod_floor(abs(frames * perfs_per_frame), perfs_per_foot);
+        let frames_result: (i64, i64) = div_mod_floor(perfs_result.1, perfs_per_frame);
+        let feet = perfs_result.0;
+        let frames = frames_result.0;
 
-        feet_and_frames_impl(
-            frames,
-            negative,
-            rep.perfs_per_frame(),
-            rep.perfs_per_foot(),
-        )
+        let sign = if negative { "-" } else { "" };
+
+        if perfs_per_foot % perfs_per_frame != 0 {
+            format!("{}{}+{:02}.{}", sign, feet, frames, feet % perfs_per_frame)
+        } else {
+            format!("{}{}+{:02}", sign, feet, frames)
+        }
     }
 
     /// Returns a [Timecode] with the same number of frames running at a different
