@@ -69,7 +69,7 @@ let parsed = Timecode::with_frames("1+08", rates::F23_98).unwrap();
 assert_eq!(parsed.timecode(), "00:00:01:00");
 
 // By default, Feet + Frames parsing infers 4-perf 35mm film, or
-// 3-perf 35mm film if there is a final offset after a period...
+// 3-perf 35mm film if there is a final offset after a period:
 
 let parsed = Timecode::with_frames("2+5.1", rates::F24).unwrap();
 assert_eq!(parsed.timecode(), "00:00:01:23");

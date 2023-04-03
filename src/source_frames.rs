@@ -283,7 +283,7 @@ fn parse_feet_and_frames_str(
 
     let final_format = match (format, perfs) {
         (Some(f), _) => f,
-        (_, Some(_)) => FilmFormat::FF35mm3perf,
+        (None, Some(x)) if x.as_str().parse::<i64>().unwrap_or(99) < 3 => FilmFormat::FF35mm3perf,
         (_, _) => FilmFormat::FF35mm4perf,
     };
 
