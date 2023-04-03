@@ -38,7 +38,7 @@ assert_eq!(tc.frames(), 1502234i64);
 assert_eq!(tc.seconds(), Rational64::new(751868117, 12000));
 assert_eq!(tc.runtime(3), "17:24:15.676");
 assert_eq!(tc.premiere_ticks(), 15915544300656000i64);
-assert_eq!(tc.feet_and_frames_35mm_4p(), "93889+10");
+assert_eq!(tc.feet_and_frames(), "93889+10");
 
 // We can inspect the framerate.
 assert_eq!(tc.rate().playback(), Rational64::new(24000, 1001));
@@ -150,9 +150,9 @@ assert_eq!(ntsc.timecode(), "02:00:00:00");
     - Rational    | 18018/5
     - Feet+Frames | '5400+00'
         - [X] 35mm, 4-perf
-        - [ ] 35mm, 3-perf
-        - [ ] 35mm, 2-perf
-        - [ ] 16mm
+        - [X] 35mm, 3-perf
+        - [X] 35mm, 2-perf
+        - [X] 16mm
     - Premiere Ticks | 15240960000000
 - Operations:
     - Comparisons (==, <, <=, >, >=)
