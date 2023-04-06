@@ -169,9 +169,9 @@ assert_eq!(ntsc.timecode(), "02:00:00:00");
     - Rational    | 18018/5
     - Feet+Frames | '5400+00'
       - [X] 35mm, 4-perf
-      - [ ] 35mm, 3-perf
-      - [ ] 35mm, 2-perf
-      - [ ] 16mm
+      - [X] 35mm, 3-perf
+      - [X] 35mm, 2-perf
+      - [X] 16mm
     - Premiere Ticks | 15240960000000
   - Operations:
     - Comparisons (==, <, <=, >, >=)
