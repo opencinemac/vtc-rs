@@ -20,6 +20,9 @@ mod test {
         timecode: String,
         runtime: String,
         feet_and_frames_35mm_4perf: String,
+        feet_and_frames_35mm_3perf: String,
+        feet_and_frames_35mm_2perf: String,
+        feet_and_frames_16mm: String,
         premiere_ticks: i64,
     }
 
@@ -56,6 +59,9 @@ mod test {
             timecode: "01:00:00:00".to_string(),
             runtime: "01:00:03.6".to_string(),
             feet_and_frames_35mm_4perf: "5400+00".to_string(),
+            feet_and_frames_35mm_3perf: "4050+00.0".to_string(),
+            feet_and_frames_35mm_2perf: "2700+00".to_string(),
+            feet_and_frames_16mm: "4320+00".to_string(),         
             premiere_ticks: 915372057600000i64,
         }
     )]
@@ -85,6 +91,9 @@ mod test {
             timecode: "-01:00:00:00".to_string(),
             runtime: "-01:00:03.6".to_string(),
             feet_and_frames_35mm_4perf: "-5400+00".to_string(),
+            feet_and_frames_35mm_3perf: "-4050+00.0".to_string(),
+            feet_and_frames_35mm_2perf: "-2700+00".to_string(),
+            feet_and_frames_16mm: "-4320+00".to_string(),
             premiere_ticks: -915372057600000i64,
         }
     )]
@@ -118,6 +127,9 @@ mod test {
             timecode: "00:40:00:00".to_string(),
             runtime: "00:40:02.4".to_string(),
             feet_and_frames_35mm_4perf: "3600+00".to_string(),
+            feet_and_frames_35mm_3perf: "2700+00.0".to_string(),
+            feet_and_frames_35mm_2perf: "1800+00".to_string(),
+            feet_and_frames_16mm: "2880+00".to_string(),
             premiere_ticks: 610248038400000,
         }
     )]
@@ -147,6 +159,9 @@ mod test {
             timecode: "-00:40:00:00".to_string(),
             runtime: "-00:40:02.4".to_string(),
             feet_and_frames_35mm_4perf: "-3600+00".to_string(),
+            feet_and_frames_35mm_3perf: "-2700+00.0".to_string(),
+            feet_and_frames_35mm_2perf: "-1800+00".to_string(),
+            feet_and_frames_16mm: "-2880+00".to_string(),
             premiere_ticks: -610248038400000,
         }
     )]
@@ -183,6 +198,9 @@ mod test {
             timecode: "01:00:00:00".to_string(),
             runtime: "01:00:00.0".to_string(),
             feet_and_frames_35mm_4perf: "5400+00".to_string(),
+            feet_and_frames_35mm_3perf: "4050+00.0".to_string(),
+            feet_and_frames_35mm_2perf: "2700+00".to_string(),
+            feet_and_frames_16mm: "4320+00".to_string(),
             premiere_ticks: 914457600000000,
         }
     )]
@@ -212,6 +230,9 @@ mod test {
             timecode: "-01:00:00:00".to_string(),
             runtime: "-01:00:00.0".to_string(),
             feet_and_frames_35mm_4perf: "-5400+00".to_string(),
+            feet_and_frames_35mm_3perf: "-4050+00.0".to_string(),
+            feet_and_frames_35mm_2perf: "-2700+00".to_string(),
+            feet_and_frames_16mm: "-4320+00".to_string(),
             premiere_ticks: -914457600000000,
         }
     )]
@@ -246,6 +267,9 @@ mod test {
             timecode: "00:40:00:00".to_string(),
             runtime: "00:40:00.0".to_string(),
             feet_and_frames_35mm_4perf: "3600+00".to_string(),
+            feet_and_frames_35mm_3perf: "2700+00.0".to_string(),
+            feet_and_frames_35mm_2perf: "1800+00".to_string(),
+            feet_and_frames_16mm: "2880+00".to_string(),
             premiere_ticks: 609638400000000,
         }
     )]
@@ -276,6 +300,9 @@ mod test {
             timecode: "-00:40:00:00".to_string(),
             runtime: "-00:40:00.0".to_string(),
             feet_and_frames_35mm_4perf: "-3600+00".to_string(),
+            feet_and_frames_35mm_3perf: "-2700+00.0".to_string(),
+            feet_and_frames_35mm_2perf: "-1800+00".to_string(),
+            feet_and_frames_16mm: "-2880+00".to_string(),
             premiere_ticks: -609638400000000,
         }
     )]
@@ -309,6 +336,9 @@ mod test {
             timecode: "00:00:00;00".to_string(),
             runtime: "00:00:00.0".to_string(),
             feet_and_frames_35mm_4perf: "0+00".to_string(),
+            feet_and_frames_35mm_3perf: "0+00.0".to_string(),
+            feet_and_frames_35mm_2perf: "0+00".to_string(),
+            feet_and_frames_16mm: "0+00".to_string(),
             premiere_ticks: 0,
         }
     )]
@@ -338,6 +368,9 @@ mod test {
             timecode: "00:01:01;00".to_string(),
             runtime: "00:01:00.994266667".to_string(),
             feet_and_frames_35mm_4perf: "114+04".to_string(),
+            feet_and_frames_35mm_3perf: "85+14.1".to_string(),
+            feet_and_frames_35mm_2perf: "57+04".to_string(),
+            feet_and_frames_16mm: "91+08".to_string(),
             premiere_ticks: 15_493_519_641_600,
         }
     )]
@@ -373,6 +406,9 @@ mod test {
             timecode: "00:00:02;02".to_string(),
             runtime: "00:00:02.068733333".to_string(),
             feet_and_frames_35mm_4perf: "3+14".to_string(),
+            feet_and_frames_35mm_3perf: "2+19.2".to_string(),
+            feet_and_frames_35mm_2perf: "1+30".to_string(),
+            feet_and_frames_16mm: "3+02".to_string(),
             premiere_ticks: 525491366400,
         }
     )]
@@ -403,6 +439,9 @@ mod test {
             timecode: "-00:00:02;02".to_string(),
             runtime: "-00:00:02.068733333".to_string(),
             feet_and_frames_35mm_4perf: "-3+14".to_string(),
+            feet_and_frames_35mm_3perf: "-2+19.2".to_string(),
+            feet_and_frames_35mm_2perf: "-1+30".to_string(),
+            feet_and_frames_16mm: "-3+02".to_string(),
             premiere_ticks: -525491366400,
         }
     )]
@@ -436,6 +475,9 @@ mod test {
             timecode: "00:01:00;02".to_string(),
             runtime: "00:01:00.06".to_string(),
             feet_and_frames_35mm_4perf: "112+08".to_string(),
+            feet_and_frames_35mm_3perf: "84+08.0".to_string(),
+            feet_and_frames_35mm_2perf: "56+08".to_string(),
+            feet_and_frames_16mm: "90+00".to_string(),
             premiere_ticks: 15256200960000,
         }
     )]
@@ -465,6 +507,9 @@ mod test {
             timecode: "-00:01:00;02".to_string(),
             runtime: "-00:01:00.06".to_string(),
             feet_and_frames_35mm_4perf: "-112+08".to_string(),
+            feet_and_frames_35mm_3perf: "-84+08.0".to_string(),
+            feet_and_frames_35mm_2perf: "-56+08".to_string(),
+            feet_and_frames_16mm: "-90+00".to_string(),
             premiere_ticks: -15256200960000,
         }
     )]
@@ -498,6 +543,9 @@ mod test {
             timecode: "00:10:00;00".to_string(),
             runtime: "00:09:59.9994".to_string(),
             feet_and_frames_35mm_4perf: "1123+14".to_string(),
+            feet_and_frames_35mm_3perf: "842+19.2".to_string(),
+            feet_and_frames_35mm_2perf: "561+30".to_string(),
+            feet_and_frames_16mm: "899+02".to_string(),
             premiere_ticks: 152409447590400,
         }
     )]
@@ -527,6 +575,9 @@ mod test {
             timecode: "-00:10:00;00".to_string(),
             runtime: "-00:09:59.9994".to_string(),
             feet_and_frames_35mm_4perf: "-1123+14".to_string(),
+            feet_and_frames_35mm_3perf: "-842+19.2".to_string(),
+            feet_and_frames_35mm_2perf: "-561+30".to_string(),
+            feet_and_frames_16mm: "-899+02".to_string(),
             premiere_ticks: -152409447590400,
         }
     )]
@@ -560,6 +611,9 @@ mod test {
             timecode: "00:11:00;02".to_string(),
             runtime: "00:11:00.0594".to_string(),
             feet_and_frames_35mm_4perf: "1236+06".to_string(),
+            feet_and_frames_35mm_3perf: "927+06.0".to_string(),
+            feet_and_frames_35mm_2perf: "618+06".to_string(), 
+            feet_and_frames_16mm: "989+02".to_string(), 
             premiere_ticks: 167665648550400,
         }
     )]
@@ -589,6 +643,9 @@ mod test {
             timecode: "-00:11:00;02".to_string(),
             runtime: "-00:11:00.0594".to_string(),
             feet_and_frames_35mm_4perf: "-1236+06".to_string(),
+            feet_and_frames_35mm_3perf: "-927+06.0".to_string(), 
+            feet_and_frames_35mm_2perf: "-618+06".to_string(), 
+            feet_and_frames_16mm: "-989+02".to_string(), 
             premiere_ticks: -167665648550400,
         }
     )]
@@ -620,6 +677,9 @@ mod test {
             timecode: "01:00:00;00".to_string(),
             runtime: "00:59:59.9964".to_string(),
             feet_and_frames_35mm_4perf: "6743+04".to_string(),
+            feet_and_frames_35mm_3perf: "5057+09.2".to_string(), 
+            feet_and_frames_35mm_2perf: "3371+20".to_string(), 
+            feet_and_frames_16mm: "5394+12".to_string(), 
             premiere_ticks: 914456685542400,
         }
     )]
@@ -648,6 +708,9 @@ mod test {
             timecode: "-01:00:00;00".to_string(),
             runtime: "-00:59:59.9964".to_string(),
             feet_and_frames_35mm_4perf: "-6743+04".to_string(),
+            feet_and_frames_35mm_3perf: "-5057+09.2".to_string(), 
+            feet_and_frames_35mm_2perf: "-3371+20".to_string(), 
+            feet_and_frames_16mm: "-5394+12".to_string(), 
             premiere_ticks: -914456685542400,
         }
     )]
@@ -681,6 +744,9 @@ mod test {
             timecode: "00:00:00;00".to_string(),
             runtime: "00:00:00.0".to_string(),
             feet_and_frames_35mm_4perf: "0+00".to_string(),
+            feet_and_frames_35mm_3perf: "0+00.0".to_string(), 
+            feet_and_frames_35mm_2perf: "0+00".to_string(), 
+            feet_and_frames_16mm: "0+00".to_string(), 
             premiere_ticks: 0,
         }
     )]
@@ -716,6 +782,9 @@ mod test {
             timecode: "00:00:01;01".to_string(),
             runtime: "00:00:01.017683333".to_string(),
             feet_and_frames_35mm_4perf: "3+13".to_string(),
+            feet_and_frames_35mm_3perf: "2+18.2".to_string(),
+            feet_and_frames_35mm_2perf: "1+29".to_string(), 
+            feet_and_frames_16mm: "3+01".to_string(), 
             premiere_ticks: 258507849600,
         }
     )]
@@ -746,6 +815,9 @@ mod test {
             timecode: "-00:00:01;01".to_string(),
             runtime: "-00:00:01.017683333".to_string(),
             feet_and_frames_35mm_4perf: "-3+13".to_string(),
+            feet_and_frames_35mm_3perf: "-2+18.2".to_string(), 
+            feet_and_frames_35mm_2perf: "-1+29".to_string(), 
+            feet_and_frames_16mm: "-3+01".to_string(), 
             premiere_ticks: -258507849600,
         }
     )]
@@ -781,6 +853,9 @@ mod test {
             timecode: "00:00:01;03".to_string(),
             runtime: "00:00:01.05105".to_string(),
             feet_and_frames_35mm_4perf: "3+15".to_string(),
+            feet_and_frames_35mm_3perf: "2+20.2".to_string(), 
+            feet_and_frames_35mm_2perf: "1+31".to_string(), 
+            feet_and_frames_16mm: "3+03".to_string(), 
             premiere_ticks: 266983516800,
         }
     )]
@@ -811,6 +886,9 @@ mod test {
             timecode: "-00:00:01;03".to_string(),
             runtime: "-00:00:01.05105".to_string(),
             feet_and_frames_35mm_4perf: "-3+15".to_string(),
+            feet_and_frames_35mm_3perf: "-2+20.2".to_string(), 
+            feet_and_frames_35mm_2perf: "-1+31".to_string(), 
+            feet_and_frames_16mm: "-3+03".to_string(), 
             premiere_ticks: -266983516800,
         }
     )]
@@ -846,6 +924,9 @@ mod test {
             timecode: "00:01:00;04".to_string(),
             runtime: "00:01:00.06".to_string(),
             feet_and_frames_35mm_4perf: "225+00".to_string(),
+            feet_and_frames_35mm_3perf: "168+16.0".to_string(), 
+            feet_and_frames_35mm_2perf: "112+16".to_string(), 
+            feet_and_frames_16mm: "180+00".to_string(), 
             premiere_ticks: 15256200960000,
         }
     )]
@@ -863,6 +944,9 @@ mod test {
             timecode: "00:01:01;03".to_string(),
             runtime: "00:01:01.044316667".to_string(),
             feet_and_frames_35mm_4perf: "228+11".to_string(),
+            feet_and_frames_35mm_3perf: "171+11.0".to_string(), 
+            feet_and_frames_35mm_2perf: "114+11".to_string(), 
+            feet_and_frames_16mm: "182+19".to_string(), 
             premiere_ticks: 15506233142400,
         }
     )]
@@ -892,6 +976,9 @@ mod test {
             timecode: "-00:01:00;04".to_string(),
             runtime: "-00:01:00.06".to_string(),
             feet_and_frames_35mm_4perf: "-225+00".to_string(),
+            feet_and_frames_35mm_3perf: "-168+16.0".to_string(), 
+            feet_and_frames_35mm_2perf: "-112+16".to_string(), 
+            feet_and_frames_16mm: "-180+00".to_string(), 
             premiere_ticks: -15256200960000,
         }
     )]
@@ -928,6 +1015,9 @@ mod test {
             timecode: "123:17:34:217".to_string(),
             runtime: "123:24:58.759070833".to_string(),
             feet_and_frames_35mm_4perf: "6657823+09".to_string(),
+            feet_and_frames_35mm_3perf: "4993367+14.2".to_string(), 
+            feet_and_frames_35mm_2perf: "3328911+25".to_string(), 
+            feet_and_frames_16mm: "5326258+17".to_string(), 
             premiere_ticks: 112858993584136800,
         }
     )]
@@ -992,7 +1082,28 @@ mod test {
         assert_eq!(
             case.feet_and_frames_35mm_4perf,
             tc.feet_and_frames(FilmFormat::FF35mm4perf),
-            "feet and frames for {} source {:?}",
+            "feet and frames (35mm 4p) for {} source {:?}",
+            source_type,
+            source
+        );
+        assert_eq!(
+            case.feet_and_frames_35mm_3perf,
+            tc.feet_and_frames(FilmFormat::FF35mm3perf),
+            "feet and frames (35mm 3p) for {} source {:?}",
+            source_type,
+            source
+        );        
+        assert_eq!(
+            case.feet_and_frames_35mm_2perf,
+            tc.feet_and_frames(FilmFormat::FF35mm2perf),
+            "feet and frames (35mm 2p) for {} source {:?}",
+            source_type,
+            source
+        );        
+        assert_eq!(
+            case.feet_and_frames_16mm,
+            tc.feet_and_frames(FilmFormat::FF16mm),
+            "feet and frames (16mm )for {} source {:?}",
             source_type,
             source
         );
