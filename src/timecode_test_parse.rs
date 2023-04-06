@@ -1092,14 +1092,14 @@ mod test {
             "feet and frames (35mm 3p) for {} source {:?}",
             source_type,
             source
-        );        
+        );
         assert_eq!(
             case.feet_and_frames_35mm_2perf,
             tc.feet_and_frames(FilmFormat::FF35mm2perf),
             "feet and frames (35mm 2p) for {} source {:?}",
             source_type,
             source
-        );        
+        );
         assert_eq!(
             case.feet_and_frames_16mm,
             tc.feet_and_frames(FilmFormat::FF16mm),

@@ -616,7 +616,6 @@ impl Timecode {
 
     */
     pub fn feet_and_frames(&self, rep: FilmFormat) -> String {
-
         let frames = self.frames();
         let negative = self.seconds.is_negative();
         let (perfs_per_frame, perfs_per_foot) = (rep.perfs_per_frame(), rep.perfs_per_foot());
@@ -1050,4 +1049,3 @@ fn drop_frame_adjustment(mut frame_number: i64, rate: Framerate) -> i64 {
         tens_of_mins_adjustment
     }
 }
-
