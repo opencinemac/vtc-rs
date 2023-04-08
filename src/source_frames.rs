@@ -284,8 +284,10 @@ fn parse_feet_and_frames_str(
 
     let final_format : Result<FilmFormat, TimecodeParseError> = match (given_format, perfs_n) {
         (Some(x) , Some(_)) if x.allows_perf_field() == false => Err(TimecodeParseError::UnknownStrFormat(
-             format!("Perf field was present in string, which is not allowed for given film format {:?}.", 
-                 given_format.unwrap()))),
+             format!("Perf field was present in string \"{}\", which is not allowed for given film format {:?}.", 
+                 matched.get(0).unwrap().as_str(), x)
+             )
+            ),
         (Some(f), _) => Ok(f),
         (None, Some(_)) => Ok(FilmFormat::FF35mm3perf),
         (_, _) => Ok(FilmFormat::FF35mm4perf),
