@@ -137,6 +137,13 @@ impl FilmFormat {
             FilmFormat::FF35mm2perf => 2,
         }
     }
+
+    pub fn allows_perf_field(&self) -> bool {
+        match self {
+            FilmFormat::FF35mm3perf => true,
+            _ => false
+        }
+    }
 }
 
 /// A struct that bundles a str together with a format, to hint parsing.

@@ -268,7 +268,7 @@ fn drop_frame_tc_adjustment(sections: TimecodeSections, rate: Framerate) -> Fram
 
 fn parse_feet_and_frames_str(
     matched: regex::Captures,
-    format: Option<FilmFormat>,
+    given_format: Option<FilmFormat>,
 ) -> FramesSourceResult {
     // If we got a match, these groups had to be present, so we can unwrap them.
 
@@ -280,16 +280,28 @@ fn parse_feet_and_frames_str(
 
     // Get whether this value was a negative timecode value.
     let is_negative = matched.name("negative").is_some();
+    let perfs_n = perfs
+        .map(|x| x.as_str().parse::<i64>().ok())
+        .flatten();
 
-    let final_format = match (format, perfs) {
-        (Some(f), _) => f,
-        (None, Some(x)) if x.as_str().parse::<i64>().unwrap_or(99) < 3 => FilmFormat::FF35mm3perf,
-        (_, _) => FilmFormat::FF35mm4perf,
+    let final_format : Result<FilmFormat, TimecodeParseError> = match (given_format, perfs_n) {
+        (Some(x) , Some(_)) if x.allows_perf_field() == false => 
+            Err(TimecodeParseError::UnknownStrFormat(
+             format!("Perf field was present in string, which is not allowed for given film format {:?}.", 
+                 given_format.unwrap()))),         
+        (Some(f), _) => Ok(f),
+        (None, Some(_)) => Ok(FilmFormat::FF35mm3perf),
+        (_, _) => Ok(FilmFormat::FF35mm4perf),
     };
 
-    let mut perfs = feet * final_format.perfs_per_foot() + frames * final_format.perfs_per_frame();
-    if is_negative {
-        perfs = -perfs;
-    };
-    Ok(perfs / final_format.perfs_per_frame())
+    if let Ok(ff) = final_format {
+        let mut perfs = feet * ff.perfs_per_foot() + frames * ff.perfs_per_frame();
+        if is_negative {
+            perfs = -perfs;
+        };
+        Ok(perfs / ff.perfs_per_frame())
+    } else {
+        Err( final_format.err().unwrap() )
+    }
+
 }
