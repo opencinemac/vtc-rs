@@ -1,4 +1,4 @@
-use num::integer::{div_mod_floor, div_rem};
+use num::integer::{div_mod_floor, div_rem, lcm};
 use num::rational::Ratio;
 use num::{abs, FromPrimitive, Rational64, Signed, ToPrimitive, Zero};
 
@@ -121,10 +121,17 @@ impl FilmFormat {
     pub fn perfs_per_foot(&self) -> i64 {
         match self {
             FilmFormat::FF16mm => PERFS_PER_6INCHES_16,
-            FilmFormat::FF35mm4perf | FilmFormat::FF35mm3perf | FilmFormat::FF35mm2perf => {
-                PERFS_PER_FOOT_35
-            }
+            FilmFormat::FF35mm4perf | 
+            FilmFormat::FF35mm3perf | 
+            FilmFormat::FF35mm2perf => PERFS_PER_FOOT_35
         }
+    }
+    
+    /// Fewest number of perfs required to complete an integral
+    /// number of feet and integral number of frames in this
+    /// format
+    pub fn footage_perf_modulus(&self) -> i64 {
+        lcm(self.perfs_per_frame(), self.perfs_per_foot())
     }
 
     /// Utility function mapping self to number of

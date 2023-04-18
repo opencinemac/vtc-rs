@@ -294,7 +294,12 @@ fn parse_feet_and_frames_str(
     };
 
     if let Ok(ff) = final_format {
-        let mut perfs = feet * ff.perfs_per_foot() + frames * ff.perfs_per_frame();
+        let mut perfs = feet * ff.perfs_per_foot();
+        let residual = dbg!(perfs % ff.footage_perf_modulus());
+        perfs += dbg!(residual % ff.perfs_per_frame());
+        dbg!(perfs);
+        perfs += frames * ff.perfs_per_frame();
+        dbg!(perfs);
         if is_negative {
             perfs = -perfs;
         };

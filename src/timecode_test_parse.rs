@@ -4,8 +4,8 @@ mod test {
     use rstest::rstest;
 
     use crate::{
-        rates, source_ppro_ticks::PremiereTicksSource, FilmFormat, Framerate, FramesSource, Ntsc,
-        SecondsSource, Timecode, TimecodeParseError,
+        rates, source_ppro_ticks::PremiereTicksSource, FeetFramesStr, FilmFormat, Framerate,
+        FramesSource, Ntsc, SecondsSource, Timecode, TimecodeParseError,
     };
     use std::fmt::Debug;
     use std::ops::Deref;
@@ -35,6 +35,11 @@ mod test {
                 Box::new("01:00:00:00".to_string()),
                 Box::new("86400".to_string()),
                 Box::new("5400+00".to_string()),
+                Box::new("4050+00.0".to_string()),
+                Box::new(FeetFramesStr::new("5400+00", FilmFormat::FF35mm4perf)),
+                Box::new(FeetFramesStr::new("4050+00.0", FilmFormat::FF35mm3perf)),
+                Box::new(FeetFramesStr::new("2700+00", FilmFormat::FF35mm2perf)),
+                Box::new(FeetFramesStr::new("4320+00", FilmFormat::FF16mm)),
                 Box::new(86400i64),
                 Box::new(86400u64),
                 Box::new(86400i32),
@@ -71,6 +76,11 @@ mod test {
                 Box::new("-01:00:00:00".to_string()),
                 Box::new("-86400".to_string()),
                 Box::new("-5400+00".to_string()),
+                Box::new("-4050+00.0".to_string()),
+                Box::new(FeetFramesStr::new("-5400+00", FilmFormat::FF35mm4perf)),
+                Box::new(FeetFramesStr::new("-4050+00.0", FilmFormat::FF35mm3perf)),
+                Box::new(FeetFramesStr::new("-2700+00", FilmFormat::FF35mm2perf)),
+                Box::new(FeetFramesStr::new("-4320+00", FilmFormat::FF16mm)),             
                 Box::new(-86400i64),
                 Box::new(-86400i32),
                 Box::new(-86400isize),
@@ -103,6 +113,11 @@ mod test {
                 Box::new("00:40:00:00".to_string()),
                 Box::new("57600".to_string()),
                 Box::new("3600+00".to_string()),
+                Box::new("2700+00.0".to_string()),
+                Box::new(FeetFramesStr::new("3600+00", FilmFormat::FF35mm4perf)),
+                Box::new(FeetFramesStr::new("2700+00.0", FilmFormat::FF35mm3perf)),
+                Box::new(FeetFramesStr::new("1800+00", FilmFormat::FF35mm2perf)),
+                Box::new(FeetFramesStr::new("2880+00", FilmFormat::FF16mm)),
                 Box::new(57600i64),
                 Box::new(57600u64),
                 Box::new(57600i32),
@@ -139,6 +154,11 @@ mod test {
                 Box::new("-00:40:00:00".to_string()),
                 Box::new("-57600".to_string()),
                 Box::new("-3600+00".to_string()),
+                Box::new("-2700+00.0".to_string()),
+                Box::new(FeetFramesStr::new("-3600+00", FilmFormat::FF35mm4perf)),
+                Box::new(FeetFramesStr::new("-2700+00.0", FilmFormat::FF35mm3perf)),
+                Box::new(FeetFramesStr::new("-1800+00", FilmFormat::FF35mm2perf)),
+                Box::new(FeetFramesStr::new("-2880+00", FilmFormat::FF16mm)),              
                 Box::new(-57600i64),
                 Box::new(-57600i32),
                 Box::new(-57600isize),
@@ -173,6 +193,11 @@ mod test {
                 Box::new("01:00:00:00".to_string()),
                 Box::new("86400".to_string()),
                 Box::new("5400+00".to_string()),
+                Box::new("4050+00.0".to_string()),
+                Box::new(FeetFramesStr::new("5400+00", FilmFormat::FF35mm4perf)),
+                Box::new(FeetFramesStr::new("4050+00.0", FilmFormat::FF35mm3perf)),
+                Box::new(FeetFramesStr::new("2700+00", FilmFormat::FF35mm2perf)),
+                Box::new(FeetFramesStr::new("4320+00", FilmFormat::FF16mm)),
                 Box::new(86400i64),
                 Box::new(86400u64),
                 Box::new(86400i32),
@@ -210,6 +235,11 @@ mod test {
                 Box::new("-01:00:00:00".to_string()),
                 Box::new("-86400".to_string()),
                 Box::new("-5400+00".to_string()),
+                Box::new("-4050+00.0".to_string()),
+                Box::new(FeetFramesStr::new("-5400+00", FilmFormat::FF35mm4perf)),
+                Box::new(FeetFramesStr::new("-4050+00.0", FilmFormat::FF35mm3perf)),
+                Box::new(FeetFramesStr::new("-2700+00", FilmFormat::FF35mm2perf)),
+                Box::new(FeetFramesStr::new("-4320+00", FilmFormat::FF16mm)),
                 Box::new(-86400i64),
                 Box::new(-86400i32),
                 Box::new(-86400isize),
@@ -242,6 +272,11 @@ mod test {
                 Box::new("00:40:00:00".to_string()),
                 Box::new("57600".to_string()),
                 Box::new("3600+00".to_string()),
+                Box::new("2700+00.0".to_string()),
+                Box::new(FeetFramesStr::new("3600+00", FilmFormat::FF35mm4perf)),
+                Box::new(FeetFramesStr::new("2700+00.0", FilmFormat::FF35mm3perf)),
+                Box::new(FeetFramesStr::new("1800+00", FilmFormat::FF35mm2perf)),
+                Box::new(FeetFramesStr::new("2880+00", FilmFormat::FF16mm)),
                 Box::new(57600i64),
                 Box::new(57600u64),
                 Box::new(57600i32),
@@ -279,6 +314,11 @@ mod test {
                 Box::new("-00:40:00:00".to_string()),
                 Box::new("-57600".to_string()),
                 Box::new("-3600+00".to_string()),
+                Box::new("-2700+00.0".to_string()),
+                Box::new(FeetFramesStr::new("-3600+0", FilmFormat::FF35mm4perf)),
+                Box::new(FeetFramesStr::new("-2700+00.0", FilmFormat::FF35mm3perf)),
+                Box::new(FeetFramesStr::new("-1800+0", FilmFormat::FF35mm2perf)),
+                Box::new(FeetFramesStr::new("-2880+0", FilmFormat::FF16mm)),
                 Box::new(-57600i64),
                 Box::new(-57600i32),
                 Box::new(-57600isize),
@@ -313,6 +353,10 @@ mod test {
             frames_sources: vec![
                 Box::new("00:00:00;00".to_string()),
                 Box::new("0+00".to_string()),
+                Box::new("0+00.0".to_string()),
+                Box::new(FeetFramesStr::new("0+00", FilmFormat::FF35mm4perf)),
+                Box::new(FeetFramesStr::new("0+0", FilmFormat::FF35mm2perf)),
+                Box::new(FeetFramesStr::new("0+00", FilmFormat::FF16mm)),
                 Box::new(0i64),
                 Box::new(0u64),
                 Box::new(0i32),
@@ -348,6 +392,11 @@ mod test {
                 Box::new("00:01:01;00".to_string()),
                 Box::new("1828".to_string()),
                 Box::new("114+04".to_string()),
+                // Box::new("85+14.1".to_string()),
+                Box::new(FeetFramesStr::new("114+04", FilmFormat::FF35mm4perf)),
+                // Box::new(FeetFramesStr::new("85+14.1", FilmFormat::FF35mm3perf)),
+                Box::new(FeetFramesStr::new("57+4", FilmFormat::FF35mm2perf)),
+                Box::new(FeetFramesStr::new("91+08", FilmFormat::FF16mm)),
                 Box::new(1828i64),
                 Box::new(1828u64),
                 Box::new(1828i32),
@@ -1271,4 +1320,18 @@ mod test {
 
         Ok(())
     }
+
+    /// test 35mm3perf film parsing
+    #[rstest]
+    #[case("0+0.0", 0)]
+    #[case("1+0.1", 21)]
+    #[case("2+0.2", 42)]
+    #[case("3+0.0", 64)]
+    fn test_threeperf_parsing(#[case] ff: &str , #[case] frame_count: i64) -> Result<(), TimecodeParseError> {
+        let tc = Timecode::with_frames(FeetFramesStr::new(ff, FilmFormat::FF35mm3perf), rates::F24)?;
+        assert_eq!(tc.frames(), frame_count);
+
+        Ok(())
+    }
+
 }
