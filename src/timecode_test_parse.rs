@@ -1321,6 +1321,18 @@ mod test {
         Ok(())
     }
 
+    /// test footage dimensions
+    #[rstest]
+    #[case(FilmFormat::FF35mm4perf,64,16,1)]
+    #[case(FilmFormat::FF35mm3perf,192,64,3)]
+    #[case(FilmFormat::FF35mm2perf,64,32,1)]
+    #[case(FilmFormat::FF16mm,20,20,1)]
+    fn test_footage_dims(#[case] format: FilmFormat, #[case] perfs: i64, #[case] frames: i64, #[case] feet: i64) -> () {
+        assert_eq!(format.footage_perf_modulus(), perfs);
+        assert_eq!(format.footage_frame_modulus(), frames);
+        assert_eq!(format.footage_modulus(), feet);
+    }
+
     /// test 35mm3perf film parsing
     #[rstest]
     #[case("0+0.0", 0)]
