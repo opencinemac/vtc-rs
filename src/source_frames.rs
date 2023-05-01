@@ -280,7 +280,7 @@ fn parse_feet_and_frames_str(
 
     // Get whether this value was a negative timecode value.
     let is_negative = matched.name("negative").is_some();
-    let perfs_n = perfs_str.map(|x| x.as_str().parse::<i64>().ok()).flatten();
+    let perfs_n = perfs_str.and_then(|x| x.as_str().parse::<i64>().ok());
 
     let final_format : Result<FilmFormat, TimecodeParseError> = match (given_format, perfs_n) {
         (Some(x) , Some(_)) if !x.allows_perf_field()  => Err(TimecodeParseError::UnknownStrFormat(
