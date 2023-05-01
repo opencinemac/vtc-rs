@@ -1323,11 +1323,16 @@ mod test {
 
     /// test footage dimensions
     #[rstest]
-    #[case(FilmFormat::FF35mm4perf,64,16,1)]
-    #[case(FilmFormat::FF35mm3perf,192,64,3)]
-    #[case(FilmFormat::FF35mm2perf,64,32,1)]
-    #[case(FilmFormat::FF16mm,20,20,1)]
-    fn test_footage_dims(#[case] format: FilmFormat, #[case] perfs: i64, #[case] frames: i64, #[case] feet: i64) -> () {
+    #[case(FilmFormat::FF35mm4perf, 64, 16, 1)]
+    #[case(FilmFormat::FF35mm3perf, 192, 64, 3)]
+    #[case(FilmFormat::FF35mm2perf, 64, 32, 1)]
+    #[case(FilmFormat::FF16mm, 20, 20, 1)]
+    fn test_footage_dims(
+        #[case] format: FilmFormat,
+        #[case] perfs: i64,
+        #[case] frames: i64,
+        #[case] feet: i64,
+    ) -> () {
         assert_eq!(format.footage_perf_modulus(), perfs);
         assert_eq!(format.footage_frame_modulus(), frames);
         assert_eq!(format.footage_modulus(), feet);
@@ -1339,11 +1344,14 @@ mod test {
     #[case("1+0.1", 21)]
     #[case("2+0.2", 42)]
     #[case("3+0.0", 64)]
-    fn test_threeperf_parsing(#[case] ff: &str , #[case] frame_count: i64) -> Result<(), TimecodeParseError> {
-        let tc = Timecode::with_frames(FeetFramesStr::new(ff, FilmFormat::FF35mm3perf), rates::F24)?;
+    fn test_threeperf_parsing(
+        #[case] ff: &str,
+        #[case] frame_count: i64,
+    ) -> Result<(), TimecodeParseError> {
+        let tc =
+            Timecode::with_frames(FeetFramesStr::new(ff, FilmFormat::FF35mm3perf), rates::F24)?;
         assert_eq!(tc.frames(), frame_count);
 
         Ok(())
     }
-
 }

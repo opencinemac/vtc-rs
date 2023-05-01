@@ -293,7 +293,6 @@ fn parse_feet_and_frames_str(
         (_, _) => Ok(FilmFormat::FF35mm4perf),
     };
 
-
     if let Ok(ff) = final_format {
         let int_feet = (feet / ff.footage_modulus()) * ff.footage_modulus();
         let mut rem_feet = feet - int_feet;
