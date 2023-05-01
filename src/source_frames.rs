@@ -276,11 +276,11 @@ fn parse_feet_and_frames_str(
     let frames =
         timecode_parse::convert_tc_int(matched.name("frames").unwrap().as_str(), "frames")?;
 
-    let perfs = matched.name("perf");
+    let perfs_str = matched.name("perf");
 
     // Get whether this value was a negative timecode value.
     let is_negative = matched.name("negative").is_some();
-    let perfs_n = perfs.map(|x| x.as_str().parse::<i64>().ok()).flatten();
+    let perfs_n = perfs_str.map(|x| x.as_str().parse::<i64>().ok()).flatten();
 
     let final_format : Result<FilmFormat, TimecodeParseError> = match (given_format, perfs_n) {
         (Some(x) , Some(_)) if x.allows_perf_field() == false => Err(TimecodeParseError::UnknownStrFormat(
@@ -293,11 +293,16 @@ fn parse_feet_and_frames_str(
         (_, _) => Ok(FilmFormat::FF35mm4perf),
     };
 
+
     if let Ok(ff) = final_format {
-        let mut perfs = feet * ff.perfs_per_foot();
-        let residual = perfs % ff.footage_perf_modulus();
-        perfs += residual % ff.perfs_per_frame();
-        perfs += frames * ff.perfs_per_frame();
+        let int_feet = (feet / ff.footage_modulus()) * ff.footage_modulus();
+        let mut rem_feet = feet - int_feet;
+        let mut rem_frames = frames;
+        while rem_feet > 0 {
+            rem_frames += ff.footage_frame_modulus() / ff.footage_modulus();
+            rem_feet -= 1;
+        }
+        let mut perfs = int_feet * ff.perfs_per_foot() + rem_frames * ff.perfs_per_frame();
         if is_negative {
             perfs = -perfs;
         };
