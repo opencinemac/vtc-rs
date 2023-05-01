@@ -156,10 +156,7 @@ impl FilmFormat {
     }
 
     pub fn allows_perf_field(&self) -> bool {
-        match self {
-            FilmFormat::FF35mm3perf => true,
-            _ => false,
-        }
+        matches!(self, FilmFormat::FF35mm3perf)
     }
 }
 
