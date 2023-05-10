@@ -280,32 +280,45 @@ fn parse_feet_and_frames_str(
 
     // Get whether this value was a negative timecode value.
     let is_negative = matched.name("negative").is_some();
-    let perfs_n = perfs_str.and_then(|x| x.as_str().parse::<i64>().ok());
+    let perfs_n = perfs_str.and_then(|perfs_n| perfs_n.as_str().parse::<i64>().ok());
 
     let final_format : Result<FilmFormat, TimecodeParseError> = match (given_format, perfs_n) {
-        (Some(x) , Some(_)) if !x.allows_perf_field()  => Err(TimecodeParseError::UnknownStrFormat(
+        (Some(film_format) , Some(_)) if !film_format.allows_perf_field()  => Err(TimecodeParseError::UnknownStrFormat(
              format!("Perf field was present in string \"{}\", which is not allowed for given film format {:?}.", 
-                 matched.get(0).unwrap().as_str(), x)
+                 matched.get(0).unwrap().as_str(), film_format)
              )
             ),
-        (Some(f), _) => Ok(f),
+        (Some(film_format), _) => Ok(film_format),
         (None, Some(_)) => Ok(FilmFormat::FF35mm3perf),
         (_, _) => Ok(FilmFormat::FF35mm4perf),
     };
 
-    if let Ok(ff) = final_format {
-        let int_feet = (feet / ff.footage_modulus()) * ff.footage_modulus();
-        let mut rem_feet = feet - int_feet;
+    if let Ok(final_format) = final_format {
+        // modulus feet is the number of integral feet in the given framecount.
+        // If the number of perfs in a foot is evenly divisible in perfs in a frame,
+        // this will be the same as the final footage count. If not (as in 35mm 3 perf),
+        // there will be a couple feet left over.
+        //
+        // A footage modulus is the fewest number of feet required to complete an integral
+        // number of frames.
+        let modulus_feet = (
+            /* we obtain the count of footage moduluses */
+            feet / final_format.footage_modulus()
+            /* and then mutiply it by the number of feet in a single modulus. */
+            ) * final_format.footage_modulus();
+
+        /* there may be feet left over */
+        let mut rem_feet = feet - modulus_feet;
         let mut rem_frames = frames;
         while rem_feet > 0 {
-            rem_frames += ff.footage_frame_modulus() / ff.footage_modulus();
+            rem_frames += final_format.footage_frame_modulus() / final_format.footage_modulus();
             rem_feet -= 1;
         }
-        let mut perfs = int_feet * ff.perfs_per_foot() + rem_frames * ff.perfs_per_frame();
+        let mut perfs = modulus_feet * final_format.perfs_per_foot() + rem_frames * final_format.perfs_per_frame();
         if is_negative {
             perfs = -perfs;
         };
-        Ok(perfs / ff.perfs_per_frame())
+        Ok(perfs / final_format.perfs_per_frame())
     } else {
         Err(final_format.err().unwrap())
     }

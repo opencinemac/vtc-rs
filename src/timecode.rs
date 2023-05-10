@@ -129,17 +129,17 @@ impl FilmFormat {
 
     /// Fewest number of perfs required to complete an integral
     /// number of feet and integral number of frames in this
-    /// format
+    /// format.
     pub fn footage_perf_modulus(&self) -> i64 {
         lcm(self.perfs_per_frame(), self.perfs_per_foot())
     }
 
-    /// Number of frames in footage_perf_modulus
+    /// Number of frames in footage_perf_modulus.
     pub fn footage_frame_modulus(&self) -> i64 {
         self.footage_perf_modulus() / self.perfs_per_frame()
     }
 
-    /// Number of feet in footage_perf_modulus
+    /// Number of feet in footage_perf_modulus.
     pub fn footage_modulus(&self) -> i64 {
         self.footage_perf_modulus() / self.perfs_per_foot()
     }
