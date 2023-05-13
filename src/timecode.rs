@@ -130,18 +130,18 @@ impl FilmFormat {
     /// Fewest number of perfs required to complete an integral
     /// number of feet and integral number of frames in this
     /// format.
-    pub fn footage_perf_modulus(&self) -> i64 {
+    pub fn footage_modulus_perf_count(&self) -> i64 {
         lcm(self.perfs_per_frame(), self.perfs_per_foot())
     }
 
     /// Number of frames in footage_perf_modulus.
-    pub fn footage_frame_modulus(&self) -> i64 {
-        self.footage_perf_modulus() / self.perfs_per_frame()
+    pub fn footage_modulus_frame_count(&self) -> i64 {
+        self.footage_modulus_perf_count() / self.perfs_per_frame()
     }
 
     /// Number of feet in footage_perf_modulus.
-    pub fn footage_modulus(&self) -> i64 {
-        self.footage_perf_modulus() / self.perfs_per_foot()
+    pub fn footage_modulus_footage_count(&self) -> i64 {
+        self.footage_modulus_perf_count() / self.perfs_per_foot()
     }
 
     /// Utility function mapping self to number of
@@ -155,8 +155,10 @@ impl FilmFormat {
         }
     }
 
+    /// Utility function indicating if the format requires
+    /// a perf field in footage string representations.
     pub fn allows_perf_field(&self) -> bool {
-        matches!(self, FilmFormat::FF35mm3perf)
+        self.perfs_per_frame() % self.perfs_per_foot() != 0
     }
 }
 

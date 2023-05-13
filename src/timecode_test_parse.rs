@@ -1333,9 +1333,9 @@ mod test {
         #[case] frames: i64,
         #[case] feet: i64,
     ) -> () {
-        assert_eq!(format.footage_perf_modulus(), perfs);
-        assert_eq!(format.footage_frame_modulus(), frames);
-        assert_eq!(format.footage_modulus(), feet);
+        assert_eq!(format.footage_modulus_perf_count(), perfs);
+        assert_eq!(format.footage_modulus_frame_count(), frames);
+        assert_eq!(format.footage_modulus_footage_count(), feet);
     }
 
     /// test 35mm3perf film parsing

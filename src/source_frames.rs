@@ -294,30 +294,37 @@ fn parse_feet_and_frames_str(
     };
 
     if let Ok(final_format) = final_format {
-        // modulus feet is the number of integral feet in the given framecount.
         // If the number of perfs in a foot is evenly divisible in perfs in a frame,
         // this will be the same as the final footage count. If not (as in 35mm 3 perf),
         // there will be a couple feet left over.
-        //
-        // A footage modulus is the fewest number of feet required to complete an integral
-        // number of frames.
         let modulus_feet = (
-            /* we obtain the count of footage moduluses */
-            feet / final_format.footage_modulus()
-            /* and then mutiply it by the number of feet in a single modulus. */
-            ) * final_format.footage_modulus();
+            // ...we obtain the floor count of footage moduli...
+            feet / final_format.footage_modulus_footage_count()
+            // ...and then mutiply it by the number of feet in a single modulus.
+            ) * final_format.footage_modulus_footage_count();
 
-        /* there may be feet left over */
+        // There may be feet left over, because we took the floor value.
         let mut rem_feet = feet - modulus_feet;
         let mut rem_frames = frames;
+
+        // If there WEREN'T any feet left over, we can just continue, but if there were,
+        // we have to step through each remaining foot in the modulus and add the 
+        // leftover frames in those feet to rem_frames.
         while rem_feet > 0 {
-            rem_frames += final_format.footage_frame_modulus() / final_format.footage_modulus();
+            rem_frames += final_format.footage_modulus_frame_count() / final_format.footage_modulus_footage_count();
             rem_feet -= 1;
         }
+        
+        // Because of the uneven number of perfs in a foot, we have to sum feet and frames by their
+        // respective perf counts.
         let mut perfs = modulus_feet * final_format.perfs_per_foot() + rem_frames * final_format.perfs_per_frame();
+
+        // Negate if indicated.
         if is_negative {
             perfs = -perfs;
         };
+
+        // We divide by perfs per frame to obtain the final frame count value 
         Ok(perfs / final_format.perfs_per_frame())
     } else {
         Err(final_format.err().unwrap())
