@@ -1,4 +1,4 @@
-use num::integer::{div_mod_floor, div_rem, lcm};
+use num::integer::{div_mod_floor, div_rem, lcm, div_floor};
 use num::rational::Ratio;
 use num::{abs, FromPrimitive, Rational64, Signed, ToPrimitive, Zero};
 
@@ -129,7 +129,8 @@ impl FilmFormat {
 
     /// Fewest number of perfs required to complete an integral
     /// number of feet and integral number of frames in this
-    /// format.
+    /// format. (This should simply be the lcm of the perfs-per-frame
+    /// and the perfs-per-foot.)
     pub fn footage_modulus_perf_count(&self) -> i64 {
         lcm(self.perfs_per_frame(), self.perfs_per_foot())
     }
@@ -158,7 +159,7 @@ impl FilmFormat {
     /// Utility function indicating if the format requires
     /// a perf field in footage string representations.
     pub fn allows_perf_field(&self) -> bool {
-        self.perfs_per_frame() % self.perfs_per_foot() != 0
+        self.perfs_per_foot() % self.perfs_per_frame() != 0
     }
 }
 
@@ -639,18 +640,25 @@ impl Timecode {
 
     */
     pub fn feet_and_frames(&self, rep: FilmFormat) -> String {
-        let frames = self.frames();
+        let frames = abs(self.frames());
         let negative = self.seconds.is_negative();
-        let (perfs_per_frame, perfs_per_foot) = (rep.perfs_per_frame(), rep.perfs_per_foot());
-        let perfs_result = div_mod_floor(abs(frames * perfs_per_frame), perfs_per_foot);
-        let frames_result: (i64, i64) = div_mod_floor(perfs_result.1, perfs_per_frame);
-        let feet = perfs_result.0;
-        let frames = frames_result.0;
+
+        let footage_moduli = div_floor(frames, rep.footage_modulus_frame_count());
+        let mut perf_marker = 0;
+        let mut feet = footage_moduli * rep.footage_modulus_footage_count();
+        let mut frames = frames - (footage_moduli * rep.footage_modulus_frame_count());
+        
+        let less_frames = dbg!(div_floor(rep.footage_modulus_frame_count(), rep.footage_modulus_footage_count())); 
+        while frames > less_frames  {
+            feet += 1;
+            perf_marker += 1;
+            frames -= less_frames; 
+        }
 
         let sign = if negative { "-" } else { "" };
 
-        if perfs_per_foot % perfs_per_frame != 0 {
-            format!("{}{}+{:02}.{}", sign, feet, frames, feet % perfs_per_frame)
+        if rep.allows_perf_field() {
+            format!("{}{}+{:02}.{}", sign, feet, frames, perf_marker)
         } else {
             format!("{}{}+{:02}", sign, feet, frames)
         }

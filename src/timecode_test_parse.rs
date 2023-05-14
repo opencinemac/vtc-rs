@@ -392,9 +392,9 @@ mod test {
                 Box::new("00:01:01;00".to_string()),
                 Box::new("1828".to_string()),
                 Box::new("114+04".to_string()),
-                // Box::new("85+14.1".to_string()),
+                Box::new("85+15.1".to_string()),
                 Box::new(FeetFramesStr::new("114+04", FilmFormat::FF35mm4perf)),
-                // Box::new(FeetFramesStr::new("85+14.1", FilmFormat::FF35mm3perf)),
+                Box::new(FeetFramesStr::new("85+15.1", FilmFormat::FF35mm3perf)),
                 Box::new(FeetFramesStr::new("57+4", FilmFormat::FF35mm2perf)),
                 Box::new(FeetFramesStr::new("91+08", FilmFormat::FF16mm)),
                 Box::new(1828i64),
@@ -417,7 +417,7 @@ mod test {
             timecode: "00:01:01;00".to_string(),
             runtime: "00:01:00.994266667".to_string(),
             feet_and_frames_35mm_4perf: "114+04".to_string(),
-            feet_and_frames_35mm_3perf: "85+14.1".to_string(),
+            feet_and_frames_35mm_3perf: "85+15.1".to_string(),
             feet_and_frames_35mm_2perf: "57+04".to_string(),
             feet_and_frames_16mm: "91+08".to_string(),
             premiere_ticks: 15_493_519_641_600,
@@ -429,6 +429,7 @@ mod test {
                 Box::new("00:00:02;02".to_string()),
                 Box::new("62".to_string()),
                 Box::new("3+14".to_string()),
+                Box::new("2+20.2".to_string()),
                 Box::new(62i64),
                 Box::new(62u64),
                 Box::new(62i32),
@@ -455,7 +456,7 @@ mod test {
             timecode: "00:00:02;02".to_string(),
             runtime: "00:00:02.068733333".to_string(),
             feet_and_frames_35mm_4perf: "3+14".to_string(),
-            feet_and_frames_35mm_3perf: "2+19.2".to_string(),
+            feet_and_frames_35mm_3perf: "2+20.2".to_string(),
             feet_and_frames_35mm_2perf: "1+30".to_string(),
             feet_and_frames_16mm: "3+02".to_string(),
             premiere_ticks: 525491366400,
@@ -467,6 +468,7 @@ mod test {
                 Box::new("-00:00:02;02".to_string()),
                 Box::new("-62".to_string()),
                 Box::new("-3+14".to_string()),
+                Box::new("-2+20.2".to_string()),
                 Box::new(-62i64),
                 Box::new(-62i32),
                 Box::new(-62i16),
@@ -488,7 +490,7 @@ mod test {
             timecode: "-00:00:02;02".to_string(),
             runtime: "-00:00:02.068733333".to_string(),
             feet_and_frames_35mm_4perf: "-3+14".to_string(),
-            feet_and_frames_35mm_3perf: "-2+19.2".to_string(),
+            feet_and_frames_35mm_3perf: "-2+20.2".to_string(),
             feet_and_frames_35mm_2perf: "-1+30".to_string(),
             feet_and_frames_16mm: "-3+02".to_string(),
             premiere_ticks: -525491366400,
@@ -568,6 +570,7 @@ mod test {
                 Box::new("00:10:00;00".to_string()),
                 Box::new("17982".to_string()),
                 Box::new("1123+14".to_string()),
+                Box::new("842+20.2".to_string()),
                 Box::new(17982i64),
                 Box::new(17982u64),
                 Box::new(17982i32),
@@ -592,7 +595,7 @@ mod test {
             timecode: "00:10:00;00".to_string(),
             runtime: "00:09:59.9994".to_string(),
             feet_and_frames_35mm_4perf: "1123+14".to_string(),
-            feet_and_frames_35mm_3perf: "842+19.2".to_string(),
+            feet_and_frames_35mm_3perf: "842+20.2".to_string(),
             feet_and_frames_35mm_2perf: "561+30".to_string(),
             feet_and_frames_16mm: "899+02".to_string(),
             premiere_ticks: 152409447590400,
@@ -604,6 +607,7 @@ mod test {
                 Box::new("-00:10:00;00".to_string()),
                 Box::new("-17982".to_string()),
                 Box::new("-1123+14".to_string()),
+                Box::new("-842+20.2".to_string()),
                 Box::new(-17982i64),
                 Box::new(-17982i32),
                 Box::new(-17982i16),
@@ -624,7 +628,7 @@ mod test {
             timecode: "-00:10:00;00".to_string(),
             runtime: "-00:09:59.9994".to_string(),
             feet_and_frames_35mm_4perf: "-1123+14".to_string(),
-            feet_and_frames_35mm_3perf: "-842+19.2".to_string(),
+            feet_and_frames_35mm_3perf: "-842+20.2".to_string(),
             feet_and_frames_35mm_2perf: "-561+30".to_string(),
             feet_and_frames_16mm: "-899+02".to_string(),
             premiere_ticks: -152409447590400,
@@ -704,6 +708,7 @@ mod test {
                 Box::new("01:00:00;00".to_string()),
                 Box::new("107892".to_string()),
                 Box::new("6743+04".to_string()),
+                Box::new("5057+10.2".to_string()),
                 Box::new(107892i64),
                 Box::new(107892u64),
                 Box::new(107892i32),
@@ -726,7 +731,7 @@ mod test {
             timecode: "01:00:00;00".to_string(),
             runtime: "00:59:59.9964".to_string(),
             feet_and_frames_35mm_4perf: "6743+04".to_string(),
-            feet_and_frames_35mm_3perf: "5057+09.2".to_string(), 
+            feet_and_frames_35mm_3perf: "5057+10.2".to_string(), 
             feet_and_frames_35mm_2perf: "3371+20".to_string(), 
             feet_and_frames_16mm: "5394+12".to_string(), 
             premiere_ticks: 914456685542400,
@@ -738,6 +743,7 @@ mod test {
                 Box::new("-01:00:00;00".to_string()),
                 Box::new("-107892".to_string()),
                 Box::new("-6743+04".to_string()),
+                Box::new("-5057+10.2".to_string()),
                 Box::new(-107892i64),
                 Box::new(-107892i32),
             ],
@@ -757,7 +763,7 @@ mod test {
             timecode: "-01:00:00;00".to_string(),
             runtime: "-00:59:59.9964".to_string(),
             feet_and_frames_35mm_4perf: "-6743+04".to_string(),
-            feet_and_frames_35mm_3perf: "-5057+09.2".to_string(), 
+            feet_and_frames_35mm_3perf: "-5057+10.2".to_string(), 
             feet_and_frames_35mm_2perf: "-3371+20".to_string(), 
             feet_and_frames_16mm: "-5394+12".to_string(), 
             premiere_ticks: -914456685542400,
@@ -805,6 +811,7 @@ mod test {
                 Box::new("00:00:01;01".to_string()),
                 Box::new("61".to_string()),
                 Box::new("3+13".to_string()),
+                Box::new("2+19.2".to_string()),
                 Box::new(61i64),
                 Box::new(61u64),
                 Box::new(61i32),
@@ -831,7 +838,7 @@ mod test {
             timecode: "00:00:01;01".to_string(),
             runtime: "00:00:01.017683333".to_string(),
             feet_and_frames_35mm_4perf: "3+13".to_string(),
-            feet_and_frames_35mm_3perf: "2+18.2".to_string(),
+            feet_and_frames_35mm_3perf: "2+19.2".to_string(),
             feet_and_frames_35mm_2perf: "1+29".to_string(), 
             feet_and_frames_16mm: "3+01".to_string(), 
             premiere_ticks: 258507849600,
@@ -843,6 +850,7 @@ mod test {
                 Box::new("-00:00:01;01".to_string()),
                 Box::new("-61".to_string()),
                 Box::new("-3+13".to_string()),
+                Box::new("-2+19.2".to_string()),
                 Box::new(-61i64),
                 Box::new(-61i32),
                 Box::new(-61i16),
@@ -864,7 +872,7 @@ mod test {
             timecode: "-00:00:01;01".to_string(),
             runtime: "-00:00:01.017683333".to_string(),
             feet_and_frames_35mm_4perf: "-3+13".to_string(),
-            feet_and_frames_35mm_3perf: "-2+18.2".to_string(), 
+            feet_and_frames_35mm_3perf: "-2+19.2".to_string(), 
             feet_and_frames_35mm_2perf: "-1+29".to_string(), 
             feet_and_frames_16mm: "-3+01".to_string(), 
             premiere_ticks: -258507849600,
@@ -876,6 +884,7 @@ mod test {
                 Box::new("00:00:01;03".to_string()),
                 Box::new("63".to_string()),
                 Box::new("3+15".to_string()),
+                Box::new("2+21.2".to_string()),
                 Box::new(63i64),
                 Box::new(63u64),
                 Box::new(63i32),
@@ -902,7 +911,7 @@ mod test {
             timecode: "00:00:01;03".to_string(),
             runtime: "00:00:01.05105".to_string(),
             feet_and_frames_35mm_4perf: "3+15".to_string(),
-            feet_and_frames_35mm_3perf: "2+20.2".to_string(), 
+            feet_and_frames_35mm_3perf: "2+21.2".to_string(), 
             feet_and_frames_35mm_2perf: "1+31".to_string(), 
             feet_and_frames_16mm: "3+03".to_string(), 
             premiere_ticks: 266983516800,
@@ -914,6 +923,7 @@ mod test {
                 Box::new("-00:00:01;03".to_string()),
                 Box::new("-63".to_string()),
                 Box::new("-3+15".to_string()),
+                Box::new("-2+21.2".to_string()),
                 Box::new(-63i64),
                 Box::new(-63i32),
                 Box::new(-63i16),
@@ -935,7 +945,7 @@ mod test {
             timecode: "-00:00:01;03".to_string(),
             runtime: "-00:00:01.05105".to_string(),
             feet_and_frames_35mm_4perf: "-3+15".to_string(),
-            feet_and_frames_35mm_3perf: "-2+20.2".to_string(), 
+            feet_and_frames_35mm_3perf: "-2+21.2".to_string(), 
             feet_and_frames_35mm_2perf: "-1+31".to_string(), 
             feet_and_frames_16mm: "-3+03".to_string(), 
             premiere_ticks: -266983516800,
@@ -1064,7 +1074,7 @@ mod test {
             timecode: "123:17:34:217".to_string(),
             runtime: "123:24:58.759070833".to_string(),
             feet_and_frames_35mm_4perf: "6657823+09".to_string(),
-            feet_and_frames_35mm_3perf: "4993367+14.2".to_string(), 
+            feet_and_frames_35mm_3perf: "4993367+15.2".to_string(), 
             feet_and_frames_35mm_2perf: "3328911+25".to_string(), 
             feet_and_frames_16mm: "5326258+17".to_string(), 
             premiere_ticks: 112858993584136800,
@@ -1351,6 +1361,23 @@ mod test {
         let tc =
             Timecode::with_frames(FeetFramesStr::new(ff, FilmFormat::FF35mm3perf), rates::F24)?;
         assert_eq!(tc.frames(), frame_count);
+
+        Ok(())
+    }
+
+    /// test 35mm3perf string generation
+    #[rstest]
+    #[case(0, "0+00.0")]
+    #[case(20,"0+20.0")]
+    #[case(21,"1+00.1")]
+    #[case(41,"1+20.1")]
+    #[case(42,"2+00.2")]
+    fn test_threeperf_generation(
+        #[case] frame_count: i64,
+        #[case] ff: &str
+        ) -> Result<(),TimecodeParseError> {
+        let tc = Timecode::with_frames(frame_count, rates::F24)?;
+        assert_eq!(tc.feet_and_frames(FilmFormat::FF35mm3perf) , ff);
 
         Ok(())
     }

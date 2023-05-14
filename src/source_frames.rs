@@ -1,4 +1,5 @@
 use num::Rational64;
+use num::integer::div_floor;
 use regex::Match;
 use std::convert::TryFrom;
 use std::fmt::Debug;
@@ -272,16 +273,19 @@ fn parse_feet_and_frames_str(
 ) -> FramesSourceResult {
     // If we got a match, these groups had to be present, so we can unwrap them.
 
-    let feet = timecode_parse::convert_tc_int(matched.name("feet").unwrap().as_str(), "feet")?;
-    let frames =
-        timecode_parse::convert_tc_int(matched.name("frames").unwrap().as_str(), "frames")?;
+    let feet = timecode_parse::convert_tc_int(
+        matched.name("feet").unwrap().as_str(), "feet")?;
 
-    let perfs_str = matched.name("perf");
+    let frames = timecode_parse::convert_tc_int(
+        matched.name("frames").unwrap().as_str(), "frames")?;
 
+    // Parse perfs field if it was present otherwise pull a Option::None.
+    let perfs_n = matched.name("perf").and_then(|perfs_n| perfs_n.as_str().parse::<i64>().ok());
+    
     // Get whether this value was a negative timecode value.
     let is_negative = matched.name("negative").is_some();
-    let perfs_n = perfs_str.and_then(|perfs_n| perfs_n.as_str().parse::<i64>().ok());
 
+    // Infer the format of the footage if it hasn't been provided.
     let final_format : Result<FilmFormat, TimecodeParseError> = match (given_format, perfs_n) {
         (Some(film_format) , Some(_)) if !film_format.allows_perf_field()  => Err(TimecodeParseError::UnknownStrFormat(
              format!("Perf field was present in string \"{}\", which is not allowed for given film format {:?}.", 
@@ -297,35 +301,35 @@ fn parse_feet_and_frames_str(
         // If the number of perfs in a foot is evenly divisible in perfs in a frame,
         // this will be the same as the final footage count. If not (as in 35mm 3 perf),
         // there will be a couple feet left over.
-        let modulus_feet = (
-            // ...we obtain the floor count of footage moduli...
-            feet / final_format.footage_modulus_footage_count()
-            // ...and then mutiply it by the number of feet in a single modulus.
-            ) * final_format.footage_modulus_footage_count();
+
+        // We set up `rem_frames` with `frames` from the string. This will accumulate
+        // our final result.
+        let mut rem_frames = frames;
+        
+        // We obtain the count of integral footage moduli in the `feet` count with floor 
+        // division.
+        let footage_moduli = div_floor(feet, final_format.footage_modulus_footage_count());
 
         // There may be feet left over, because we took the floor value.
-        let mut rem_feet = feet - modulus_feet;
-        let mut rem_frames = frames;
-
-        // If there WEREN'T any feet left over, we can just continue, but if there were,
-        // we have to step through each remaining foot in the modulus and add the 
+        let mut rem_feet = feet - (footage_moduli * final_format.footage_modulus_footage_count());
+        
+         // Add all the frames in the footage_moduli.
+        rem_frames += footage_moduli * final_format.footage_modulus_frame_count();       // If there WEREN'T any feet left over, we can just continue, but if there were,
+        // we have to step through each remaining foot in the modulus and add the
         // leftover frames in those feet to rem_frames.
         while rem_feet > 0 {
-            rem_frames += final_format.footage_modulus_frame_count() / final_format.footage_modulus_footage_count();
+            rem_frames += final_format.footage_modulus_frame_count()
+                / final_format.footage_modulus_footage_count();
             rem_feet -= 1;
         }
-        
-        // Because of the uneven number of perfs in a foot, we have to sum feet and frames by their
-        // respective perf counts.
-        let mut perfs = modulus_feet * final_format.perfs_per_foot() + rem_frames * final_format.perfs_per_frame();
 
         // Negate if indicated.
         if is_negative {
-            perfs = -perfs;
-        };
+            rem_frames = -rem_frames;
+        };       
 
-        // We divide by perfs per frame to obtain the final frame count value 
-        Ok(perfs / final_format.perfs_per_frame())
+        // We divide by perfs per frame to obtain the final frame count value
+        Ok(dbg!(rem_frames))
     } else {
         Err(final_format.err().unwrap())
     }
