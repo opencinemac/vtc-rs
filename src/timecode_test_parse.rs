@@ -1372,6 +1372,8 @@ mod test {
     #[case(21,"1+00.1")]
     #[case(41,"1+20.1")]
     #[case(42,"2+00.2")]
+    #[case(63,"2+21.2")]
+    #[case(64,"3+00.0")]
     fn test_threeperf_generation(
         #[case] frame_count: i64,
         #[case] ff: &str
