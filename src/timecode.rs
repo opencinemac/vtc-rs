@@ -640,19 +640,47 @@ impl Timecode {
 
     */
     pub fn feet_and_frames(&self, rep: FilmFormat) -> String {
-        let frames = abs(self.frames());
+        // get the frame count and sign
+        let total_frames = abs(self.frames());
         let negative = self.seconds.is_negative();
-
-        let footage_moduli = div_floor(frames, rep.footage_modulus_frame_count());
-        let mut perf_marker = 0;
-        let mut feet = footage_moduli * rep.footage_modulus_footage_count();
-        let mut frames = frames - (footage_moduli * rep.footage_modulus_frame_count());
         
-        let less_frames = dbg!(div_floor(rep.footage_modulus_frame_count(), rep.footage_modulus_footage_count())); 
-        while frames > less_frames  {
-            feet += 1;
-            perf_marker += 1;
-            frames -= less_frames; 
+        // the nunber of moduli in the frame count
+        let (footage_moduli, remaining_frames) = div_rem(total_frames, rep.footage_modulus_frame_count());
+
+        // initialize two accumulators, one for feet and one for frames, these values are what
+        // we will return
+        //
+        // Get the number of feet in footage_moduli, and set frames to zero for now
+        let mut feet = footage_moduli * rep.footage_modulus_footage_count();
+        let mut frames = 0; 
+        
+        // Get the number of remaining perfs
+        let mut remaining_perfs = remaining_frames * rep.perfs_per_frame();
+        
+        let mut perf_marker = 0;
+
+        // consume the remaining perfs
+        while remaining_perfs > 0 {
+            if remaining_perfs < rep.perfs_per_foot() {
+                assert!(remaining_perfs % rep.perfs_per_frame() == 0);
+                // if less, we simply set the remaining number of frames to the 
+                // frame count...
+                frames = remaining_perfs / rep.perfs_per_frame();
+                // ...and we are done
+                remaining_perfs = 0;
+            } else if remaining_perfs == rep.perfs_per_foot() {
+                feet += 1;
+                remaining_perfs = 0;
+                perf_marker += 1;
+            } else /* if remaining_perfs > rep.perfs_per_foot */ {
+                // if more, we find the number of frames in an "imperfect" foot 
+                let frames_this_foot = div_floor(rep.perfs_per_foot(), rep.perfs_per_frame());
+                // deduct this number of perfs from count 
+                remaining_perfs -= frames_this_foot * rep.perfs_per_frame();
+                // and add one foot to the number of feet 
+                feet += 1;
+                perf_marker += 1;
+            }
         }
 
         let sign = if negative { "-" } else { "" };

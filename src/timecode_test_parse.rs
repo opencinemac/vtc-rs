@@ -1351,8 +1351,11 @@ mod test {
     /// test 35mm3perf film parsing
     #[rstest]
     #[case("0+0.0", 0)]
+    #[case("0+20.0", 20)]
     #[case("1+0.1", 21)]
+    #[case("1+20.1", 41)]
     #[case("2+0.2", 42)]
+    #[case("2+21.2", 63)]
     #[case("3+0.0", 64)]
     fn test_threeperf_parsing(
         #[case] ff: &str,
