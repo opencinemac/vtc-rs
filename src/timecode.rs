@@ -654,26 +654,24 @@ impl Timecode {
         // division.
         let last_perf = total_perfs + rep.perfs_per_frame() - 1;
         let feet = last_perf / rep.perfs_per_foot();
-
-        // The perf marker is simply the modulo of the footage count and the 
-        // number of feet in a footage modulus.
-        //
-        // For almost all formats this is always zero, but not in the case of
-        // 3-perf.
-        //
-        // The meaning of the perf marker is obscure but it indicates the
-        // position of the Kodak KeyKode "black dot," a dot that appears
-        // every 32 perfs (6 inches) and witnesses an asociated KeyKode latent 
-        // edge number. On an Avid the perf marker is represented as a number, 
-        // However on window dubs from Evertz TCGs this would appear as a visual
-        // symbol,
-        let perf_marker = feet % rep.footage_modulus_footage_count();
-
         let frames = (last_perf % rep.perfs_per_foot()) / rep.perfs_per_frame();
 
         let sign = if negative { "-" } else { "" };
 
         if rep.allows_perf_field() {
+            // The perf marker is simply the modulo of the footage count and the
+            // number of feet in a footage modulus.
+            //
+            // For almost all formats this is always zero, but not in the case of
+            // 3-perf.
+            //
+            // The meaning of the perf marker is obscure but it indicates the
+            // position of the Kodak KeyKode "black dot," a dot that appears
+            // every 32 perfs (6 inches) and witnesses an asociated KeyKode latent
+            // edge number. On an Avid the perf marker is represented as a number,
+            // However on window dubs from Evertz TCGs this would appear as a visual
+            // symbol,
+            let perf_marker = feet % rep.footage_modulus_footage_count();
             format!("{}{}+{:02}.{}", sign, feet, frames, perf_marker)
         } else {
             format!("{}{}+{:02}", sign, feet, frames)
