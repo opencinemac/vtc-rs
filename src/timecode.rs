@@ -1,4 +1,4 @@
-use num::integer::{div_floor, div_mod_floor, div_rem, lcm};
+use num::integer::{div_rem, lcm};
 use num::rational::Ratio;
 use num::{abs, FromPrimitive, Rational64, Signed, ToPrimitive, Zero};
 
