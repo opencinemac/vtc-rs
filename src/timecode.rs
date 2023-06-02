@@ -667,7 +667,7 @@ impl Timecode {
             //
             // The meaning of the perf marker is obscure but it indicates the
             // position of the Kodak KeyKode "black dot," a dot that appears
-            // every 32 perfs (6 inches) and witnesses an asociated KeyKode latent
+            // every 32 perfs (6 inches) and witnesses an associated KeyKode latent
             // edge number. On an Avid the perf marker is represented as a number,
             // However on window dubs from Evertz TCGs this would appear as a visual
             // symbol,
