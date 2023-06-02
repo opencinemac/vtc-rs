@@ -958,6 +958,7 @@ mod test {
             frames_sources: vec![
                 Box::new("00:01:00;04".to_string()),
                 Box::new("3600".to_string()),
+                Box::new("168+16.0".to_string()),
                 Box::new("225+00".to_string()),
                 Box::new(3600i64),
                 Box::new(3600u64),
@@ -993,7 +994,9 @@ mod test {
     #[case::t00_01_00_04_f59_94_df(
         ParseCase{
             frames_sources: vec![
+                Box::new("3659".to_string()),
                 Box::new("00:01:01;03".to_string()),
+                Box::new("171+11.0".to_string())
             ],
             seconds_sources: vec![],
             ticks_sources: vec![],
@@ -1015,6 +1018,7 @@ mod test {
                 Box::new("-00:01:00;04".to_string()),
                 Box::new("-3600".to_string()),
                 Box::new("-225+00".to_string()),
+                Box::new("-168+16.0".to_string()),
                 Box::new(-3600i64),
                 Box::new(-3600i32),
                 Box::new(-3600i16),
