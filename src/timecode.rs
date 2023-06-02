@@ -1,4 +1,4 @@
-use num::integer::{div_mod_floor, div_rem, lcm, div_floor};
+use num::integer::{div_floor, div_mod_floor, div_rem, lcm};
 use num::rational::Ratio;
 use num::{abs, FromPrimitive, Rational64, Signed, ToPrimitive, Zero};
 
@@ -643,45 +643,33 @@ impl Timecode {
         // get the frame count and sign
         let total_frames = abs(self.frames());
         let negative = self.seconds.is_negative();
-        
-        // the nunber of moduli in the frame count
-        let (footage_moduli, remaining_frames) = div_rem(total_frames, rep.footage_modulus_frame_count());
 
-        // initialize two accumulators, one for feet and one for frames, these values are what
-        // we will return
+        let total_perfs = total_frames * rep.perfs_per_frame();
+
+        // The foot a frame lies in, by convention, is where the frame _ends_,
+        // not where it begins. If we add rep.perfs_per_frame() -1 to the perf
+        // count, we get the last perf of the frame we are on.
         //
-        // Get the number of feet in footage_moduli, and set frames to zero for now
-        let mut feet = footage_moduli * rep.footage_modulus_footage_count();
-        let mut frames = 0; 
-        
-        // Get the number of remaining perfs
-        let mut remaining_perfs = remaining_frames * rep.perfs_per_frame();
-        
-        let mut perf_marker = 0;
+        // Once we have that, the foot we are on can be obtained with integer
+        // division.
+        let last_perf = total_perfs + rep.perfs_per_frame() - 1;
+        let feet = last_perf / rep.perfs_per_foot();
 
-        // consume the remaining perfs
-        while remaining_perfs > 0 {
-            if remaining_perfs < rep.perfs_per_foot() {
-                assert!(remaining_perfs % rep.perfs_per_frame() == 0);
-                // if less, we simply set the remaining number of frames to the 
-                // frame count...
-                frames = remaining_perfs / rep.perfs_per_frame();
-                // ...and we are done
-                remaining_perfs = 0;
-            } else if remaining_perfs == rep.perfs_per_foot() {
-                feet += 1;
-                remaining_perfs = 0;
-                perf_marker += 1;
-            } else /* if remaining_perfs > rep.perfs_per_foot */ {
-                // if more, we find the number of frames in an "imperfect" foot 
-                let frames_this_foot = div_floor(rep.perfs_per_foot(), rep.perfs_per_frame());
-                // deduct this number of perfs from count 
-                remaining_perfs -= frames_this_foot * rep.perfs_per_frame();
-                // and add one foot to the number of feet 
-                feet += 1;
-                perf_marker += 1;
-            }
-        }
+        // The perf marker is simply the modulo of the footage count and the 
+        // number of feet in a footage modulus.
+        //
+        // For almost all formats this is always zero, but not in the case of
+        // 3-perf.
+        //
+        // The meaning of the perf marker is obscure but it indicates the
+        // position of the Kodak KeyKode "black dot," a dot that appears
+        // every 32 perfs (6 inches) and witnesses an asociated KeyKode latent 
+        // edge number. On an Avid the perf marker is represented as a number, 
+        // However on window dubs from Evertz TCGs this would appear as a visual
+        // symbol,
+        let perf_marker = feet % rep.footage_modulus_footage_count();
+
+        let frames = (last_perf % rep.perfs_per_foot()) / rep.perfs_per_frame();
 
         let sign = if negative { "-" } else { "" };
 

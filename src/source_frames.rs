@@ -1,5 +1,5 @@
-use num::Rational64;
 use num::integer::div_floor;
+use num::Rational64;
 use regex::Match;
 use std::convert::TryFrom;
 use std::fmt::Debug;
@@ -273,15 +273,16 @@ fn parse_feet_and_frames_str(
 ) -> FramesSourceResult {
     // If we got a match, these groups had to be present, so we can unwrap them.
 
-    let feet = timecode_parse::convert_tc_int(
-        matched.name("feet").unwrap().as_str(), "feet")?;
+    let feet = timecode_parse::convert_tc_int(matched.name("feet").unwrap().as_str(), "feet")?;
 
-    let frames = timecode_parse::convert_tc_int(
-        matched.name("frames").unwrap().as_str(), "frames")?;
+    let frames =
+        timecode_parse::convert_tc_int(matched.name("frames").unwrap().as_str(), "frames")?;
 
     // Parse perfs field if it was present otherwise pull a Option::None.
-    let perfs_n = matched.name("perf").and_then(|perfs_n| perfs_n.as_str().parse::<i64>().ok());
-    
+    let perfs_n = matched
+        .name("perf")
+        .and_then(|perfs_n| perfs_n.as_str().parse::<i64>().ok());
+
     // Get whether this value was a negative timecode value.
     let is_negative = matched.name("negative").is_some();
 
@@ -305,16 +306,18 @@ fn parse_feet_and_frames_str(
         // We set up `rem_frames` with `frames` from the string. This will accumulate
         // our final result.
         let mut rem_frames = frames;
-        
-        // We obtain the count of integral footage moduli in the `feet` count with floor 
+
+        // We obtain the count of integral footage moduli in the `feet` count with floor
         // division.
         let footage_moduli = div_floor(feet, final_format.footage_modulus_footage_count());
 
         // There may be feet left over, because we took the floor value.
         let mut rem_feet = feet - (footage_moduli * final_format.footage_modulus_footage_count());
-        
-         // Add all the frames in the footage_moduli.
-        rem_frames += footage_moduli * final_format.footage_modulus_frame_count();       // If there WEREN'T any feet left over, we can just continue, but if there were,
+
+        // Add all the frames in the footage_moduli.
+        rem_frames += footage_moduli * final_format.footage_modulus_frame_count();
+
+        // If there WEREN'T any feet left over, we can just continue, but if there were,
         // we have to step through each remaining foot in the modulus and add the
         // leftover frames in those feet to rem_frames.
         while rem_feet > 0 {
@@ -326,7 +329,7 @@ fn parse_feet_and_frames_str(
         // Negate if indicated.
         if is_negative {
             rem_frames = -rem_frames;
-        };       
+        };
 
         // We divide by perfs per frame to obtain the final frame count value
         Ok(dbg!(rem_frames))

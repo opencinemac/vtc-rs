@@ -1371,18 +1371,18 @@ mod test {
     /// test 35mm3perf string generation
     #[rstest]
     #[case(0, "0+00.0")]
-    #[case(20,"0+20.0")]
-    #[case(21,"1+00.1")]
-    #[case(41,"1+20.1")]
-    #[case(42,"2+00.2")]
-    #[case(63,"2+21.2")]
-    #[case(64,"3+00.0")]
+    #[case(20, "0+20.0")]
+    #[case(21, "1+00.1")]
+    #[case(41, "1+20.1")]
+    #[case(42, "2+00.2")]
+    #[case(63, "2+21.2")]
+    #[case(64, "3+00.0")]
     fn test_threeperf_generation(
         #[case] frame_count: i64,
-        #[case] ff: &str
-        ) -> Result<(),TimecodeParseError> {
+        #[case] ff: &str,
+    ) -> Result<(), TimecodeParseError> {
         let tc = Timecode::with_frames(frame_count, rates::F24)?;
-        assert_eq!(tc.feet_and_frames(FilmFormat::FF35mm3perf) , ff);
+        assert_eq!(tc.feet_and_frames(FilmFormat::FF35mm3perf), ff);
 
         Ok(())
     }
