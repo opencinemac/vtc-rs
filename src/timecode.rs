@@ -874,7 +874,7 @@ impl Eq for Timecode {}
 
 impl PartialOrd for Timecode {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.seconds.partial_cmp(&other.seconds)
+        Some(self.cmp(other))
     }
 }
 
