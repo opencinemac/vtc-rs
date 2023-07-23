@@ -249,7 +249,7 @@ mod test {
         );
         assert_eq!(
             info.feet_and_frames,
-            tc.feet_and_frames(),
+            tc.feet_and_frames(crate::FilmFormat::FF35mm4perf),
             "event {} {} feet and frames from {:?} ({})",
             event_num,
             tc_field,

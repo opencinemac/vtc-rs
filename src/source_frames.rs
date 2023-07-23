@@ -1,13 +1,16 @@
+use num::integer::div_floor;
 use num::Rational64;
 use regex::Match;
 use std::convert::TryFrom;
 use std::fmt::Debug;
 
 use crate::consts::{
-    FEET_AND_FRAMES_REGEX, FRAMES_PER_FOOT, SECONDS_PER_HOUR_I64, SECONDS_PER_MINUTE_I64,
-    TIMECODE_REGEX,
+    FEET_AND_FRAMES_REGEX, SECONDS_PER_HOUR_I64, SECONDS_PER_MINUTE_I64, TIMECODE_REGEX,
 };
-use crate::{timecode_parse, Framerate, Ntsc, TimecodeParseError, TimecodeSections};
+use crate::{
+    timecode_parse, FeetFramesStr, FilmFormat, Framerate, Ntsc, TimecodeParseError,
+    TimecodeSections,
+};
 
 /// The result type of [FramesSource::to_frames].
 pub type FramesSourceResult = Result<i64, TimecodeParseError>;
@@ -131,13 +134,26 @@ impl FramesSource for &str {
         }
 
         if let Some(matched) = FEET_AND_FRAMES_REGEX.captures(self) {
-            return parse_feet_and_frames_str(matched);
+            return parse_feet_and_frames_str(matched, None);
         }
 
         Err(TimecodeParseError::UnknownStrFormat(format!(
             "{} is not a known frame-count timecode format",
             self
         )))
+    }
+}
+
+impl<'a> FramesSource for FeetFramesStr<'a> {
+    fn to_frames(&self, _rate: Framerate) -> FramesSourceResult {
+        if let Some(matched) = FEET_AND_FRAMES_REGEX.captures(self.input) {
+            parse_feet_and_frames_str(matched, Some(self.format))
+        } else {
+            Err(TimecodeParseError::UnknownStrFormat(format!(
+                "{} is not a known frame-count timecode format",
+                self.input
+            )))
+        }
     }
 }
 
@@ -251,18 +267,73 @@ fn drop_frame_tc_adjustment(sections: TimecodeSections, rate: Framerate) -> Fram
     Ok(-adjustment)
 }
 
-fn parse_feet_and_frames_str(matched: regex::Captures) -> FramesSourceResult {
+fn parse_feet_and_frames_str(
+    matched: regex::Captures,
+    given_format: Option<FilmFormat>,
+) -> FramesSourceResult {
     // If we got a match, these groups had to be present, so we can unwrap them.
+
     let feet = timecode_parse::convert_tc_int(matched.name("feet").unwrap().as_str(), "feet")?;
-    let mut frames =
+
+    let frames =
         timecode_parse::convert_tc_int(matched.name("frames").unwrap().as_str(), "frames")?;
+
+    // Parse perfs field if it was present otherwise pull a Option::None.
+    let perfs_n = matched
+        .name("perf")
+        .and_then(|perfs_n| perfs_n.as_str().parse::<i64>().ok());
 
     // Get whether this value was a negative timecode value.
     let is_negative = matched.name("negative").is_some();
 
-    frames += feet * FRAMES_PER_FOOT;
-    if is_negative {
-        frames = -frames;
+    // Infer the format of the footage if it hasn't been provided.
+    let final_format : Result<FilmFormat, TimecodeParseError> = match (given_format, perfs_n) {
+        (Some(film_format) , Some(_)) if !film_format.allows_perf_field()  => Err(TimecodeParseError::UnknownStrFormat(
+             format!("Perf field was present in string \"{}\", which is not allowed for given film format {:?}.", 
+                 matched.get(0).unwrap().as_str(), film_format)
+             )
+            ),
+        (Some(film_format), _) => Ok(film_format),
+        (None, Some(_)) => Ok(FilmFormat::FF35mm3perf),
+        (_, _) => Ok(FilmFormat::FF35mm4perf),
     };
-    Ok(frames)
+
+    if let Ok(final_format) = final_format {
+        // If the number of perfs in a foot is evenly divisible in perfs in a frame,
+        // this will be the same as the final footage count. If not (as in 35mm 3 perf),
+        // there will be a couple feet left over.
+
+        // We set up `rem_frames` with `frames` from the string. This will accumulate
+        // our final result.
+        let mut rem_frames = frames;
+
+        // We obtain the count of integral footage moduli in the `feet` count with floor
+        // division.
+        let footage_moduli = div_floor(feet, final_format.footage_modulus_footage_count());
+
+        // There may be feet left over, because we took the floor value.
+        let mut rem_feet = feet - (footage_moduli * final_format.footage_modulus_footage_count());
+
+        // Add all the frames in the footage_moduli.
+        rem_frames += footage_moduli * final_format.footage_modulus_frame_count();
+
+        // If there WEREN'T any feet left over, we can just continue, but if there were,
+        // we have to step through each remaining foot in the modulus and add the
+        // leftover frames in those feet to rem_frames.
+        while rem_feet > 0 {
+            rem_frames += final_format.footage_modulus_frame_count()
+                / final_format.footage_modulus_footage_count();
+            rem_feet -= 1;
+        }
+
+        // Negate if indicated.
+        if is_negative {
+            rem_frames = -rem_frames;
+        };
+
+        // We divide by perfs per frame to obtain the final frame count value
+        Ok(dbg!(rem_frames))
+    } else {
+        Err(final_format.err().unwrap())
+    }
 }

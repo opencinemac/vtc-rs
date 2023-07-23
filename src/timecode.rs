@@ -1,9 +1,12 @@
-use num::integer::{div_mod_floor, div_rem};
+use num::integer::{div_rem, lcm};
 use num::rational::Ratio;
 use num::{abs, FromPrimitive, Rational64, Signed, ToPrimitive, Zero};
 
 use crate::{
-    consts::{FRAMES_PER_FOOT, PREMIERE_TICKS_PER_SECOND, SECONDS_PER_HOUR, SECONDS_PER_MINUTE},
+    consts::{
+        PERFS_PER_6INCHES_16, PERFS_PER_FOOT_35, PREMIERE_TICKS_PER_SECOND, SECONDS_PER_HOUR,
+        SECONDS_PER_MINUTE,
+    },
     source_ppro_ticks::PremiereTicksSource,
     timecode_parse::round_seconds_to_frame,
     Framerate, FramesSource, Ntsc, SecondsSource, TimecodeParseError,
@@ -30,6 +33,152 @@ pub struct TimecodeSections {
     pub seconds: i64,
     /// Frames value.
     pub frames: i64,
+}
+
+/** Feet and Frames Representations
+
+[[FF35mm4perf]]
+
+35mm 4-perf film (16 frames per foot). ex: '5400+13'.
+
+# What it is
+
+On physical film, each foot contains a certain number of frames. For 35mm, 4-perf film (the most
+common type on Hollywood movies), this number is 16 frames per foot. Feet-And-Frames was often
+used in place of Keycode to quickly reference a frame in the edit.
+
+# Where you see it
+
+For the most part, feet + frames has died out as a reference, because digital media is not
+measured in feet. The most common place it is still used is Studio Sound Departments. Many Sound
+Mixers and Designers intuitively think in feet + frames, and it is often burned into the
+reference picture for them.
+
+- Telecine.
+- Sound turnover reference picture.
+- Sound turnover change lists.
+
+[[FF35mm3perf]]
+
+35mm film with 3-perf per-frame pulldown (64 perforations per foot). ex: '12+01.1'.
+
+# What it is
+
+3-perf footages are represented as a string with three terms, a number of feet, a
+number of frames from the beginning of the foot, and an final framing term preceded by
+a period, indicating how many perfs were cut off the first frame of this foot.
+
+# Where you see it
+
+Avid cutlists and pull lists on Avid 3 perf projects.
+
+[[FF35mm2perf]]
+
+# What it is
+
+35mm 2-perf film records 32 frames in a foot of film, instead of the usual 16.
+This creates a negative image with a wide aspect ratio using standard spherical
+lenses and consumes half the footage per minute running time as standard 35mm,
+while having a grain profile somewhat better than 16mm while not as good as
+standard 35mm.
+
+# Where you see it
+
+35mm 2-perf formats are uncommon though still find occasional use, the process is
+usually marketed as "Techniscope", the original trademark for Technicolor Italia's
+2-perf format. It was historically very common in the Italian film industry prior
+to digital filmmaking, and is used on some contemporary films to obtain a film look
+while keeping stock and processing costs down.
+
+[[FF16mm]]
+
+# What it is
+
+On 16mm film, there are forty frames of film in each foot, one perforation
+per frame. However, 16mm film is edge coded every six inches, with twenty
+frames per code, so the footage "1+19" is succeeded by "2+0".
+
+# Where you see it
+
+16mm telecines, 16mm edge codes.
+
+*/
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum FilmFormat {
+    /// 35mm, 4-perf footage
+    FF35mm4perf,
+    /// 35mm, 3-perf footage
+    FF35mm3perf,
+    /// 35mm, 2-perf footage
+    FF35mm2perf,
+    /// 16mm footage
+    FF16mm,
+}
+
+impl FilmFormat {
+    /// Utility function mapping self to number
+    /// of perfs per (logical) foot in this case.
+    pub fn perfs_per_foot(&self) -> i64 {
+        match self {
+            FilmFormat::FF16mm => PERFS_PER_6INCHES_16,
+            FilmFormat::FF35mm4perf | FilmFormat::FF35mm3perf | FilmFormat::FF35mm2perf => {
+                PERFS_PER_FOOT_35
+            }
+        }
+    }
+
+    /// Fewest number of perfs required to complete an integral
+    /// number of feet and integral number of frames in this
+    /// format. (This should simply be the lcm of the perfs-per-frame
+    /// and the perfs-per-foot.)
+    pub fn footage_modulus_perf_count(&self) -> i64 {
+        lcm(self.perfs_per_frame(), self.perfs_per_foot())
+    }
+
+    /// Number of frames in footage_perf_modulus.
+    pub fn footage_modulus_frame_count(&self) -> i64 {
+        self.footage_modulus_perf_count() / self.perfs_per_frame()
+    }
+
+    /// Number of feet in footage_perf_modulus.
+    pub fn footage_modulus_footage_count(&self) -> i64 {
+        self.footage_modulus_perf_count() / self.perfs_per_foot()
+    }
+
+    /// Utility function mapping self to number of
+    /// perfs per frame in this case.
+    pub fn perfs_per_frame(&self) -> i64 {
+        match self {
+            FilmFormat::FF16mm => 1,
+            FilmFormat::FF35mm4perf => 4,
+            FilmFormat::FF35mm3perf => 3,
+            FilmFormat::FF35mm2perf => 2,
+        }
+    }
+
+    /// Utility function indicating if the format requires
+    /// a perf field in footage string representations.
+    pub fn allows_perf_field(&self) -> bool {
+        self.perfs_per_foot() % self.perfs_per_frame() != 0
+    }
+}
+
+/// A struct that bundles a str together with a format, to hint parsing.
+///
+/// This struct, which implelements [FrameSource], allows you to include
+/// a format hint to the footage parser, which will override its default
+/// inference.
+#[derive(Debug)]
+pub struct FeetFramesStr<'a> {
+    pub(crate) input: &'a str,
+    pub(crate) format: FilmFormat,
+}
+
+impl<'a> FeetFramesStr<'a> {
+    /// Create a [FeetFramesStr] object from a string and a [FilmFormat].
+    pub fn new(input: &'a str, format: FilmFormat) -> Self {
+        FeetFramesStr { input, format }
+    }
 }
 
 /// The [Result] type returned by [Timecode::with_seconds], [Timecode::with_frames], and
@@ -473,42 +622,60 @@ impl Timecode {
     }
 
     /**
-    Returns the number of feet and frames this timecode represents if it were shot on 35mm
-    4-perf film (16 frames per foot). ex: '5400+13'.
+    Create a feet+frames string of `self`.
 
     # What it is
 
-    On physical film, each foot contains a certain number of frames. For 35mm, 4-perf film (the most
-    common type on Hollywood movies), this number is 16 frames per foot. Feet-And-Frames was often
-    used in place of Keycode to quickly reference a frame in the edit.
+    The customary text representation of frame-accurate film footage.
+
+    The `rep` parameter selects the film format. 35mm, 4-perf vertical
+    pulldown is by far the most common, but other film gauges and pulldowns
+    are supported. See the [FeetFramesRep] enum for all available formats.
 
     # Where you see it
 
-    For the most part, feet + frames has died out as a reference, because digital media is not
-    measured in feet. The most common place it is still used is Studio Sound Departments. Many Sound
-    Mixers and Designers intuitively think in feet + frames, and it is often burned into the
-    reference picture for them.
+    - Film assembly and pull lists, chronologs and camera reports
+    - FLX and ALE telecine log files
+    - Avid film pull lists, cut lists and change lists
 
-    - Telecine.
-    - Sound turnover reference picture.
-    - Sound turnover change lists.
-
-    # Examples
-
-    ```rust
-    # use vtc::{Timecode, rates};
-    let tc = Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
-    assert_eq!("5400+00", tc.feet_and_frames())
-    ```
     */
-    pub fn feet_and_frames(&self) -> String {
-        let result = div_mod_floor(abs(self.frames()), FRAMES_PER_FOOT);
-        let feet = result.0;
-        let frames = result.1;
+    pub fn feet_and_frames(&self, rep: FilmFormat) -> String {
+        // get the frame count and sign
+        let total_frames = abs(self.frames());
+        let negative = self.seconds.is_negative();
 
-        let sign = if self.seconds.is_negative() { "-" } else { "" };
+        let total_perfs = total_frames * rep.perfs_per_frame();
 
-        format!("{}{}+{:02}", sign, feet, frames)
+        // The foot a frame lies in, by convention, is where the frame _ends_,
+        // not where it begins. If we add rep.perfs_per_frame() -1 to the perf
+        // count, we get the last perf of the frame we are on.
+        //
+        // Once we have that, the foot we are on can be obtained with integer
+        // division.
+        let last_perf = total_perfs + rep.perfs_per_frame() - 1;
+        let feet = last_perf / rep.perfs_per_foot();
+        let frames = (last_perf % rep.perfs_per_foot()) / rep.perfs_per_frame();
+
+        let sign = if negative { "-" } else { "" };
+
+        if rep.allows_perf_field() {
+            // The perf marker is simply the modulo of the footage count and the
+            // number of feet in a footage modulus.
+            //
+            // For almost all formats this is always zero, but not in the case of
+            // 3-perf.
+            //
+            // The meaning of the perf marker is obscure but it indicates the
+            // position of the Kodak KeyKode "black dot," a dot that appears
+            // every 32 perfs (6 inches) and witnesses an associated KeyKode latent
+            // edge number. On an Avid the perf marker is represented as a number,
+            // However on window dubs from Evertz TCGs this would appear as a visual
+            // symbol,
+            let perf_marker = feet % rep.footage_modulus_footage_count();
+            format!("{}{}+{:02}.{}", sign, feet, frames, perf_marker)
+        } else {
+            format!("{}{}+{:02}", sign, feet, frames)
+        }
     }
 
     /// Returns a [Timecode] with the same number of frames running at a different

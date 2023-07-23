@@ -25,7 +25,7 @@ corner-cases of parsing and calculating timecode.
 Let's take a quick high-level look at what you can do with vtc-rs:
 
 ```rust
-use vtc::{Timecode, Framerate, Ntsc, rates};
+use vtc::{Timecode, Framerate, Ntsc, rates, FilmFormat, FeetFramesStr};
 use num::Rational64;
 
 // It's easy to make a new 23.98 NTSC timecode. We use the with_frames constructor here since
@@ -38,7 +38,8 @@ assert_eq!(tc.frames(), 1502234i64);
 assert_eq!(tc.seconds(), Rational64::new(751868117, 12000));
 assert_eq!(tc.runtime(3), "17:24:15.676");
 assert_eq!(tc.premiere_ticks(), 15915544300656000i64);
-assert_eq!(tc.feet_and_frames(), "93889+10");
+assert_eq!(tc.feet_and_frames(FilmFormat::FF35mm4perf), "93889+10");
+assert_eq!(tc.feet_and_frames(FilmFormat::FF16mm), "75111+14");
 
 // We can inspect the framerate.
 assert_eq!(tc.rate().playback(), Rational64::new(24000, 1001));
@@ -66,6 +67,24 @@ assert_eq!(parsed.timecode(), "00:00:01:00");
 // Feet + Frames:
 let parsed = Timecode::with_frames("1+08", rates::F23_98).unwrap();
 assert_eq!(parsed.timecode(), "00:00:01:00");
+
+// By default, Feet + Frames parsing infers 4-perf 35mm film, or
+// 3-perf 35mm film if there is a final offset after a period:
+
+let parsed = Timecode::with_frames("2+5.1", rates::F24).unwrap();
+assert_eq!(parsed.timecode(), "00:00:01:23");
+
+// If you want to do calculations with unusual footage formants,
+// you can hint the Feet + Frames parser with a FeetFrames struct.
+
+let feet_frames : FeetFramesStr = FeetFramesStr::new("22+1", FilmFormat::FF16mm);
+let parsed = Timecode::with_frames(feet_frames, rates::F24).unwrap();
+assert_eq!(parsed.timecode(), "00:00:18:09");
+
+// And then these timecode objects can be turned back into footages.
+
+let ff = parsed.feet_and_frames(FilmFormat::FF35mm4perf);
+assert_eq!(ff, "27+09");
 
 // We can add two timecodes
 tc += Timecode::with_frames("01:00:00:00", rates::F23_98).unwrap();
@@ -150,9 +169,9 @@ assert_eq!(ntsc.timecode(), "02:00:00:00");
     - Rational    | 18018/5
     - Feet+Frames | '5400+00'
       - [X] 35mm, 4-perf
-      - [ ] 35mm, 3-perf
-      - [ ] 35mm, 2-perf
-      - [ ] 16mm
+      - [X] 35mm, 3-perf
+      - [X] 35mm, 2-perf
+      - [X] 16mm
     - Premiere Ticks | 15240960000000
   - Operations:
     - Comparisons (==, <, <=, >, >=)
@@ -251,4 +270,4 @@ pub use framerate_parse::{FramerateSource, FramerateSourceResult};
 pub use source_frames::{FramesSource, FramesSourceResult};
 pub use source_ppro_ticks::{PremiereTicksSource, PremiereTicksSourceResult};
 pub use source_seconds::{SecondsSource, SecondsSourceResult};
-pub use timecode::{Timecode, TimecodeParseResult, TimecodeSections};
+pub use timecode::{FeetFramesStr, FilmFormat, Timecode, TimecodeParseResult, TimecodeSections};

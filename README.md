@@ -150,9 +150,9 @@ assert_eq!(ntsc.timecode(), "02:00:00:00");
     - Rational    | 18018/5
     - Feet+Frames | '5400+00'
         - [X] 35mm, 4-perf
-        - [ ] 35mm, 3-perf
-        - [ ] 35mm, 2-perf
-        - [ ] 16mm
+        - [X] 35mm, 3-perf
+        - [X] 35mm, 2-perf
+        - [X] 16mm
     - Premiere Ticks | 15240960000000
 - Operations:
     - Comparisons (==, <, <=, >, >=)
@@ -185,3 +185,8 @@ assert_eq!(ntsc.timecode(), "02:00:00:00");
 
 <div>Drop-frame calculations adapted from <a href="https://www.davidheidelberger.com/2010/06/10/drop-frame-timecode/">David Heidelberger's blog.</a></div>
 <div>Logo made by <a href="" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+## Authors
+
+- *Billy Peake*: Initial Work
+- *Jamie Hardt*: 35mm, 3perf & 16mm format support
