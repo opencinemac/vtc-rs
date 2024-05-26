@@ -1072,25 +1072,27 @@ impl Neg for Timecode {
 ///
 /// ***WARNING:*** This method will panic if passed a non-drop-frame framerate.
 fn drop_frame_adjustment(mut frame_number: i64, rate: Framerate) -> i64 {
-    let framerate = rate.playback().to_f64().unwrap();
+    let framerate = rate.timebase().to_f64().unwrap();
 
     let dropped_per_min = rate.drop_frames_per_minute().unwrap();
-    let frames_per_hour = (framerate * 60.0 * 60.0).round().to_i64().unwrap();
+    let frames_per_hour = (framerate * 60.0 * 60.0).round() as i64;
     let frames_per_24_hours = frames_per_hour * 24;
-    let frames_per_10_min = (framerate * 60.0 * 10.0).round().to_i64().unwrap();
-    let frames_per_min = (framerate * 60.0).round().to_i64().unwrap();
+    let frames_per_10_min = (framerate * 60.0 * 10.0).round() as i64;
+    let frames_per_min = (framerate.round() as i64 * 60) - dropped_per_min;
+
+    while frame_number < 0 {
+        frame_number += frames_per_24_hours;
+    }
 
     frame_number %= frames_per_24_hours;
 
     let (tens_of_mins, remaining_mins) = div_rem(frame_number, frames_per_10_min);
-    let tens_of_mins_adjustment = dropped_per_min * 9 * tens_of_mins;
 
-    if remaining_mins > dropped_per_min {
-        let remaining_minutes_adjustment =
-            dropped_per_min * (remaining_mins - dropped_per_min) / frames_per_min;
-
-        tens_of_mins_adjustment + remaining_minutes_adjustment
+    let dropped_frames = if remaining_mins > dropped_per_min {
+        (dropped_per_min * 9 * tens_of_mins) + dropped_per_min * ((remaining_mins - dropped_per_min) / frames_per_min)
     } else {
-        tens_of_mins_adjustment
-    }
+        dropped_per_min * 9 * tens_of_mins
+    };
+
+    dropped_frames
 }
