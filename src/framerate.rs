@@ -403,6 +403,12 @@ pub mod rates {
         ntsc: Ntsc::None,
     };
 
+    /// 25 fps.
+    pub const F25: Framerate = Framerate {
+        value: num::Rational64::new_raw(25, 1),
+        ntsc: Ntsc::None,
+    };
+
     /// 29.97 NTSC Non-drop-frame.
     pub const F29_97_NDF: Framerate = Framerate {
         value: num::Rational64::new_raw(30000, 1001),
