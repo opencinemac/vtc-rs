@@ -27,6 +27,161 @@ mod test {
     }
 
     #[rstest]
+    // 25 FPS CASES ------------------
+    // ---------------------------
+    #[case::t01_00_00_00_f25(
+        ParseCase{
+            frames_sources: vec![
+                Box::new("01:00:00:00".to_string()),
+                Box::new("90000".to_string()),
+                Box::new("5625+00".to_string()),
+                Box::new("4218+16.0".to_string()),
+                Box::new(FeetFramesStr::new("5625+00", FilmFormat::FF35mm4perf)),
+                Box::new(FeetFramesStr::new("4218+16.0", FilmFormat::FF35mm3perf)),
+                Box::new(FeetFramesStr::new("2812+16", FilmFormat::FF35mm2perf)),
+                Box::new(FeetFramesStr::new("4500+00", FilmFormat::FF16mm)),
+                Box::new(90000i64),
+                Box::new(90000u64),
+                Box::new(90000i32),
+                Box::new(90000u32),
+                Box::new(90000isize),
+                Box::new(90000usize),
+            ],
+            seconds_sources: vec![
+                Box::new(Rational64::new(3600, 1)),
+                Box::new(Rational64::new(3600, 1).to_f64().unwrap()),
+                Box::new(Rational64::new(3600, 1).to_f32().unwrap()),
+                Box::new("01:00:00.0".to_string()),
+                Box::new("01:00:00".to_string()),
+                Box::new("3600.0".to_string()),
+            ],
+            ticks_sources: vec![
+                Box::new(914457600000000i64),
+                Box::new(914457600000000u64),
+            ],
+            rate: rates::F25,
+            seconds: Rational64::new(3600, 1),
+            frames: 90000,
+            timecode: "01:00:00:00".to_string(),
+            runtime: "01:00:00.0".to_string(),
+            feet_and_frames_35mm_4perf: "5625+00".to_string(),
+            feet_and_frames_35mm_3perf: "4218+16.0".to_string(),
+            feet_and_frames_35mm_2perf: "2812+16".to_string(),
+            feet_and_frames_16mm: "4500+00".to_string(),
+            premiere_ticks: 914457600000000,
+        }
+    )]
+    #[case::t01_00_00_00_f25_negative(
+        ParseCase{
+            frames_sources: vec![
+                Box::new("-01:00:00:00".to_string()),
+                Box::new("-90000".to_string()),
+                Box::new("-5625+00".to_string()),
+                Box::new("-4218+16.0".to_string()),
+                Box::new(FeetFramesStr::new("-5625+00", FilmFormat::FF35mm4perf)),
+                Box::new(FeetFramesStr::new("-4218+16.0", FilmFormat::FF35mm3perf)),
+                Box::new(FeetFramesStr::new("-2812+16", FilmFormat::FF35mm2perf)),
+                Box::new(FeetFramesStr::new("-4500+00", FilmFormat::FF16mm)),
+                Box::new(-90000i64),
+                Box::new(-90000i32),
+                Box::new(-90000isize),
+            ],
+            seconds_sources: vec![
+                Box::new(-Rational64::new(3600, 1)),
+                Box::new(-Rational64::new(3600, 1).to_f64().unwrap()),
+                Box::new(-Rational64::new(3600, 1).to_f32().unwrap()),
+                Box::new("-01:00:00.0".to_string()),
+                Box::new("-3600.0".to_string()),
+            ],
+            ticks_sources: vec![
+                Box::new(-914457600000000i64),
+            ],
+            rate: rates::F25,
+            seconds: -Rational64::new(3600, 1),
+            frames: -90000,
+            timecode: "-01:00:00:00".to_string(),
+            runtime: "-01:00:00.0".to_string(),
+            feet_and_frames_35mm_4perf: "-5625+00".to_string(),
+            feet_and_frames_35mm_3perf: "-4218+16.0".to_string(),
+            feet_and_frames_35mm_2perf: "-2812+16".to_string(),
+            feet_and_frames_16mm: "-4500+00".to_string(),
+            premiere_ticks: -914457600000000,
+        }
+    )]
+    #[case::t00_01_00_00_f25(
+        ParseCase{
+            frames_sources: vec![
+                Box::new("00:01:00:00".to_string()),
+                Box::new("1500".to_string()),
+                Box::new("93+12".to_string()),
+                Box::new("70+07.1".to_string()),
+                Box::new(FeetFramesStr::new("93+12", FilmFormat::FF35mm4perf)),
+                Box::new(FeetFramesStr::new("70+07.1", FilmFormat::FF35mm3perf)),
+                Box::new(FeetFramesStr::new("46+28", FilmFormat::FF35mm2perf)),
+                Box::new(FeetFramesStr::new("75+00", FilmFormat::FF16mm)),
+                Box::new(1500i64),
+                Box::new(1500u64),
+                Box::new(1500i32),
+                Box::new(1500u32),
+                Box::new(1500isize),
+                Box::new(1500usize),
+            ],
+            seconds_sources: vec![
+                Box::new(Rational64::new(60, 1)),
+                Box::new(Rational64::new(60, 1).to_f64().unwrap()),
+                Box::new(Rational64::new(60, 1).to_f32().unwrap()),
+                Box::new("00:01:00.0".to_string()),
+                Box::new("60.0".to_string()),
+            ],
+            ticks_sources: vec![
+                Box::new(15240960000000i64),
+                Box::new(15240960000000u64),
+            ],
+            rate: rates::F25,
+            seconds: Rational64::new(60, 1),
+            frames: 1500,
+            timecode: "00:01:00:00".to_string(),
+            runtime: "00:01:00.0".to_string(),
+            feet_and_frames_35mm_4perf: "93+12".to_string(),
+            feet_and_frames_35mm_3perf: "70+07.1".to_string(),
+            feet_and_frames_35mm_2perf: "46+28".to_string(),
+            feet_and_frames_16mm: "75+00".to_string(),
+            premiere_ticks: 15240960000000,
+        }
+    )]
+    #[case::t00_00_00_00_f25(
+        ParseCase{
+            frames_sources: vec![
+                Box::new("00:00:00:00".to_string()),
+                Box::new("0".to_string()),
+                Box::new("0+00".to_string()),
+                Box::new("0+00.0".to_string()),
+                Box::new(FeetFramesStr::new("0+00", FilmFormat::FF35mm4perf)),
+                Box::new(FeetFramesStr::new("0+00.0", FilmFormat::FF35mm3perf)),
+                Box::new(FeetFramesStr::new("0+00", FilmFormat::FF35mm2perf)),
+                Box::new(FeetFramesStr::new("0+00", FilmFormat::FF16mm)),
+                Box::new(0i64),
+            ],
+            seconds_sources: vec![
+                Box::new(Rational64::new(0, 1)),
+                Box::new("00:00:00.0".to_string()),
+                Box::new("0".to_string()),
+            ],
+            ticks_sources: vec![
+                Box::new(0i64),
+            ],
+            rate: rates::F25,
+            seconds: Rational64::new(0, 1),
+            frames: 0,
+            timecode: "00:00:00:00".to_string(),
+            runtime: "00:00:00.0".to_string(),
+            feet_and_frames_35mm_4perf: "0+00".to_string(),
+            feet_and_frames_35mm_3perf: "0+00.0".to_string(),
+            feet_and_frames_35mm_2perf: "0+00".to_string(),
+            feet_and_frames_16mm: "0+00".to_string(),
+            premiere_ticks: 0,
+        }
+    )]
     // 23.98 NTSC CASES ----------
     // ---------------------------
     #[case::t01_00_00_00_f23_98(
