@@ -332,7 +332,7 @@ fn parse_feet_and_frames_str(
         };
 
         // We divide by perfs per frame to obtain the final frame count value
-        Ok(dbg!(rem_frames))
+        Ok(rem_frames)
     } else {
         Err(final_format.err().unwrap())
     }
