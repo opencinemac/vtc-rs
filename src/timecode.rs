@@ -1078,7 +1078,9 @@ fn drop_frame_adjustment(mut frame_number: i64, rate: Framerate) -> i64 {
     let frames_per_hour = (framerate * 60.0 * 60.0).round().to_i64().unwrap();
     let frames_per_24_hours = frames_per_hour * 24;
     let frames_per_10_min = (framerate * 60.0 * 10.0).round().to_i64().unwrap();
-    let frames_per_min = (framerate * 60.0).round().to_i64().unwrap();
+    // Frames in a minute that drops frames. Rounding the playback rate here is not exact
+    // at higher rates (119.88 * 60 rounds to 7193, not 7192), so compute it directly.
+    let frames_per_min = rate.timebase().to_integer() * 60 - dropped_per_min;
 
     frame_number %= frames_per_24_hours;
 
@@ -1086,8 +1088,11 @@ fn drop_frame_adjustment(mut frame_number: i64, rate: Framerate) -> i64 {
     let tens_of_mins_adjustment = dropped_per_min * 9 * tens_of_mins;
 
     if remaining_mins > dropped_per_min {
+        // Integer division must happen before the multiplication: we want the number of
+        // whole minutes elapsed since the last 10-minute mark, times the frames dropped per
+        // minute. Multiplying first adds dropped frames partway through a minute.
         let remaining_minutes_adjustment =
-            dropped_per_min * (remaining_mins - dropped_per_min) / frames_per_min;
+            dropped_per_min * ((remaining_mins - dropped_per_min) / frames_per_min);
 
         tens_of_mins_adjustment + remaining_minutes_adjustment
     } else {

@@ -254,6 +254,8 @@ mod framerate_test;
 mod timecode;
 mod timecode_parse;
 #[cfg(test)]
+mod timecode_test_drop_frame;
+#[cfg(test)]
 mod timecode_test_ops;
 #[cfg(test)]
 mod timecode_test_parse;
